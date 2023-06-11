@@ -1,0 +1,12 @@
+[submodule "biobench2"]
+	path = biobench2
+	url = https://github.com/reiverjohn/biobench2.git
+[submodule "graphBIG"]
+	path = graphBIG
+	url = https://github.com/graphbig/graphBIG.git
+[submodule "gups"]
+	path = gups
+	url = https://github.com/alexandermerritt/gups.git
+[submodule "sysbench"]
+	path = sysbench
+	url = https://github.com/akopytov/sysbench.git
