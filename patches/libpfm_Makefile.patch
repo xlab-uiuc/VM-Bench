@@ -1,0 +1,10 @@
+diff --git a/tools/Makefile b/tools/Makefile
+index 6a4163e..692455a 100644
+--- a/tools/Makefile
++++ b/tools/Makefile
+@@ -1,4 +1,4 @@
+-PFMDIR=libpfm-4.5.0
++PFMDIR=libpfm-4.12.0
+ CXX=g++
+ CXX_FLAGS=-I./include -L./lib -O3
+ LIBS=-lpfm_cxx -lpfm
