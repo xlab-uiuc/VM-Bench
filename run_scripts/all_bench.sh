@@ -2,9 +2,9 @@
 
 BASEDIR=`pwd`
 # dataset="graphBIG/dataset/small/"
-dataset_100k="graphBIG/dataset/LDBC/output-1000k/"
+dataset_1000k="graphBIG/dataset/LDBC/output-1000k/"
 run_1000k() {
-	"$1" --dataset $(realpath "$dataset_100k")
+	"$1" --dataset $(realpath "$dataset_1000k")
 }
 
 dataset_10k="graphBIG/dataset/LDBC/output-10k/"
@@ -23,6 +23,6 @@ run_1000k ./graphBIG/benchmark/bench_pageRank/pagerank
 
 
 cd $BASEDIR
-./gups.sh
-./mummer.sh
-./sysbench.sh
+./run_scripts/gups.sh
+./run_scripts/mummer.sh
+./run_scripts/sysbench.sh

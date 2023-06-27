@@ -2,7 +2,7 @@
 
 
 # dataset="graphBIG/dataset/small/"
-dataset_100k="graphBIG/dataset/LDBC/output-10k/"
+dataset_10k="graphBIG/dataset/LDBC/output-10k/"
 run_10k() {
 	"$1" --dataset $(realpath "$dataset_10k")
 }
