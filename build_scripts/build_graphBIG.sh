@@ -53,5 +53,5 @@ LDBC_PATH="patches/LDBC.tar.gz"
 if test -f "$BASEDIR/$LDBC_PATH"; then
     tar -xf $BASEDIR/$LDBC_PATH --directory $BASEDIR/graphBIG/dataset/
 else
-    echo "Please download LDBC dataset"
+    echo "Please download LDBC dataset to patches/LDBC.tar.gz"
 fi
