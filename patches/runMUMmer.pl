@@ -35,7 +35,7 @@
 ##
 ## SET TEST ITERATION VALUE BELOW!!
 ##
-$replicates = 3;
+$replicates = 1;
 ##
 ## SET OMP_NUM_THREADS TO CONTROL CPU USAGE FOR VELVET!!
 ##
