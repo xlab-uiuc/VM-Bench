@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import re
 import subprocess
 import datetime
+from pathlib import Path
 from typing import NamedTuple
 
 FILENAME = ''
@@ -13,17 +15,18 @@ PERF_PATH = "/home/schai/linux_gen_x86/tools/perf/perf"
 RUN_TIMES = 5
 benchmarks = {
     # bench_name, relative bench script path, times, output path
-    "Graph - BC"  : ("./graphbig_bc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_bc.perf"),
-    "Graph - BFS" : ("./graphbig_bfs.sh"      , RUN_TIMES, OUTPUT_DIR + "graphbig_bfs.perf"),
-    "Graph - DFS" : ("./graphbig_dfs.sh"      , RUN_TIMES, OUTPUT_DIR + "graphbig_dfs.perf"),
-    "Graph - DC"  : ("./graphbig_dc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_dc.perf"),
-    "Graph - SSSP": ("./graphbig_sssp.sh"     , RUN_TIMES, OUTPUT_DIR + "graphbig_sssp.perf"),
-    "Graph - CC"  : ("./graphbig_cc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_cc.perf"),
-    "Graph - TC"  : ("./graphbig_tc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_tc.perf"),
-    "Graph - PR"  : ("./graphbig_pagerank.sh" , RUN_TIMES, OUTPUT_DIR + "graphbig_pagerank.perf"),
-    "sysbench"    : ("./sysbench.sh"          , RUN_TIMES, OUTPUT_DIR + "sysbench.perf"),
-    "gups"        : ("./gups.sh"              , RUN_TIMES, OUTPUT_DIR + "gups.perf"),
-    "mummer"      : ("./mummer.sh"            , RUN_TIMES, OUTPUT_DIR + "mummer.perf"),
+    "Graph - BC"  : ("graphbig_bc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_bc.perf"),
+    "Graph - BFS" : ("graphbig_bfs.sh"      , RUN_TIMES, OUTPUT_DIR + "graphbig_bfs.perf"),
+    "Graph - DFS" : ("graphbig_dfs.sh"      , RUN_TIMES, OUTPUT_DIR + "graphbig_dfs.perf"),
+    "Graph - DC"  : ("graphbig_dc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_dc.perf"),
+    "Graph - SSSP": ("graphbig_sssp.sh"     , RUN_TIMES, OUTPUT_DIR + "graphbig_sssp.perf"),
+    "Graph - CC"  : ("graphbig_cc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_cc.perf"),
+    "Graph - TC"  : ("graphbig_tc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_tc.perf"),
+    "Graph - PR"  : ("graphbig_pagerank.sh" , RUN_TIMES, OUTPUT_DIR + "graphbig_pagerank.perf"),
+    "sysbench"    : ("sysbench.sh"          , RUN_TIMES, OUTPUT_DIR + "sysbench.perf"),
+    "mem_test"    : ("mem_test.sh"          , RUN_TIMES, OUTPUT_DIR + "mem_test.perf"),
+    "gups"        : ("gups.sh"              , RUN_TIMES, OUTPUT_DIR + "gups.perf"),
+    "mummer"      : ("mummer.sh"            , RUN_TIMES, OUTPUT_DIR + "mummer.perf"),
 }
 
 
@@ -34,7 +37,7 @@ def run_perf(command, outpath):
         "--all-cpus", "-I", "1000", "-o",
         outpath, "--", command
     ]
-
+    print(' '.join(cmd))
     r = subprocess.run(cmd, capture_output=True)
     assert r.returncode == 0
 
@@ -79,12 +82,13 @@ def calc_average_page_walk_latency(perf_result):
                     count_str = tokens[EVENT_COUNT_POS].replace(',', '')
                     total_walked += float(count_str)
     
+    print("total_pending: ", total_pending, "total_walked: ", total_walked)
     avg_walk_latency = total_pending / total_walked
 
     return avg_walk_latency
 
-def perf():
-    for name, info in benchmarks.items():
+def perf(bench_list):
+    for name, info in bench_list.items():
         bench_path, times, output_path = info
         bench_real_path = os.path.join(SCRIPT_DIR, bench_path)
 
@@ -112,5 +116,23 @@ def perf():
 
 if __name__ == "__main__":
     FILENAME = get_result_filename()
+    Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
+
     SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-    perf()
+
+    parser = argparse.ArgumentParser(description='A script with flags.')
+    parser.add_argument('--benchs', nargs='*', default=[])
+    args = parser.parse_args()
+    bench_names = args.benchs
+
+    print(bench_names)
+    if len(bench_names) == 0:
+        perf(bench_list=benchmarks)
+    else:
+        bench_list = {}
+        for name in bench_names:
+            if name in benchmarks:
+                bench_list[name] = benchmarks[name]
+            else:
+                print(f"Unknown benchmark: {name}")
+        perf(bench_list=bench_list)
