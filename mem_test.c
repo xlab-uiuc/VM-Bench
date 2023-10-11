@@ -27,7 +27,7 @@ int main()
         a[i + 128] = 64;
     }
     
-    for (int j = 0; j < 2000; j++) {
+    for (int j = 0; j < 1000; j++) {
         for (int i = 0; i < len - step ; i += step) {
             // sum += a[i] * a[i + step];
             sum += a[i] + a[i + step + 5];
