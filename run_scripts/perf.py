@@ -31,11 +31,13 @@ benchmarks = {
 
 
 def run_perf(command, outpath):
+    perf_cpu = "1"
+    command_cpu = "5"
     cmd = [
-        "sudo", PERF_PATH, "stat",
-        "--event=dtlb_load_misses.walk_pending,dtlb_store_misses.walk_pending,itlb_misses.walk_pending,dtlb_load_misses.walk_completed,dtlb_store_misses.walk_completed,itlb_misses.walk_completed",
-        "--all-cpus", "-I", "1000", "-o",
-        outpath, "--", command
+        "sudo", "taskset", "-c", perf_cpu, PERF_PATH, "stat",
+        "--event=dtlb_load_misses.walk_pending,dtlb_store_misses.walk_pending,itlb_misses.walk_pending,dtlb_load_misses.walk_completed,dtlb_store_misses.walk_completed,itlb_misses.walk_completed,page-faults",
+        "-C", command_cpu, "-I", "1000", "-o",
+        outpath, "--", "taskset", "-c", command_cpu, command
     ]
     print(' '.join(cmd))
     r = subprocess.run(cmd, capture_output=True)
@@ -70,6 +72,7 @@ def calc_average_page_walk_latency(perf_result):
     EVENT_NAME_POS = 2
     total_pending = 0.0
     total_walked = 0
+    total_pf = 0
     with open(perf_result) as file:
         for line in file:
             tokens = line.split()
@@ -81,11 +84,14 @@ def calc_average_page_walk_latency(perf_result):
                 if "walk_completed" in tokens[EVENT_NAME_POS]:
                     count_str = tokens[EVENT_COUNT_POS].replace(',', '')
                     total_walked += float(count_str)
-    
-    print("total_pending: ", total_pending, "total_walked: ", total_walked)
+                if "page-faults" in tokens[EVENT_NAME_POS]:
+                    count_str = tokens[EVENT_COUNT_POS].replace(',', '')
+                    total_pf += float(count_str)
+
+    print("total_pending: ", total_pending, "total_walked: ", total_walked, "total_pf: ", total_pf)
     avg_walk_latency = total_pending / total_walked
 
-    return avg_walk_latency
+    return avg_walk_latency, total_pf
 
 def perf(bench_list):
     for name, info in bench_list.items():
@@ -98,19 +104,23 @@ def perf(bench_list):
         total_run_time = 0.0
         
         latencies = []
+        n_pfs = []
         for t in range(times):
             print(f"{t + 1}...", flush=True, end='')
             output = run_perf(bench_real_path, output_path).decode('utf-8')
 
-            l = calc_average_page_walk_latency(output_path)
+            l, n_pf = calc_average_page_walk_latency(output_path)
             print(l)
             latencies.append(l)
+            n_pfs.append(n_pf)
         
 
         print("")
         avg_latency = sum(latencies) / len(latencies)
+        avg_n_pf = sum(n_pfs) / len(n_pfs)
         print(f"Average latency: {avg_latency}")
-        
+        print(f"Average page faults: {avg_n_pf}")
+
         with open(FILENAME, 'a') as f:
             f.write(f"{name},{times},{avg_latency}\n")
 
