@@ -6,8 +6,12 @@
 BASEDIR=`pwd`
 cd $BASEDIR/gups
 
-# install mpich if needed
-sudo apt install -y libmpich-dev
+if dpkg -l | grep libmpich-dev; then
+    echo "libmpich-dev ready"
+else
+    # install mpich if needed
+    sudo apt install -y libmpich-dev
+fi
 
 # apply patch to add include path of mpich
 # if ! grep "^CCFLAGS.*mpich" Makefile.linux; then
@@ -15,7 +19,6 @@ sudo apt install -y libmpich-dev
 #     git apply gups_makefile.patch
 # fi
 
-cp $BASEDIR/patches/gups_vanilla_patch_for_large_mem.c gups_vanilla.c
 make -f Makefile.linux gups_vanilla;
 
 if test -f "$BASEDIR/gups/gups_vanilla"; then
