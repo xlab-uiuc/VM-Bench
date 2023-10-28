@@ -50,8 +50,28 @@ for bench in "${bechmarks[@]}"; do
 done
 
 LDBC_PATH="patches/LDBC.tar.gz"
-if test -f "$BASEDIR/$LDBC_PATH"; then
-    tar -xf $BASEDIR/$LDBC_PATH --directory $BASEDIR/graphBIG/dataset/
-else
-    echo "Please download LDBC dataset to patches/LDBC.tar.gz"
+if [ ! -e "$BASEDIR/$LDBC_PATH" ]; then
+    echo "Downlowding LDBC dataset"
+    pip install gdown
+    PATH=$PATH:~/.local/bin gdown 'https://drive.google.com/uc?export=download&id=1fuk5tadoU4oHtXUNJUusQo868vS_-dSB' -O $BASEDIR/$LDBC_PATH
 fi
+
+if [ ! -e "$BASEDIR/graphBIG/dataset/LDBC" ]; then
+    echo "unzipping LDBC dataset"
+    tar -xf $BASEDIR/$LDBC_PATH --directory $BASEDIR/graphBIG/dataset/
+fi
+
+
+if [ ! -e "$BASEDIR/graphBIG/dataset/LDBC" ]; then
+    echo "LDBC dataset ready"
+else
+    echo "LDBC not ready. Please check before running benchmark"
+fi
+
+# tar -xf $BASEDIR/$LDBC_PATH --directory $BASEDIR/graphBIG/dataset/
+
+# if test -f "$BASEDIR/$LDBC_PATH"; then
+#     tar -xf $BASEDIR/$LDBC_PATH --directory $BASEDIR/graphBIG/dataset/
+# else
+#     echo "Please download LDBC dataset to patches/LDBC.tar.gz"
+# fi

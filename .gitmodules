@@ -10,3 +10,6 @@
 [submodule "sysbench"]
 	path = sysbench
 	url = https://github.com/akopytov/sysbench.git
+[submodule "FlameGraph"]
+	path = FlameGraph
+	url = https://github.com/brendangregg/FlameGraph.git
