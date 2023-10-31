@@ -45,27 +45,37 @@ def run_perf(command, outpath):
 
     return r.stdout
 
-def get_result_filename():
-    kernel = ''
-    with open('/proc/cmdline') as f:
-        cmdline = f.read()
+def get_kernel_version():
+    try:
+        output = subprocess.check_output(["uname", "-r"], universal_newlines=True)
+        return output.strip()
+    except subprocess.CalledProcessError as e:
+        print(f"Error occurred: {e}")
+        return None
 
-        if 'vanilla' in cmdline:
-            kernel = 'vanila'
-        elif 'gen-x86' in cmdline:
-            kernel = 'gen-x86'
+def get_thp_config():
+    try:
+        output = subprocess.check_output(["cat", "/sys/kernel/mm/transparent_hugepage/enabled"], universal_newlines=True)
+        if "[always]" in output.strip():
+            return "THP_always"
+        elif "[madvise]" in output.strip():
+            return "THP_madvise"
+        elif "[never]" in output.strip():
+            return "THP_never"
         else:
-            print("Unknown kernel!")
-            kernel = 'unknown'
+            return "no_thp_support"
+    except subprocess.CalledProcessError as e:
+        print(f"Error occurred: {e}")
+        return "no_thp_support"
 
-        thp = 'THP_enabled'
-        if 'transparent_hugepage=never' in cmdline:
-            thp = 'noTHP'
+def get_result_filename():
+    kernel = get_kernel_version()
+    thp_config = get_thp_config()
 
     d = datetime.datetime.now()
     timestamp = d.strftime("%Y-%m-%d-%H-%M-%S")
 
-    return f'./walk_latency_{kernel}_{thp}_{timestamp}_.csv'
+    return f'./{kernel}_{thp_config}_{timestamp}.csv'
 
 def calc_average_page_walk_latency(perf_result):
     EVENT_COUNT_POS = 1
