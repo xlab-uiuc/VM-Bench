@@ -13,3 +13,6 @@
 [submodule "FlameGraph"]
 	path = FlameGraph
 	url = https://github.com/brendangregg/FlameGraph.git
+[submodule "LEBench"]
+	path = LEBench
+	url = git@github.com:xlab-uiuc/LEBench.git

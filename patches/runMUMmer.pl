@@ -74,7 +74,7 @@ for ($i=1; $i <= $replicates; $i++) {
 ##	MUMmer v. 3.0
 ##
 print "\nRunning MUMmer, replicate # $i...\n\n";
-system("sleep 5");
+# system("sleep 5");
 @timeResults = `(time -p sh -c './MUMmer/mummer -b -c  ./MUMmer/input/hs_chrY.fa ./MUMmer/input/hs_chr17.fa  1> ./QuEST/output/results.txt 2>> benchResults.txt') 2>&1`;
 chomp(@timeResults);
 print "@timeResults\n";
