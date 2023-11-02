@@ -1,2 +1,2 @@
 #!/bin/bash
-sysbench/src/sysbench memory --memory-total-size=32GiB run
+sysbench/src/sysbench memory --memory-block-size=64G --memory-total-size=200G run
