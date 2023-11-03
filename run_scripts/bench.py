@@ -26,7 +26,8 @@ FILENAME = ''
 SCRIPT_DIR = ''
 
 def run_command(cmd):
-    r = subprocess.run([cmd], capture_output=True)
+    command_cpu = "8"
+    r = subprocess.run(["sudo", "taskset", "-ac", command_cpu, cmd], capture_output=True)
     assert r.returncode == 0
 
     return r.stdout

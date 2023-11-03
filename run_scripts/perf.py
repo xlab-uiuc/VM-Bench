@@ -11,7 +11,7 @@ FILENAME = ''
 SCRIPT_DIR = ''
 OUTPUT_DIR = 'perf_results/'
 
-PERF_PATH = "/home/schai/linux_gen_x86/tools/perf/perf"
+PERF_PATH = "/home/siyuan/linux_5.15_vanilla/tools/perf/perf"
 RUN_TIMES = 5
 benchmarks = {
     # bench_name, relative bench script path, times, output path
@@ -31,13 +31,13 @@ benchmarks = {
 
 
 def run_perf(command, outpath):
-    perf_cpu = "1"
-    command_cpu = "5"
+    perf_cpu = "4"
+    command_cpu = "8"
     cmd = [
-        "sudo", "taskset", "-c", perf_cpu, PERF_PATH, "stat",
+        "sudo", "taskset", "-ac", perf_cpu, PERF_PATH, "stat",
         "--event=dtlb_load_misses.walk_pending,dtlb_store_misses.walk_pending,itlb_misses.walk_pending,dtlb_load_misses.walk_completed,dtlb_store_misses.walk_completed,itlb_misses.walk_completed,page-faults",
         "-C", command_cpu, "-I", "1000", "-o",
-        outpath, "--", "taskset", "-c", command_cpu, command
+        outpath, "--", "taskset", "-ac", command_cpu, command
     ]
     print(' '.join(cmd))
     r = subprocess.run(cmd, capture_output=True)
