@@ -6,7 +6,7 @@ BASEDIR=`pwd`
 PERF_CPU=4
 COMMAND_CPU=6
 PERF_PATH=/home/schai/linux_gen_x86/tools/perf/perf
-PERF_FREQ=34000
+PERF_FREQ=70000
 
 OUT_FOLDER="results/FlameGraph"
 mkdir -p $OUT_FOLDER
@@ -51,7 +51,8 @@ BENCH_NAMES=(
     "mummer"
 )
 
-KEYWORDS=(
+
+PID_GREP_KEYWORDS=(
     "graphBIG/benchmark/bench_betweennessCentr/bc "
     "graphBIG/benchmark/bench_BFS/bfs"
     "graphBIG/benchmark/bench_DFS/dfs"
@@ -65,25 +66,41 @@ KEYWORDS=(
     "\d\s+\./MUMmer/mummer"
 )
 
+
+KEYWORDS=(
+    "bc;"
+    "bfs;"
+    "dfs;"
+    "dc;"
+    "sssp;"
+    "connectedcomponent;"
+    "tc;"
+    "pagerank;"
+    "sysbench;"
+    "gups_vanilla;"
+    "mummer;"
+)
+
+# set large sampling frequency
+sudo bash -c "echo $PERF_FREQ > /sys/kernel/mm/transparent_hugepage/enabled"
+
 for ((i=0; i<${#BENCH_NAMES[@]}; i++)); do
     bench=${BENCH_NAMES[$i]}
     keyword=${KEYWORDS[$i]}
+    
     echo "${bench} - ${keyword}"
 
-    # run benchmark in background
-    sudo taskset -c $COMMAND_CPU ${BASEDIR}/run_scripts/${bench}.sh &
-
-    sleep 0.3
-
-    BENCH_PID=`ps aux | grep -P $keyword | grep -v grep | awk '{print $2}'`
-    echo $bench " on " ${BENCH_PID}
+    sudo rm perf.data
+    sudo taskset -c $PERF_CPU $PERF_PATH record -F $PERF_FREQ -a -g -- taskset -c $COMMAND_CPU ${BASEDIR}/run_scripts/${bench}.sh
     
     file_prefix_bench=${FILE_PREFIX}_${bench}
 
-    sudo taskset -c $PERF_CPU $PERF_PATH script > ${OUT_FOLDER}/${file_prefix_bench}_out.perf
+    sudo $PERF_PATH script > ${OUT_FOLDER}/${file_prefix_bench}_out.perf
 
     ${BASEDIR}/FlameGraph/stackcollapse-perf.pl ${OUT_FOLDER}/${file_prefix_bench}_out.perf >  ${OUT_FOLDER}/${file_prefix_bench}_out.folded
-    ${BASEDIR}/FlameGraph/flamegraph.pl ${OUT_FOLDER}/${file_prefix_bench}_out.folded > ${OUT_FOLDER}/${file_prefix_bench}_kernel.svg
+    rg $keyword ${OUT_FOLDER}/${file_prefix_bench}_out.folded > ${OUT_FOLDER}/${file_prefix_bench}_out_selected.folded
+
+    ${BASEDIR}/FlameGraph/flamegraph.pl ${OUT_FOLDER}/${file_prefix_bench}_out_selected.folded > ${OUT_FOLDER}/${file_prefix_bench}_bench.svg
 
     # remove large intermediate file
     sudo rm ${OUT_FOLDER}/${file_prefix_bench}_out.perf
