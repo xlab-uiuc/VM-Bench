@@ -75,7 +75,7 @@ def get_result_filename():
     d = datetime.datetime.now()
     timestamp = d.strftime("%Y-%m-%d-%H-%M-%S")
 
-    return f'./{kernel}_{thp_config}_{timestamp}.csv'
+    return f'paper_results/{kernel}/{kernel}_{thp_config}_latency_{timestamp}.csv'
 
 def calc_average_page_walk_latency(perf_result):
     EVENT_COUNT_POS = 1

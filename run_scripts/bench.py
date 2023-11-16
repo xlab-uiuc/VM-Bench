@@ -62,7 +62,7 @@ def get_result_filename():
     d = datetime.datetime.now()
     timestamp = d.strftime("%Y-%m-%d-%H-%M-%S")
 
-    return f'./{kernel}_{thp_config}_{timestamp}.csv'
+    return f'paper_results/{kernel}/{kernel}_{thp_config}_app_{timestamp}.csv'
 
 def bench():
     for name, info in benchmarks.items():

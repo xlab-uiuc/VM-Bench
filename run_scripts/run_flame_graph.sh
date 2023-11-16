@@ -8,11 +8,11 @@ COMMAND_CPU=8
 PERF_PATH=/home/siyuan/linux_5.15_vanilla/tools/perf/perf
 PERF_FREQ=70000
 
-OUT_FOLDER="results/FlameGraph"
+KERNEL_NAME=`uname -r`
+
+OUT_FOLDER="paper_results/${KERNEL_NAME}/FlameGraph"
 mkdir -p $OUT_FOLDER
 
-
-KERNEL_NAME=`uname -r`
 THP_CONFIG="no_thp_support"
 thp_file="/sys/kernel/mm/transparent_hugepage/enabled"
 
@@ -101,7 +101,7 @@ for ((i=0; i<${#BENCH_NAMES[@]}; i++)); do
         sudo $PERF_PATH script > ${OUT_FOLDER}/${file_prefix_bench}_out.perf
 
         ${BASEDIR}/FlameGraph/stackcollapse-perf.pl ${OUT_FOLDER}/${file_prefix_bench}_out.perf >  ${OUT_FOLDER}/${file_prefix_bench}_out.folded
-        rg $keyword ${OUT_FOLDER}/${file_prefix_bench}_out.folded > ${OUT_FOLDER}/${file_prefix_bench}_out_selected.folded
+        rg "^$keyword" ${OUT_FOLDER}/${file_prefix_bench}_out.folded > ${OUT_FOLDER}/${file_prefix_bench}_out_selected.folded
 
         ${BASEDIR}/FlameGraph/flamegraph.pl ${OUT_FOLDER}/${file_prefix_bench}_out_selected.folded > ${OUT_FOLDER}/${file_prefix_bench}_bench.svg
 
