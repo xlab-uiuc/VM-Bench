@@ -1,0 +1,31 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"languageName":"csharp","name":"csharp"}]}}
+
+#!csharp
+
+using System.IO;
+using System.Text.RegularExpressions;
+
+var symbol = new Regex(@"\w+\s+\w+\s+([^\s]+)");
+
+var allsyms = File
+	.ReadAllLines("/proc/kallsyms")
+	.Select(x => symbol.Match(x).Groups[1].Value)
+	.ToHashSet();
+
+var calls = new Regex(@"^(.*)\s+\d+$");
+
+var list = new List<string>();
+
+foreach (var file in Directory.EnumerateFiles(@"/home/jz/vm-interface/rethinkVM_bench/paper_results/5.15.0-gen-x86/FlameGraph", "*_out_reselected.folded")) {
+	var lines = File
+		.ReadAllLines(file)
+		.Where(x => x.Contains(' '))
+		.Select(x => new { Trace = calls.Match(x).Groups[1].Value.Split(';'), Line = x})
+		.Where(x => x.Trace.Any(y => allsyms.Contains(y)))
+		.Select(x => x.Line)
+		.ToList();
+	
+	File.WriteAllLines(file.Replace("_out_reselected.folded", "_out_kernel.folded"), lines);
+}
