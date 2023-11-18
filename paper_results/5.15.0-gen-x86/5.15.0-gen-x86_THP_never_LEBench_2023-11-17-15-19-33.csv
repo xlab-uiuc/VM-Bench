@@ -1,0 +1,86 @@
+OS Benchmark experiment
+Test Name:,5.15.0-gen-x86,
+       ref          kbest:,0.000000017,
+       ref        average:,0.000000018,0.000000004
+       cpu          kbest:,0.003007412,
+       cpu        average:,0.003008813,0.000001258
+    getpid          kbest:,0.000000097,
+    getpid        average:,0.000000102,0.000000052
+context_switch          kbest:,0.000003394,
+context_switch        average:,0.000003454,0.000000019
+      send          kbest:,0.000000375,
+      send        average:,0.000000432,0.000000738
+      recv          kbest:,0.000000321,
+      recv        average:,0.000000387,0.000000999
+  big_send          kbest:,0.000005484,
+  big_send        average:,0.000006340,0.000001758
+  big_recv          kbest:,0.000004318,
+  big_recv        average:,0.000004485,0.000000671
+      fork          kbest:,0.000035048,
+      fork       average:,0.000036391,0.000007631,
+      fork    Child kbest:,0.000051100,
+      fork Child average:,0.000052693,0.000008788,
+thr_create          kbest:,0.000002807,
+thr_create       average:,0.000003759,0.000007411,
+thr_create    Child kbest:,0.000006036,
+thr_create Child average:,0.000007191,0.000010617,
+  big_fork          kbest:,0.001249801,
+  big_fork       average:,0.001267491,0.000010993,
+  big_fork    Child kbest:,0.001274937,
+  big_fork Child average:,0.001292682,0.000011110,
+ huge_fork          kbest:,0.002471097,
+ huge_fork       average:,0.002506047,0.000030763,
+ huge_fork    Child kbest:,0.002496397,
+ huge_fork Child average:,0.002531479,0.000030824,
+small_write          kbest:,0.000000563,
+small_write        average:,0.000000584,0.000000359
+small_read          kbest:,0.000000328,
+small_read        average:,0.000000367,0.000004916
+small_mmap          kbest:,0.000000408,
+small_mmap        average:,0.000000468,0.000009235
+small_munmap          kbest:,0.000001053,
+small_munmap        average:,0.000001095,0.000000377
+small_page_fault          kbest:,0.000000842,
+small_page_fault        average:,0.000000866,0.000001717
+ mid_write          kbest:,0.000003150,
+ mid_write        average:,0.000003258,0.000004900
+  mid_read          kbest:,0.000001826,
+  mid_read        average:,0.000002006,0.000013516
+  mid_mmap          kbest:,0.000000424,
+  mid_mmap        average:,0.000000466,0.000005536
+mid_munmap          kbest:,0.000003628,
+mid_munmap        average:,0.000003730,0.000000191
+mid_page_fault          kbest:,0.000001414,
+mid_page_fault        average:,0.000001468,0.000002436
+ big_write          kbest:,0.000479055,
+ big_write        average:,0.000484513,0.000014959
+  big_read          kbest:,0.000329925,
+  big_read        average:,0.000331878,0.000002449
+  big_mmap          kbest:,0.000000443,
+  big_mmap        average:,0.000000477,0.000003059
+big_munmap          kbest:,0.000098205,
+big_munmap        average:,0.000100314,0.000002226
+big_page_fault          kbest:,0.000001906,
+big_page_fault        average:,0.000002006,0.000003391
+huge_write          kbest:,0.009834579,
+huge_write        average:,0.010354916,0.000857268
+ huge_read          kbest:,0.017117856,
+ huge_read        average:,0.017289962,0.000074698
+ huge_mmap          kbest:,0.000000407,
+ huge_mmap        average:,0.000000454,0.000005698
+huge_munmap          kbest:,0.001221591,
+huge_munmap        average:,0.001245204,0.000017641
+huge_page_fault          kbest:,0.000001912,
+huge_page_fault        average:,0.000002037,0.000007250
+    select          kbest:,0.000000539,
+    select        average:,0.000000654,0.000008979
+      poll          kbest:,0.000000421,
+      poll        average:,0.000000493,0.000005128
+     epoll          kbest:,0.000000648,
+     epoll        average:,0.000000782,0.000009346
+select_big          kbest:,0.000054581,
+select_big        average:,0.000108746,0.000166916
+  poll_big          kbest:,0.000058082,
+  poll_big        average:,0.000111173,0.000157815
+ epoll_big          kbest:,0.000106978,
+ epoll_big        average:,0.000176225,0.000202859
