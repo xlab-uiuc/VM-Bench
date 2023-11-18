@@ -3,7 +3,7 @@
 
 cd LEBench;
 COMMAND_CPU=8
-sudo LEBENCH_DIR=. taskset -ac $COMMAND_CPU python2 run.py
+sudo taskset -ac $COMMAND_CPU TEST_DIR/OS_Eval 0 `uname -r`
 
 KERNEL_NAME=`uname -r`
 THP_CONFIG="no_thp_support"
@@ -28,7 +28,7 @@ else
     echo "Transparent Huge Pages is not supported on this system."
 fi
 
-TIME=`date "+%Y-%m-%d-%H:%M:%S"`
+TIME=`date "+%Y-%m-%d-%H-%M-%S"`
 FILE_PREFIX=${KERNEL_NAME}_${THP_CONFIG}_LEBench_${TIME}
 
-mv .new_output_file.csv ../paper_results/${KERNEL_NAME}/${FILE_PREFIX}.csv
+mv new_output_file.csv ../paper_results/${KERNEL_NAME}/${FILE_PREFIX}.csv

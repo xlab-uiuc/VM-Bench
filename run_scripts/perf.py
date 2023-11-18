@@ -13,6 +13,9 @@ OUTPUT_DIR = 'perf_results/'
 
 PERF_PATH = "/home/siyuan/linux_5.15_vanilla/tools/perf/perf"
 RUN_TIMES = 5
+KERNEL_VERSION = ""
+PERF_FILE_DESCRIPTOR = ""
+
 benchmarks = {
     # bench_name, relative bench script path, times, output path
     "Graph - BC"  : ("graphbig_bc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_bc.perf"),
@@ -29,16 +32,72 @@ benchmarks = {
     "mummer"      : ("mummer.sh"            , RUN_TIMES, OUTPUT_DIR + "mummer.perf"),
 }
 
+def get_lebenchs():
+   
+    bench_names = [
+        "ref",
+        "cpu",
+        "getpid",
+        "context_switch",
+        "send",
+        "recv",
+        "big_send",
+        "big_recv",
+        "fork",
+        "thr_create",
+        "big_fork",
+        "huge_fork",
+        "small_write",
+        "small_read",
+        "small_mmap",
+        "small_munmap",
+        "small_page_fault",
+        "mid_write",
+        "mid_read",
+        "mid_mmap",
+        "mid_munmap",
+        "mid_page_fault",
+        "big_write",
+        "big_read",
+        "big_mmap",
+        "big_munmap",
+        "big_page_fault",
+        "huge_write",
+        "huge_read",
+        "huge_mmap",
+        "huge_munmap",
+        "huge_page_fault",
+        "select",
+        "poll",
+        "epoll",
+        "select_big",
+        "poll_big",
+        "epoll_big",
+    ]
+
+    lebenchs = {}
+    OS_EVAL_PATAH = "LEBench/TEST_DIR/OS_Eval"
+    for bench_name in bench_names:
+        lebenchs[f"LEBench {bench_name}"] = ([OS_EVAL_PATAH, "0", KERNEL_VERSION, bench_name ], 3, OUTPUT_DIR + f"LEBench_{bench_name}.perf")
+
+    return lebenchs
+
 
 def run_perf(command, outpath):
     perf_cpu = "4"
     command_cpu = "8"
+    print(command)
     cmd = [
         "sudo", "taskset", "-ac", perf_cpu, PERF_PATH, "stat",
         "--event=dtlb_load_misses.walk_pending,dtlb_store_misses.walk_pending,itlb_misses.walk_pending,dtlb_load_misses.walk_completed,dtlb_store_misses.walk_completed,itlb_misses.walk_completed,page-faults",
         "-C", command_cpu, "-I", "1000", "-o",
-        outpath, "--", "taskset", "-ac", command_cpu, command
-    ]
+        outpath]
+    # TODO: make this work with ctrlfd, so that perf only record the real application runtime
+    # if "LEBench" in command[0]:        
+    #     cmd += ["--delay=-1", "--control=" f"fd:{PERF_FILE_DESCRIPTOR}"]
+
+    cmd += ["--", "taskset", "-ac", command_cpu] + command
+    
     print(' '.join(cmd))
     r = subprocess.run(cmd, capture_output=True)
     assert r.returncode == 0
@@ -105,8 +164,8 @@ def calc_average_page_walk_latency(perf_result):
 
 def perf(bench_list):
     for name, info in bench_list.items():
-        bench_path, times, output_path = info
-        bench_real_path = os.path.join(SCRIPT_DIR, bench_path)
+        bench_cmd, times, output_path = info
+        # bench_real_path = os.path.join(SCRIPT_DIR, bench_path)
 
         print(f"Running {name} for {times} times...")
 
@@ -117,7 +176,7 @@ def perf(bench_list):
         n_pfs = []
         for t in range(times):
             print(f"{t + 1}...", flush=True, end='')
-            output = run_perf(bench_real_path, output_path).decode('utf-8')
+            output = run_perf(bench_cmd, output_path).decode('utf-8')
 
             l, n_pf = calc_average_page_walk_latency(output_path)
             print(l)
@@ -140,19 +199,31 @@ if __name__ == "__main__":
 
     SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
+    KERNEL_VERSION = get_kernel_version()
+
     parser = argparse.ArgumentParser(description='A script with flags.')
     parser.add_argument('--benchs', nargs='*', default=[])
     args = parser.parse_args()
     bench_names = args.benchs
 
-    print(bench_names)
-    if len(bench_names) == 0:
-        perf(bench_list=benchmarks)
-    else:
-        bench_list = {}
-        for name in bench_names:
-            if name in benchmarks:
-                bench_list[name] = benchmarks[name]
-            else:
-                print(f"Unknown benchmark: {name}")
-        perf(bench_list=bench_list)
+    # print(bench_names)
+    # if len(bench_names) == 0:
+    #     perf(bench_list=benchmarks)
+    # else:
+    #     bench_list = {}
+    #     for name in bench_names:
+    #         if name in benchmarks:
+    #             bench_list[name] = benchmarks[name]
+    #         else:
+    #             print(f"Unknown benchmark: {name}")
+    #     perf(bench_list=bench_list)
+
+    # Path for the FIFO file
+
+    # with open(fifo_path, "rw") as file:
+    #     PERF_FILE_DESCRIPTOR = str(file.fileno())
+    #     print("PERF_FILE_DESCRIPTOR: ", PERF_FILE_DESCRIPTOR)
+
+    print(get_lebenchs())
+    perf(bench_list=get_lebenchs())
+

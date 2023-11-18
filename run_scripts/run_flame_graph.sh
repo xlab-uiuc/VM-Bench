@@ -73,7 +73,7 @@ KEYWORDS=(
     "dfs;"
     "dc;"
     "sssp;"
-    "connectedcomponent;"
+    "connectedcompon;"
     "tc;"
     "pagerank;"
     "sysbench;"
@@ -81,13 +81,66 @@ KEYWORDS=(
     "mummer;"
 )
 
+LEBENCHS=(
+        "ref"
+        "cpu"
+        "getpid"
+        "context_switch"
+        "send"
+        "recv"
+        "big_send"
+        "big_recv"
+        "fork"
+        "thr_create"
+        "big_fork"
+        "huge_fork"
+        "small_write"
+        "small_read"
+        "small_mmap"
+        "small_munmap"
+        "small_page_fault"
+        "mid_write"
+        "mid_read"
+        "mid_mmap"
+        "mid_munmap"
+        "mid_page_fault"
+        "big_write"
+        "big_read"
+        "big_mmap"
+        "big_munmap"
+        "big_page_fault"
+        "huge_write"
+        "huge_read"
+        "huge_mmap"
+        "huge_munmap"
+        "huge_page_fault"
+        "select"
+        "poll"
+        "epoll"
+        "select_big"
+        "poll_big"
+        "epoll_big"
+)
+
+lEBench_KEY="OS_Eval;"
+LEBENCH_KEYWORDS=()
+for ((i = 0; i < ${#LEBENCHS[@]}; i++)); do
+  LEBENCH_KEYWORDS+=("$lEBench_KEY")
+done
+
 # set large sampling frequency
 sudo bash -c "echo $PERF_FREQ > /sys/kernel/mm/transparent_hugepage/enabled"
+
 
 for ((i=0; i<${#BENCH_NAMES[@]}; i++)); do
     bench=${BENCH_NAMES[$i]}
     keyword=${KEYWORDS[$i]}
-    
+# for ((i=0; i<${#LEBENCHS[@]}; i++)); do
+#     bench=${LEBENCHS[$i]}
+#     keyword=${LEBENCH_KEYWORDS[$i]}
+#     OUT_FOLDER=$OUT_FOLDER/LEBench
+    mkdir -p $OUT_FOLDER
+
     echo "${bench} - ${keyword}"
 
     for j in {1..5}
@@ -97,6 +150,8 @@ for ((i=0; i<${#BENCH_NAMES[@]}; i++)); do
 
         sudo rm perf.data
         sudo taskset -c $PERF_CPU $PERF_PATH record -F $PERF_FREQ -a -g -- taskset -c $COMMAND_CPU ${BASEDIR}/run_scripts/${bench}.sh
+        
+        # sudo taskset -c $PERF_CPU $PERF_PATH record -F $PERF_FREQ -a -g -- taskset -c $COMMAND_CPU ${BASEDIR}/LEBench/TEST_DIR/OS_Eval 0 `uname -r` ${bench}
 
         sudo $PERF_PATH script > ${OUT_FOLDER}/${file_prefix_bench}_out.perf
 
