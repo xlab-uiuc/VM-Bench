@@ -16,23 +16,51 @@ RUN_TIMES = 5
 KERNEL_VERSION = ""
 PERF_FILE_DESCRIPTOR = ""
 
-benchmarks = {
-    # bench_name, relative bench script path, times, output path
-    "Graph - BC"  : ("graphbig_bc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_bc.perf"),
-    "Graph - BFS" : ("graphbig_bfs.sh"      , RUN_TIMES, OUTPUT_DIR + "graphbig_bfs.perf"),
-    "Graph - DFS" : ("graphbig_dfs.sh"      , RUN_TIMES, OUTPUT_DIR + "graphbig_dfs.perf"),
-    "Graph - DC"  : ("graphbig_dc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_dc.perf"),
-    "Graph - SSSP": ("graphbig_sssp.sh"     , RUN_TIMES, OUTPUT_DIR + "graphbig_sssp.perf"),
-    "Graph - CC"  : ("graphbig_cc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_cc.perf"),
-    "Graph - TC"  : ("graphbig_tc.sh"       , RUN_TIMES, OUTPUT_DIR + "graphbig_tc.perf"),
-    "Graph - PR"  : ("graphbig_pagerank.sh" , RUN_TIMES, OUTPUT_DIR + "graphbig_pagerank.perf"),
-    "sysbench"    : ("sysbench.sh"          , RUN_TIMES, OUTPUT_DIR + "sysbench.perf"),
-    "mem_test"    : ("mem_test.sh"          , RUN_TIMES, OUTPUT_DIR + "mem_test.perf"),
-    "gups"        : ("gups.sh"              , RUN_TIMES, OUTPUT_DIR + "gups.perf"),
-    "mummer"      : ("mummer.sh"            , RUN_TIMES, OUTPUT_DIR + "mummer.perf"),
-}
+def select_benchmarks(bench_names, benches_to_run):
+    selected_bench = []
+    for bench in benches_to_run:
+        if bench in bench_names:
+            selected_bench.append(bench)
+        else:
+            print(f"Unknown benchmark: {bench}")
 
-def get_lebenchs():
+    if len(selected_bench) == 0:
+        selected_bench = bench_names
+
+    return selected_bench
+
+def get_app_benchs(benches_to_run):
+    app_benchs = {}
+
+    bench_names = [
+        "graphbig_bc",
+        "graphbig_bfs",
+        "graphbig_dfs",
+        "graphbig_dc",
+        "graphbig_sssp",
+        "graphbig_cc",
+        "graphbig_tc",
+        "graphbig_pagerank",
+        "sysbench",
+        "mem_test",
+        "gups",
+        "mummer",
+    ]
+
+    selected_bench = select_benchmarks(bench_names, benches_to_run)
+    print("Running benchmarks: ", selected_bench)
+
+    for bench in selected_bench:
+        app_benchs[f"APP {bench}"] = (
+            [os.path.join(SCRIPT_DIR, bench + '.sh')],
+            RUN_TIMES,
+            os.path.join(OUTPUT_DIR, bench + '.perf'))
+
+    print(app_benchs)
+    return app_benchs
+
+
+def get_lebenchs(benches_to_run):
    
     bench_names = [
         "ref",
@@ -75,10 +103,14 @@ def get_lebenchs():
         "epoll_big",
     ]
 
+    selected_bench = select_benchmarks(bench_names, benches_to_run)
+    print("Running benchmarks: ", selected_bench)
+
     lebenchs = {}
     OS_EVAL_PATAH = "LEBench/TEST_DIR/OS_Eval"
-    for bench_name in bench_names:
-        lebenchs[f"LEBench {bench_name}"] = ([OS_EVAL_PATAH, "0", KERNEL_VERSION, bench_name ], 3, OUTPUT_DIR + f"LEBench_{bench_name}.perf")
+    for bench_name in selected_bench:
+        lebenchs[f"LEBench {bench_name}"] = (
+            [OS_EVAL_PATAH, "0", KERNEL_VERSION, bench_name], RUN_TIMES, OUTPUT_DIR + f"LEBench_{bench_name}.perf")
 
     return lebenchs
 
@@ -90,7 +122,7 @@ def run_perf(command, outpath):
     cmd = [
         "sudo", "taskset", "-ac", perf_cpu, PERF_PATH, "stat",
         "--event=dtlb_load_misses.walk_pending,dtlb_store_misses.walk_pending,itlb_misses.walk_pending,dtlb_load_misses.walk_completed,dtlb_store_misses.walk_completed,itlb_misses.walk_completed,page-faults",
-        "-C", command_cpu, "-I", "1000", "-o",
+        "-C", command_cpu, "-I", "400", "-o",
         outpath]
     # TODO: make this work with ctrlfd, so that perf only record the real application runtime
     # if "LEBench" in command[0]:        
@@ -127,14 +159,14 @@ def get_thp_config():
         print(f"Error occurred: {e}")
         return "no_thp_support"
 
-def get_result_filename():
+def get_result_filename(bench_suite):
     kernel = get_kernel_version()
     thp_config = get_thp_config()
 
     d = datetime.datetime.now()
     timestamp = d.strftime("%Y-%m-%d-%H-%M-%S")
 
-    return f'paper_results/{kernel}/{kernel}_{thp_config}_latency_{timestamp}.csv'
+    return f'paper_results/{kernel}/{kernel}_{thp_config}_{bench_suite}_latency_{timestamp}.csv'
 
 def calc_average_page_walk_latency(perf_result):
     EVENT_COUNT_POS = 1
@@ -162,11 +194,26 @@ def calc_average_page_walk_latency(perf_result):
 
     return avg_walk_latency, total_pf
 
+
+def intit_output_csv(times):
+    pgwalk_latency_iter_times = [
+        "pgwalk_latency_iter_" + str(i) for i in range(times)]
+    pf_iter_times = ["pf_iter_" + str(i) for i in range(times)]
+
+    pgwalk_latency_iter_str = ",".join(pgwalk_latency_iter_times)
+    pf_iter_str = ",".join(pf_iter_times)
+
+    with open(FILENAME, 'w') as f:
+        f.write(
+            f"name,times,{pgwalk_latency_iter_str},avg_latency,{pf_iter_str},avg_pf\n")
+
+
 def perf(bench_list):
+    intit_output_csv(RUN_TIMES)
     for name, info in bench_list.items():
         bench_cmd, times, output_path = info
         # bench_real_path = os.path.join(SCRIPT_DIR, bench_path)
-
+        
         print(f"Running {name} for {times} times...")
 
         total_load_time = 0.0
@@ -176,9 +223,11 @@ def perf(bench_list):
         n_pfs = []
         for t in range(times):
             print(f"{t + 1}...", flush=True, end='')
-            output = run_perf(bench_cmd, output_path).decode('utf-8')
+            cur_output_path = output_path + f"_{t}"            
 
-            l, n_pf = calc_average_page_walk_latency(output_path)
+            output = run_perf(bench_cmd, cur_output_path).decode('utf-8')
+
+            l, n_pf = calc_average_page_walk_latency(cur_output_path)
             print(l)
             latencies.append(l)
             n_pfs.append(n_pf)
@@ -191,39 +240,33 @@ def perf(bench_list):
         print(f"Average page faults: {avg_n_pf}")
 
         with open(FILENAME, 'a') as f:
-            f.write(f"{name},{times},{avg_latency}\n")
+            latencies_str = ",".join(map(str, latencies))
+            n_pfs_str = ",".join(map(str, n_pfs))
+            f.write(f"{name},{times},{latencies_str},{avg_latency},{n_pfs_str},{avg_n_pf}\n")
 
 if __name__ == "__main__":
-    FILENAME = get_result_filename()
+   
     Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
-
+    
     SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-
     KERNEL_VERSION = get_kernel_version()
 
     parser = argparse.ArgumentParser(description='A script with flags.')
+    parser.add_argument('--bench_suite', type=str, help='The benchmark suite to use')
     parser.add_argument('--benchs', nargs='*', default=[])
     args = parser.parse_args()
-    bench_names = args.benchs
+    
+    bench_suite = args.bench_suite
+    benches_to_run = args.benchs
 
-    # print(bench_names)
-    # if len(bench_names) == 0:
-    #     perf(bench_list=benchmarks)
-    # else:
-    #     bench_list = {}
-    #     for name in bench_names:
-    #         if name in benchmarks:
-    #             bench_list[name] = benchmarks[name]
-    #         else:
-    #             print(f"Unknown benchmark: {name}")
-    #     perf(bench_list=bench_list)
+    FILENAME = get_result_filename(bench_suite)
+    Path(os.path.dirname(FILENAME)).mkdir(parents=True, exist_ok=True)
+    
+    if (bench_suite == "LEBench"):
+        perf(bench_list=get_lebenchs(benches_to_run))
+    elif (bench_suite == "app"):
+        perf(bench_list=get_app_benchs(benches_to_run))
+    else:
+        print("Unknown benchmark suite: ", bench_suite)
 
-    # Path for the FIFO file
-
-    # with open(fifo_path, "rw") as file:
-    #     PERF_FILE_DESCRIPTOR = str(file.fileno())
-    #     print("PERF_FILE_DESCRIPTOR: ", PERF_FILE_DESCRIPTOR)
-
-    print(get_lebenchs())
-    perf(bench_list=get_lebenchs())
-
+    print('Resuls are saved to: ', FILENAME)
