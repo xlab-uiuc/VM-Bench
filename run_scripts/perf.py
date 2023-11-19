@@ -14,7 +14,8 @@ OUTPUT_DIR = 'perf_results/'
 PERF_PATH = "/home/siyuan/linux_5.15_vanilla/tools/perf/perf"
 RUN_TIMES = 5
 KERNEL_VERSION = ""
-PERF_FILE_DESCRIPTOR = ""
+
+PERF_CTRL_FIFO = "perf_ctrl_fifo"
 
 def select_benchmarks(bench_names, benches_to_run):
     selected_bench = []
@@ -59,9 +60,17 @@ def get_app_benchs(benches_to_run):
     print(app_benchs)
     return app_benchs
 
+def mkfifo(fifo_path):
+    if not os.path.exists(fifo_path):
+        # Create the named pipe
+        os.mkfifo(fifo_path)
+        print(f"Named pipe '{fifo_path}' created.")
+    else:
+        print(f"Named pipe '{fifo_path}' already exists.")
+
 
 def get_lebenchs(benches_to_run):
-   
+
     bench_names = [
         "ref",
         "cpu",
@@ -106,31 +115,37 @@ def get_lebenchs(benches_to_run):
     selected_bench = select_benchmarks(bench_names, benches_to_run)
     print("Running benchmarks: ", selected_bench)
 
+    mkfifo(PERF_CTRL_FIFO)
+    
     lebenchs = {}
     OS_EVAL_PATAH = "LEBench/TEST_DIR/OS_Eval"
     for bench_name in selected_bench:
         lebenchs[f"LEBench {bench_name}"] = (
-            [OS_EVAL_PATAH, "0", KERNEL_VERSION, bench_name], RUN_TIMES, OUTPUT_DIR + f"LEBench_{bench_name}.perf")
+            [OS_EVAL_PATAH, "0", KERNEL_VERSION, bench_name, PERF_CTRL_FIFO], RUN_TIMES, OUTPUT_DIR + f"LEBench_{bench_name}.perf")
 
     return lebenchs
 
 
-def run_perf(command, outpath):
+def run_perf(command, outpath, t):
     perf_cpu = "4"
     command_cpu = "8"
-    print(command)
+    
+    stat_freq = "100" if "LEBench" in command[0] else "400"
+    
     cmd = [
         "sudo", "taskset", "-ac", perf_cpu, PERF_PATH, "stat",
         "--event=dtlb_load_misses.walk_pending,dtlb_store_misses.walk_pending,itlb_misses.walk_pending,dtlb_load_misses.walk_completed,dtlb_store_misses.walk_completed,itlb_misses.walk_completed,page-faults",
         "-C", command_cpu, "-I", "400", "-o",
         outpath]
-    # TODO: make this work with ctrlfd, so that perf only record the real application runtime
-    # if "LEBench" in command[0]:        
-    #     cmd += ["--delay=-1", "--control=" f"fd:{PERF_FILE_DESCRIPTOR}"]
+
+    if "LEBench" in command[0]:        
+        cmd += ["--delay=-1", "--control=" f"fifo:{PERF_CTRL_FIFO}"]
 
     cmd += ["--", "taskset", "-ac", command_cpu] + command
-    
-    print(' '.join(cmd))
+    if (t == 0):
+        print(command)
+        print(' '.join(cmd))
+        
     r = subprocess.run(cmd, capture_output=True)
     assert r.returncode == 0
 
@@ -225,7 +240,7 @@ def perf(bench_list):
             print(f"{t + 1}...", flush=True, end='')
             cur_output_path = output_path + f"_{t}"            
 
-            output = run_perf(bench_cmd, cur_output_path).decode('utf-8')
+            output = run_perf(bench_cmd, cur_output_path, t).decode('utf-8')
 
             l, n_pf = calc_average_page_walk_latency(cur_output_path)
             print(l)
