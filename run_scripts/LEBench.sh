@@ -3,6 +3,7 @@
 
 cd LEBench;
 COMMAND_CPU=8
+rm -f test_file.txt
 sudo taskset -ac $COMMAND_CPU TEST_DIR/OS_Eval 0 `uname -r`
 
 KERNEL_NAME=`uname -r`
@@ -31,5 +32,8 @@ fi
 TIME=`date "+%Y-%m-%d-%H-%M-%S"`
 FILE_PREFIX=${KERNEL_NAME}_${THP_CONFIG}_LEBench_${TIME}
 
-mv new_output_file.csv ../paper_results/${KERNEL_NAME}/${FILE_PREFIX}.csv
-rm test_file.txt
+OUT_FOLDER="../paper_results/${KERNEL_NAME}/LEBench"
+mkdir -p ${OUT_FOLDER}
+
+mv new_output_file.csv ${OUT_FOLDER}/${FILE_PREFIX}.csv
+rm -f test_file.txt
