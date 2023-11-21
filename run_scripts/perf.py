@@ -11,13 +11,17 @@ FILENAME = ''
 SCRIPT_DIR = ''
 OUTPUT_DIR = 'perf_results/'
 
-PERF_PATH = "/home/siyuan/linux_5.15_vanilla/tools/perf/perf"
-RUN_TIMES = 5
+PERF_PATH = "/usr/bin/perf"
+# PERF_PATH = "/home/siyuan/linux_5.15_vanilla/tools/perf/perf"
+RUN_TIMES = 2
 KERNEL_VERSION = ""
 
 PERF_CTRL_FIFO = "perf_ctrl_fifo"
 
 def select_benchmarks(bench_names, benches_to_run):
+    if len(benches_to_run) == 0:
+        return bench_names
+    
     selected_bench = []
     for bench in benches_to_run:
         if bench in bench_names:
@@ -25,11 +29,17 @@ def select_benchmarks(bench_names, benches_to_run):
         else:
             print(f"Unknown benchmark: {bench}")
 
-    if len(selected_bench) == 0:
-        selected_bench = bench_names
-
     return selected_bench
 
+def mkfifo(fifo_path):
+    
+    if not os.path.exists(fifo_path):
+        # Create the named pipe
+        os.mkfifo(fifo_path)
+        print(f"Named pipe '{fifo_path}' created.")
+    else:
+        print(f"Named pipe '{fifo_path}' already exists.")
+        
 def get_app_benchs(benches_to_run):
     app_benchs = {}
 
@@ -43,7 +53,6 @@ def get_app_benchs(benches_to_run):
         "graphbig_tc",
         "graphbig_pagerank",
         "sysbench",
-        "mem_test",
         "gups",
         "mummer",
     ]
@@ -51,22 +60,15 @@ def get_app_benchs(benches_to_run):
     selected_bench = select_benchmarks(bench_names, benches_to_run)
     print("Running benchmarks: ", selected_bench)
 
+    mkfifo(PERF_CTRL_FIFO)
     for bench in selected_bench:
         app_benchs[f"APP {bench}"] = (
-            [os.path.join(SCRIPT_DIR, bench + '.sh')],
+            [os.path.join(SCRIPT_DIR, bench + '.sh'), PERF_CTRL_FIFO],
             RUN_TIMES,
             os.path.join(OUTPUT_DIR, bench + '.perf'))
 
     print(app_benchs)
     return app_benchs
-
-def mkfifo(fifo_path):
-    if not os.path.exists(fifo_path):
-        # Create the named pipe
-        os.mkfifo(fifo_path)
-        print(f"Named pipe '{fifo_path}' created.")
-    else:
-        print(f"Named pipe '{fifo_path}' already exists.")
 
 
 def get_lebenchs(benches_to_run):
@@ -130,16 +132,16 @@ def run_perf(command, outpath, t):
     perf_cpu = "4"
     command_cpu = "8"
     
-    stat_freq = "100" if "LEBench" in command[0] else "400"
+    # stat_freq = "100" if "LEBench" in command[0] else "400"
     
     cmd = [
         "sudo", "taskset", "-ac", perf_cpu, PERF_PATH, "stat",
         "--event=dtlb_load_misses.walk_pending,dtlb_store_misses.walk_pending,itlb_misses.walk_pending,dtlb_load_misses.walk_completed,dtlb_store_misses.walk_completed,itlb_misses.walk_completed,page-faults",
-        "-C", command_cpu, "-I", "400", "-o",
+        "-C", command_cpu, "-I", "100", "-o",
         outpath]
 
-    if "LEBench" in command[0]:        
-        cmd += ["--delay=-1", "--control=" f"fifo:{PERF_CTRL_FIFO}"]
+    # if "LEBench" in command[0]:        
+    cmd += ["--delay=-1", "--control=" f"fifo:{PERF_CTRL_FIFO}"]
 
     cmd += ["--", "taskset", "-ac", command_cpu] + command
     if (t == 0):

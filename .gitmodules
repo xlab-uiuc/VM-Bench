@@ -1,15 +1,15 @@
 [submodule "biobench2"]
 	path = biobench2
-	url = https://github.com/reiverjohn/biobench2.git
+	url = git@github.com:xlab-uiuc/biobench2.git
 [submodule "graphBIG"]
 	path = graphBIG
-	url = https://github.com/graphbig/graphBIG.git
+	url = git@github.com:xlab-uiuc/graphBIG.git
 [submodule "gups"]
 	path = gups
 	url = git@github.com:xlab-uiuc/gups.git
 [submodule "sysbench"]
 	path = sysbench
-	url = https://github.com/akopytov/sysbench.git
+	url = git@github.com:xlab-uiuc/sysbench.git
 [submodule "FlameGraph"]
 	path = FlameGraph
 	url = https://github.com/brendangregg/FlameGraph.git
