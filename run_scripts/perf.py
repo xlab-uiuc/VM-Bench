@@ -11,9 +11,9 @@ FILENAME = ''
 SCRIPT_DIR = ''
 OUTPUT_DIR = 'perf_results/'
 
-PERF_PATH = "/usr/bin/perf"
-# PERF_PATH = "/home/siyuan/linux_5.15_vanilla/tools/perf/perf"
-RUN_TIMES = 2
+# PERF_PATH = "/usr/bin/perf"
+PERF_PATH = "/home/siyuan/linux_5.15_vanilla/tools/perf/perf"
+RUN_TIMES = 7
 KERNEL_VERSION = ""
 
 PERF_CTRL_FIFO = "perf_ctrl_fifo"
@@ -39,7 +39,14 @@ def mkfifo(fifo_path):
         print(f"Named pipe '{fifo_path}' created.")
     else:
         print(f"Named pipe '{fifo_path}' already exists.")
-        
+
+def clean_fifo(fifo_path):
+    if os.path.exists(fifo_path):
+        os.remove(fifo_path)
+        print(f"Named pipe '{fifo_path}' removed.")
+    else:
+        print(f"Named pipe '{fifo_path}' does not exist.")
+
 def get_app_benchs(benches_to_run):
     app_benchs = {}
 
@@ -68,7 +75,7 @@ def get_app_benchs(benches_to_run):
                 PERF_CTRL_FIFO, PERF_ACK_FIFO
             ],
             RUN_TIMES,
-            os.path.join(OUTPUT_DIR, bench + '.perf'))
+            os.path.join(bench + '.perf'))
 
     print(app_benchs)
     return app_benchs
@@ -126,7 +133,7 @@ def get_lebenchs(benches_to_run):
     OS_EVAL_PATAH = "LEBench/TEST_DIR/OS_Eval"
     for bench_name in selected_bench:
         lebenchs[f"LEBench {bench_name}"] = (
-            [OS_EVAL_PATAH, "0", KERNEL_VERSION, bench_name, PERF_CTRL_FIFO], RUN_TIMES, OUTPUT_DIR + f"LEBench_{bench_name}.perf")
+            [OS_EVAL_PATAH, "0", KERNEL_VERSION, bench_name, PERF_CTRL_FIFO], RUN_TIMES, f"LEBench_{bench_name}.perf")
 
     return lebenchs
 
@@ -150,10 +157,17 @@ def run_perf(command, outpath, t):
     if (t == 0):
         print(command)
         print(' '.join(cmd))
-        
+    
+    if "LEBench" in command[0]:
+        if os.path.exists("test_file.txt"):
+            os.remove("test_file.txt")
+    
     r = subprocess.run(cmd, capture_output=True)
     assert r.returncode == 0
 
+    if "LEBench" in command[0]:
+        os.remove("test_file.txt")
+    
     return r.stdout
 
 def get_kernel_version():
@@ -228,8 +242,15 @@ def intit_output_csv(times):
             f"name,times,{pgwalk_latency_iter_str},avg_latency,{pf_iter_str},avg_pf\n")
 
 
+def get_perf_output_folder(kernel, thp_config):
+    return f"perf_results/{kernel}/{thp_config}/"
+
+
 def perf(bench_list):
     intit_output_csv(RUN_TIMES)
+    perf_out_folder = get_perf_output_folder(get_kernel_version(), get_thp_config())
+    
+    Path(perf_out_folder).mkdir(parents=True, exist_ok=True)
     for name, info in bench_list.items():
         bench_cmd, times, output_path = info
         # bench_real_path = os.path.join(SCRIPT_DIR, bench_path)
@@ -243,7 +264,7 @@ def perf(bench_list):
         n_pfs = []
         for t in range(times):
             print(f"{t + 1}...", flush=True, end='')
-            cur_output_path = output_path + f"_{t}"            
+            cur_output_path = os.path.join(perf_out_folder, output_path + f"_{t}")            
 
             output = run_perf(bench_cmd, cur_output_path, t).decode('utf-8')
 
@@ -290,3 +311,6 @@ if __name__ == "__main__":
         print("Unknown benchmark suite: ", bench_suite)
 
     print('Resuls are saved to: ', FILENAME)
+    
+    clean_fifo(PERF_CTRL_FIFO)
+    clean_fifo(PERF_ACK_FIFO)
