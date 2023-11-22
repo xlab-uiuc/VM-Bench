@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 RUNTIMES=5
-benchmarks = {
+benchmarks_global = {
     # bench_name, relative bench script path, times, regex of the loadtime, regex of the runtime
     "Graph - BC"  : ("./graphbig_bc.sh"       , RUNTIMES, r"time: (.*) sec", r"time: (.*) sec\n="),
     "Graph - BFS": ("./graphbig_bfs.sh", RUNTIMES, r"time: (.*) sec", r"time: (.*) sec\n="),
@@ -29,12 +29,22 @@ benchmarks = {
 FILENAME = ""
 SCRIPT_DIR = ""
 
+def get_app_benchs(benches_to_run):
+    if len(benches_to_run) == 0:
+        return benchmarks_global
+    else:
+        return {k: v for k, v in benchmarks_global.items() if k in benches_to_run}
+
 
 def run_command(cmd):
     command_cpu = "8"
+
+    cmd_list = ["sudo", "taskset", "-ac", command_cpu, cmd]
+    print(' '.join(cmd_list))
     r = subprocess.run(
-        ["sudo", "taskset", "-ac", command_cpu, cmd], capture_output=True
+        cmd_list, capture_output=True
     )
+
     assert r.returncode == 0
 
     return r.stdout
@@ -88,7 +98,9 @@ def get_init_df(times):
     )
 
 
-def bench():
+def bench(benchmarks):
+    to_runs = [k for k, v in benchmarks.items() ]
+    print(to_runs)
     df = get_init_df(RUNTIMES)
     for i, (name, info) in enumerate(benchmarks.items()):
         bench_path, times, regex_load_time, regex_run_time = info
@@ -143,5 +155,14 @@ def bench():
 if __name__ == "__main__":
     FILENAME = get_result_filename()
     SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-    bench()
+    print(SCRIPT_DIR)
+
+    parser = argparse.ArgumentParser(description='A script with flags.')
+    parser.add_argument('--benchs', nargs='*', default=[])
+    args = parser.parse_args()
+
+    benches_to_run = args.benchs
+
+    bench(get_app_benchs(benches_to_run))
+
     print(f"Results written to {FILENAME}")
