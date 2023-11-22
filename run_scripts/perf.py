@@ -17,7 +17,7 @@ RUN_TIMES = 2
 KERNEL_VERSION = ""
 
 PERF_CTRL_FIFO = "perf_ctrl_fifo"
-
+PERF_ACK_FIFO = "perf_ack_fifo"
 def select_benchmarks(bench_names, benches_to_run):
     if len(benches_to_run) == 0:
         return bench_names
@@ -61,9 +61,12 @@ def get_app_benchs(benches_to_run):
     print("Running benchmarks: ", selected_bench)
 
     mkfifo(PERF_CTRL_FIFO)
+    mkfifo(PERF_ACK_FIFO)
     for bench in selected_bench:
         app_benchs[f"APP {bench}"] = (
-            [os.path.join(SCRIPT_DIR, bench + '.sh'), PERF_CTRL_FIFO],
+            [os.path.join(SCRIPT_DIR, bench + '.sh'), 
+                PERF_CTRL_FIFO, PERF_ACK_FIFO
+            ],
             RUN_TIMES,
             os.path.join(OUTPUT_DIR, bench + '.perf'))
 
@@ -137,11 +140,11 @@ def run_perf(command, outpath, t):
     cmd = [
         "sudo", "taskset", "-ac", perf_cpu, PERF_PATH, "stat",
         "--event=dtlb_load_misses.walk_pending,dtlb_store_misses.walk_pending,itlb_misses.walk_pending,dtlb_load_misses.walk_completed,dtlb_store_misses.walk_completed,itlb_misses.walk_completed,page-faults",
-        "-C", command_cpu, "-I", "100", "-o",
+        "-C", command_cpu, "-I", "200", "-o",
         outpath]
 
     # if "LEBench" in command[0]:        
-    cmd += ["--delay=-1", "--control=" f"fifo:{PERF_CTRL_FIFO}"]
+    cmd += ["--delay=-1", "--control=" f"fifo:{PERF_CTRL_FIFO},{PERF_ACK_FIFO}"]
 
     cmd += ["--", "taskset", "-ac", command_cpu] + command
     if (t == 0):
