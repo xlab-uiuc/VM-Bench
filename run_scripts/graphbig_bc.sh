@@ -2,7 +2,7 @@
 
 set -x
 # dataset="graphBIG/dataset/small/"
-dataset_10k="graphBIG/dataset/LDBC/output-10k/"
+dataset_10k="graphBIG/dataset/LDBC/output-100k/"
 
 perf_ctrl_fifo=$1
 ack_fifo=$2

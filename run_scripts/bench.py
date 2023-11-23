@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import re
 import subprocess
@@ -8,10 +9,10 @@ from typing import NamedTuple
 import numpy as np
 import pandas as pd
 
-RUNTIMES=5
+RUNTIMES=7
 benchmarks_global = {
     # bench_name, relative bench script path, times, regex of the loadtime, regex of the runtime
-    "Graph - BC"  : ("./graphbig_bc.sh"       , RUNTIMES, r"time: (.*) sec", r"time: (.*) sec\n="),
+    # "Graph - BC"  : ("./graphbig_bc.sh"       , RUNTIMES, r"time: (.*) sec", r"time: (.*) sec\n="),
     "Graph - BFS": ("./graphbig_bfs.sh", RUNTIMES, r"time: (.*) sec", r"time: (.*) sec\n="),
     "Graph - DFS": ("./graphbig_dfs.sh", RUNTIMES, r"time: (.*) sec", r"time: (.*) sec\n="),
     "Graph - DC"  : ("./graphbig_dc.sh"       , RUNTIMES, r"time: (.*) sec", r"time: (.*) sec\n="),
@@ -22,7 +23,7 @@ benchmarks_global = {
     "sysbench"    : ("./sysbench.sh"          , RUNTIMES, None             , r"time elapsed:\s+(.*)s"),
     "gups"        : ("./gups.sh"              , RUNTIMES, None             , r"Update time \(secs\):    (.*)"),
     # # "gups"        : ("./gups.sh"              , RUNTIMES, None             , r"Gups:  (.*)"),
-    "mummer"      : ("./mummer.sh"            , RUNTIMES, None             , r"real (.*) user"),
+    # "mummer"      : ("./mummer.sh"            , RUNTIMES, None             , r"real (.*) user"),
 }
 
 

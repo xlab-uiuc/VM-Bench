@@ -51,7 +51,7 @@ def get_app_benchs(benches_to_run):
     app_benchs = {}
 
     bench_names = [
-        "graphbig_bc",
+        # "graphbig_bc",
         "graphbig_bfs",
         "graphbig_dfs",
         "graphbig_dc",
@@ -61,7 +61,7 @@ def get_app_benchs(benches_to_run):
         "graphbig_pagerank",
         "sysbench",
         "gups",
-        "mummer",
+        # "mummer",
     ]
 
     selected_bench = select_benchmarks(bench_names, benches_to_run)
@@ -128,12 +128,13 @@ def get_lebenchs(benches_to_run):
     print("Running benchmarks: ", selected_bench)
 
     mkfifo(PERF_CTRL_FIFO)
-    
+    mkfifo(PERF_ACK_FIFO)
+
     lebenchs = {}
     OS_EVAL_PATAH = "LEBench/TEST_DIR/OS_Eval"
     for bench_name in selected_bench:
         lebenchs[f"LEBench {bench_name}"] = (
-            [OS_EVAL_PATAH, "0", KERNEL_VERSION, bench_name, PERF_CTRL_FIFO], RUN_TIMES, f"LEBench_{bench_name}.perf")
+            [OS_EVAL_PATAH, "0", KERNEL_VERSION, bench_name, PERF_CTRL_FIFO, PERF_ACK_FIFO], RUN_TIMES, f"LEBench_{bench_name}.perf")
 
     return lebenchs
 
@@ -150,8 +151,9 @@ def run_perf(command, outpath, t):
         "-C", command_cpu, "-I", "200", "-o",
         outpath]
 
-    # if "LEBench" in command[0]:        
-    cmd += ["--delay=-1", "--control=" f"fifo:{PERF_CTRL_FIFO},{PERF_ACK_FIFO}"]
+    # TODO: mummer benchmarks measures entire system performance, so we don't support fine grained perf control
+    if not "mummer" in command[0]:        
+        cmd += ["--delay=-1", "--control=" f"fifo:{PERF_CTRL_FIFO},{PERF_ACK_FIFO}"]
 
     cmd += ["--", "taskset", "-ac", command_cpu] + command
     if (t == 0):

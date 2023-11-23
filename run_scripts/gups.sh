@@ -1,8 +1,18 @@
 #!/usr/bin/env bash
 # See https://github.com/alexandermerritt/gups for parameter setup
 
-cd gups;
+perf_ctrl_fifo=$1
+ack_fifo=$2
+
+
+if [[ -n "$perf_ctrl_fifo" && -n "$ack_fifo" ]]; then
+    ./gups/gups_vanilla 33 1024 1000000 $perf_ctrl_fifo $ack_fifo
+else
+    ./gups/gups_vanilla 33 1024 1000000
+fi
+
+
 # ./gups_vanilla 20 1000 1024;
-./gups_vanilla 33 1024 1000000
+
 # ./gups_vanilla 35 1000 1024
 
