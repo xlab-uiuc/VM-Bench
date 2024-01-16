@@ -16,3 +16,6 @@
 [submodule "LEBench"]
 	path = LEBench
 	url = git@github.com:xlab-uiuc/LEBench.git
+[submodule "ltp"]
+	path = ltp
+	url = https://github.com/linux-test-project/ltp
