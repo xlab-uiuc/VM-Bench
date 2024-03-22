@@ -85,7 +85,7 @@ def stack_engine(start: int, name: str, addr: int, stack: list, prev_addr: int, 
 		idx = -(idx + 1)
 
 		# Within one insn after call, assume a return
-		if (addr > rets["ret"]) and (addr <= rets["ret"] + max_insn_bytes):
+		if (addr >= rets["ret"]) and (addr <= rets["ret"] + max_insn_bytes):
 			stack = stack[0 : idx]
 			return (stack, True)
 		# TODO: Probably we can detect jump enter near call?
