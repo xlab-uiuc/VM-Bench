@@ -3,65 +3,93 @@
 import bisect
 import collections
 import typing
+import subprocess
+from typing import List, Tuple
+import struct
+import argparse
+import cProfile
 
-sym_addrs = []
-sym_names = []
 max_insn_bytes = 15 # by intel
 
-def get_symbol_table() -> dict:
-	"""TODO: @Siyuan, extract nm output into a dict as below"""
+def filter_text(nm_line):
+	# T/t means text(code) symbol
+	return len(nm_line) == 3 and nm_line[1].lower() == 't'
 
-	sym_table = {
-		0x3000: "test3",
-		0x1000: "test1",
-		0x2000: "test2",
-		0x4000: "test4",
-	}
+def get_symbols(vmlinux):
+	result = subprocess.run(['nm', vmlinux], check=True, capture_output=True)
+	return map(lambda l: l.strip().split(),
+			   result.stdout.decode('utf-8').split('\n'))
 
-	return sym_table
+def get_symbol_table(vmlinux_path: str) -> Tuple[list[int], List[str]]:
+	# Construct a func -> addr map
+	# ffffffff811745c0 T ZSTD_freeDStream
+	# l[0]			  l[1]		l[2]
+	selected_text_syms = filter(filter_text, get_symbols(vmlinux_path))
 
-def get_next_insn() -> int:
-	"""TODO: @Siyuan, get the address of the next instruction"""
+	# map function parse the symbol table from selected text symbols
+	# sorted function convert the map object to a list of tuples, sorted by the address  
+	text_syms = sorted(map(lambda l: (int(l[0], 16), l[2]), selected_text_syms),
+					   key=lambda l: l[0])
+	
+	sym_addrs = [tup[0] for tup in text_syms]
+	sym_names = [tup[1] for tup in text_syms]
 
-	op_list = [
-		0x1000, # test1 1
-		0x1007, # test1 2
-		0x1008, # test1 3
-		0x1054, # test1 4
-		0x1056, # test1 5
-		0x3000, # test1;test3 1
-		0x300c, # test1;test3 2
-		0x300e, # test1;test3 3
-		0x3fff, # test1;test3 4
-		0x4000, # test1;test3;test4 1
-		0x4005, # test1;test3;test4 2
-		0x4006, # test1;test3;test4 3
-		0x1060, # test1 6
-		0x1062, # test1 7
-		0x4000, # test1;test4 1
-		0x4005, # test1;test4 2
-		0x4006, # test1;test4 3
-		0x1070, # test1 8
-		0x1000, # test1 9
-		0x1007, # test1 10
-	]
+	return sym_addrs, sym_names
 
-	for op in op_list:
-		yield op
+def is_kernel_addr(addr: int) -> bool:
+	return addr >= 0xffff800000000000
 
-def build_symbol_lookup(sym_table: dict) -> None:
-	global sym_addrs
-	global sym_names
 
-	sym_lookup = collections.OrderedDict(sorted(sym_table.items()))
-	sym_addrs = list(sym_lookup.keys())
-	sym_names = list(sym_lookup.items())
+def get_next_insn(bin_log_file) -> int:
 
-def lookup_symbol(addr: int) -> str:
+	# typedef struct MemRecord
+	# {
+	# 	uint8_t header;
+	# 	uint8_t access_rw;
+	# 	uint16_t access_cpu;
+	# 	uint32_t access_sz;
+	# 	uint64_t vaddr;
+	# 	uint64_t paddr;
+	# 	uint64_t pte;
+	# 	uint64_t leaves[PAGE_TABLE_LEAVES];
+	# 	/* 64 bytes if ECPT not defined */
+	# #ifdef TARGET_X86_64_ECPT
+	# 	uint64_t cwt_leaves[CWT_LEAVES];
+	# 	uint16_t selected_ecpt_way;
+	# 	uint8_t pmd_cwt_header;
+	# 	uint8_t pud_cwt_header;
+	# 	/* 120 bytes if ECPT defined */
+	# #endif
+	# } MemRecord;
+
+	PAGE_TABLE_LEAVES = 4
+	ADDR_POS = 4
+	HEADER_POS = 0
+
+	# TODO: add support for ECPT
+	# This part: uint8, uint8, uint16, uint32, 3 * uint64, PAGE_TABLE_LEAVES * uint64
+	entry_format = '<BBHI3Q{}Q'.format(PAGE_TABLE_LEAVES)
+	entry_size = struct.calcsize(entry_format)
+
+	with open(bin_log_file, 'rb') as file:
+		while True:
+			chunk = file.read(entry_size)  # Read in 1024-byte chunks
+			if not chunk:
+				break  # If the chunk is empty, end of file has been reached
+			full_parsed_data = struct.unpack(entry_format, chunk)
+			addr = full_parsed_data[ADDR_POS]
+			header = chr(full_parsed_data[HEADER_POS])
+
+			if is_kernel_addr(addr) and header == 'F':
+				yield addr
+	
+	return 0
+
+def lookup_symbol(sym_addrs, sym_names, addr) -> str:
 	index = bisect.bisect_right(sym_addrs, addr)
 
 	if index:
-		return sym_names[index - 1]
+		return (sym_addrs[index - 1], sym_names[index - 1])
 
 	return (0x0, "__UNKNOWN_SYMBOL__")
 
@@ -100,7 +128,25 @@ def stack_engine(start: int, name: str, addr: int, stack: list, prev_addr: int, 
 	return (stack, True)
 
 def main():
-	build_symbol_lookup(get_symbol_table())
+	parser = argparse.ArgumentParser(description='An example script with arguments.')
+	parser.add_argument('--vmlinux', type=str, help='vmlinux path')
+	parser.add_argument('--trace', type=str, help='binary log path')
+	parser.add_argument('--out', type=str, help='output path')
+
+	args = parser.parse_args()
+
+	vmlinux_path = args.vmlinux
+	trace_path = args.trace
+	out_path = args.out
+
+	if (vmlinux_path == None) or (trace_path == None):
+		print("Please provide vmlinux and binary log path")
+		exit(1)
+
+	if (args.out == None):
+		out_path = "flamegraph.folded"
+
+	(sym_addrs, sym_names) = get_symbol_table(vmlinux_path)
 
 	# Function call stack
 	stack = []
@@ -120,8 +166,9 @@ def main():
 	# Flamegraph data
 	flame = {}
 
-	for addr in get_next_insn():
-		(start, name) = lookup_symbol(addr)
+	for addr in get_next_insn(trace_path):	
+		(start, name) = lookup_symbol(sym_addrs, sym_names, addr)
+		# print(f"{hex(start)} {hex(addr)} {name}")
 
 		(stack, changed) = stack_engine(start, name, addr, stack, prev_addr, prev_start, cntr)
 
@@ -139,8 +186,11 @@ def main():
 		prev_start = start
 		cntr += 1
 	
-	for key in flame:
-		print(f"{key} {flame[key]}")
+	with open(out_path, 'w') as f:
+		for key in flame:
+			print(f"{key} {flame[key]}", file = f)
 
+	print("saved to ", out_path)
 if __name__ == "__main__":
-	main()
+	cProfile.run('main()')
+	# main()
