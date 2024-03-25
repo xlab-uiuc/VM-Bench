@@ -84,12 +84,14 @@ def get_next_insn(bin_log_file, arch) -> int:
 
 	prev_user = False
 
+	info_format = '<BBHIQ'
+	info_size = struct.calcsize(info_format)
 	with open(bin_log_file, 'rb') as file:
 		while True:
 			chunk = file.read(entry_size)  # Read in 1024-byte chunks
 			if not chunk:
 				break  # If the chunk is empty, end of file has been reached
-			full_parsed_data = struct.unpack(entry_format, chunk)
+			full_parsed_data = struct.unpack(info_format, chunk[:info_size])
 			addr = full_parsed_data[ADDR_POS]
 			header = chr(full_parsed_data[HEADER_POS])
 			
