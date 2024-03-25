@@ -10,6 +10,7 @@ import argparse
 import cProfile
 
 max_insn_bytes = 15 # by intel
+USER_PROGRAM_MAGIC = 0xdeadbeef
 
 def filter_text(nm_line):
 	# T/t means text(code) symbol
@@ -71,6 +72,8 @@ def get_next_insn(bin_log_file) -> int:
 	entry_format = '<BBHI3Q{}Q'.format(PAGE_TABLE_LEAVES)
 	entry_size = struct.calcsize(entry_format)
 
+	prev_user = False
+
 	with open(bin_log_file, 'rb') as file:
 		while True:
 			chunk = file.read(entry_size)  # Read in 1024-byte chunks
@@ -79,9 +82,17 @@ def get_next_insn(bin_log_file) -> int:
 			full_parsed_data = struct.unpack(entry_format, chunk)
 			addr = full_parsed_data[ADDR_POS]
 			header = chr(full_parsed_data[HEADER_POS])
-
-			if is_kernel_addr(addr) and header == 'F':
-				yield addr
+			
+			if header == 'F':
+				# only consider instruction executed
+				if is_kernel_addr(addr):
+					prev_user = False
+					yield addr
+				else:
+					if not prev_user:
+						# print('---- user program ----')
+						yield USER_PROGRAM_MAGIC
+					prev_user = True
 	
 	return 0
 
@@ -166,18 +177,21 @@ def main():
 	# Flamegraph data
 	flame = {}
 
-	for addr in get_next_insn(trace_path):	
-		(start, name) = lookup_symbol(sym_addrs, sym_names, addr)
-		# print(f"{hex(start)} {hex(addr)} {name}")
-
-		if newly_entered(...):
+	for addr in get_next_insn(trace_path):
+		if addr == USER_PROGRAM_MAGIC:
+			# user program execution now, clears kernel stack
 			stack = []
 			prev_addr = 0x0
 			prev_start = 0x0
 			call_chain = ""
+			continue
+
+		(start, name) = lookup_symbol(sym_addrs, sym_names, addr)
+		# print(f"{hex(start)} {hex(addr)} {name}")
 		
 		(stack, changed) = stack_engine(start, name, addr, stack, prev_addr, prev_start, cntr)
-
+		# print([ frame["sym"] for frame in stack ])
+		
 		# If stack has changed, we potentially need to generate a new call chain in flamegraph format
 		if changed:
 			trace = [ frame["sym"] for frame in stack ]
@@ -191,12 +205,14 @@ def main():
 		prev_addr = addr
 		prev_start = start
 		cntr += 1
-	
+
+		if cntr % 100000 == 0:
+			print(f"Processed {cntr} instructions; flame size: {len(flame)}")
+
 	with open(out_path, 'w') as f:
 		for key in flame:
 			print(f"{key} {flame[key]}", file = f)
 
 	print("saved to ", out_path)
 if __name__ == "__main__":
-	cProfile.run('main()')
-	# main()
+	main()
