@@ -170,6 +170,12 @@ def main():
 		(start, name) = lookup_symbol(sym_addrs, sym_names, addr)
 		# print(f"{hex(start)} {hex(addr)} {name}")
 
+		if newly_entered(...):
+			stack = []
+			prev_addr = 0x0
+			prev_start = 0x0
+			call_chain = ""
+		
 		(stack, changed) = stack_engine(start, name, addr, stack, prev_addr, prev_start, cntr)
 
 		# If stack has changed, we potentially need to generate a new call chain in flamegraph format
