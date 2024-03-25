@@ -41,7 +41,7 @@ def is_kernel_addr(addr: int) -> bool:
 	return addr >= 0xffff800000000000
 
 
-def get_next_insn(bin_log_file) -> int:
+def get_next_insn(bin_log_file, arch) -> int:
 
 	# typedef struct MemRecord
 	# {
@@ -63,14 +63,24 @@ def get_next_insn(bin_log_file) -> int:
 	# #endif
 	# } MemRecord;
 
-	PAGE_TABLE_LEAVES = 4
+	if arch == "radix":
+		PAGE_TABLE_LEAVES = 4
+		# radix: uint8, uint8, uint16, uint32, 3 * uint64, PAGE_TABLE_LEAVES * uint64
+		entry_format = '<BBHI3Q{}Q'.format(PAGE_TABLE_LEAVES)
+	elif arch == "ecpt":
+		PAGE_TABLE_LEAVES = 6
+		CWT_LEAVES = 4
+		# ecpt: uint8, uint8, uint16, uint32, 3 * uint64, PAGE_TABLE_LEAVES * uint64, CWT_LEAVES * uint64, uint16, uint8, uint8, uint32 (padding)
+		entry_format = '<BBHI3Q{}Q{}QHBBI'.format(PAGE_TABLE_LEAVES, CWT_LEAVES)
+	else:
+		print("Please choose a valid arch")
+		exit(1)
+
 	ADDR_POS = 4
 	HEADER_POS = 0
 
-	# TODO: add support for ECPT
-	# This part: uint8, uint8, uint16, uint32, 3 * uint64, PAGE_TABLE_LEAVES * uint64
-	entry_format = '<BBHI3Q{}Q'.format(PAGE_TABLE_LEAVES)
 	entry_size = struct.calcsize(entry_format)
+	print(f"Entry size: {entry_size}")
 
 	prev_user = False
 
@@ -143,15 +153,16 @@ def main():
 	parser.add_argument('--vmlinux', type=str, help='vmlinux path')
 	parser.add_argument('--trace', type=str, help='binary log path')
 	parser.add_argument('--out', type=str, help='output path')
-
+	parser.add_argument('--arch', type=str, help='radix or ecpt. Must choose one')
 	args = parser.parse_args()
 
 	vmlinux_path = args.vmlinux
 	trace_path = args.trace
 	out_path = args.out
+	arch = args.arch
 
-	if (vmlinux_path == None) or (trace_path == None):
-		print("Please provide vmlinux and binary log path")
+	if (vmlinux_path == None) or (trace_path == None) or (arch == None):
+		print("Please provide vmlinux and binary log path and arch")
 		exit(1)
 
 	if (args.out == None):
@@ -177,7 +188,7 @@ def main():
 	# Flamegraph data
 	flame = {}
 
-	for addr in get_next_insn(trace_path):
+	for addr in get_next_insn(trace_path, arch):
 		if addr == USER_PROGRAM_MAGIC:
 			# user program execution now, clears kernel stack
 			stack = []
