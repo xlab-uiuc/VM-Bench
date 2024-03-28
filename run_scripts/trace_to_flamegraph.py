@@ -108,17 +108,43 @@ def get_next_insn(bin_log_file, arch) -> int:
 	
 	return 0
 
-def lookup_symbol(sym_addrs, sym_names, addr) -> str:
+
+
+def get_symbol_name_addr2line(vmlinux_path: str, addr: int, symbol_dict) -> str:
+	
+	if addr in symbol_dict:
+		return symbol_dict[addr]
+	
+	# eu-addr2line -fie vmlinux 0xffffffff81258540 | perl -ne 'print "$1\n" if (/^(\w+)( inlined.*)?$/g)'
+	command = f"eu-addr2line -fie {vmlinux_path} {hex(addr)} | perl -ne 'print \"$1\n\" if (/^(\w+)( inlined.*)?$/g)'"
+	result = subprocess.run(command, shell=True, check=True, capture_output=True)
+	decoded = result.stdout.decode('utf-8').strip()
+
+	# Reverse the lines and join them with ;
+	# we need to reverse the lines because the addr2line output is in reverse order of call trace
+	concated = ';'.join(decoded.split("\n")[::-1])
+	symbol_dict[addr] = concated
+
+	return concated	
+	
+	
+def lookup_symbol(sym_addrs, sym_names, addr, vmlinux_path, symbol_dict) -> str:
 	index = bisect.bisect_right(sym_addrs, addr)
 
+	addr2line_name = get_symbol_name_addr2line(vmlinux_path, addr, symbol_dict)
+	# print(f"addr: {hex(addr)}  addr2line: {addr2line_name}")
+
 	if index:
-		return (sym_addrs[index - 1], sym_names[index - 1])
+		return (sym_addrs[index - 1], sym_names[index - 1], addr2line_name)
 
-	return (0x0, "__UNKNOWN_SYMBOL__")
+	return (0x0, "__UNKNOWN_SYMBOL__", "__UNKNOWN_SYMBOL__")
 
-def stack_engine(start: int, name: str, addr: int, stack: list, prev_addr: int, prev_start: int, cntr: int):
+def stack_engine(start: int, name: str, inline: str, addr: int, stack: list, prev_addr: int, prev_start: int, cntr: int):
 	# Not empty and in the same symbol (sequential execution), return
 	if len(stack) >= 1 and prev_start == start:
+		if stack[-1]["inline"] != inline:
+			stack[-1]["inline"] = inline
+			return (stack, True)
 		return (stack, False)
 
 	# First instruction, must be a function enter
@@ -127,6 +153,7 @@ def stack_engine(start: int, name: str, addr: int, stack: list, prev_addr: int, 
 			"ret": prev_addr,
 			"start": start,
 			"sym": name,
+			"inline": inline,
 		})
 		return (stack, True)
 
@@ -138,6 +165,7 @@ def stack_engine(start: int, name: str, addr: int, stack: list, prev_addr: int, 
 		# Within one insn after call, assume a return
 		if (addr >= rets["ret"]) and (addr <= rets["ret"] + max_insn_bytes):
 			stack = stack[0 : idx]
+			stack[-1]["inline"] = inline
 			return (stack, True)
 		# TODO: Probably we can detect jump enter near call?
 
@@ -147,6 +175,7 @@ def stack_engine(start: int, name: str, addr: int, stack: list, prev_addr: int, 
 		"ret": prev_addr,
 		"start": start,
 		"sym": name,
+		"inline": inline,
 	})
 	return (stack, True)
 
@@ -190,6 +219,7 @@ def main():
 	# Flamegraph data
 	flame = {}
 
+	symbol_dict = {}
 	for addr in get_next_insn(trace_path, arch):
 		if addr == USER_PROGRAM_MAGIC:
 			# user program execution now, clears kernel stack
@@ -199,15 +229,15 @@ def main():
 			call_chain = ""
 			continue
 
-		(start, name) = lookup_symbol(sym_addrs, sym_names, addr)
-		# print(f"{hex(start)} {hex(addr)} {name}")
+		(start, name, inline) = lookup_symbol(sym_addrs, sym_names, addr, vmlinux_path, symbol_dict)
+		# print(f"{hex(start)} {hex(addr)} {name} {inline}")
 		
-		(stack, changed) = stack_engine(start, name, addr, stack, prev_addr, prev_start, cntr)
-		# print([ frame["sym"] for frame in stack ])
+		(stack, changed) = stack_engine(start, name, inline, addr, stack, prev_addr, prev_start, cntr)
+		# print([ frame["inline"] for frame in stack ])
 		
 		# If stack has changed, we potentially need to generate a new call chain in flamegraph format
 		if changed:
-			trace = [ frame["sym"] for frame in stack ]
+			trace = [ frame["inline"] for frame in stack ]
 			call_chain = ";".join(trace)
 
 			if call_chain not in flame:
@@ -219,7 +249,7 @@ def main():
 		prev_start = start
 		cntr += 1
 
-		if cntr % 100000 == 0:
+		if cntr % 10000 == 0:
 			print(f"Processed {cntr} instructions; flame size: {len(flame)}")
 
 	with open(out_path, 'w') as f:
