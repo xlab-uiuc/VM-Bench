@@ -297,12 +297,12 @@ def get_all_traces(folder_path: str, arch : str):
     print('folder_path', folder_path)
     benchmarks = [
         "graphbig_bfs",
-        # "graphbig_cc", 
-        # "graphbig_dc", 
-        # "graphbig_dfs", 
-        # "graphbig_pagerank", 
-        # "graphbig_sssp", 
-        # "graphbig_tc", 
+        "graphbig_cc", 
+        "graphbig_dc", 
+        "graphbig_dfs", 
+        "graphbig_pagerank", 
+        "graphbig_sssp", 
+        "graphbig_tc", 
         "gups",
         "sysbench",
     ]
