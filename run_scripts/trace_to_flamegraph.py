@@ -26,7 +26,7 @@ def get_symbols(vmlinux):
     return map(lambda l: l.strip().split(),
                result.stdout.decode('utf-8').split('\n'))
 
-def get_symbol_table(vmlinux_path: str) -> Tuple[list[int], List[str]]:
+def get_symbol_table(vmlinux_path: str):
     # Construct a func -> addr map
     # ffffffff811745c0 T ZSTD_freeDStream
     # l[0]			  l[1]		l[2]
