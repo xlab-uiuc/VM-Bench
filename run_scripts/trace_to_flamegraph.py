@@ -340,7 +340,7 @@ def produce_flame_graph(folded_path: str):
     return flamegraph_out_path
 
 def wrapper(vmlinux_path, trace_path, out_path, arch):
-    # produce_flame_folded(vmlinux_path, trace_path, out_path, arch)
+    produce_flame_folded(vmlinux_path, trace_path, out_path, arch)
     high_level_path = get_high_level_distribution(out_path)
     data_folder = "kernel_inst"
 
