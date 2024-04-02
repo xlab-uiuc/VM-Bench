@@ -164,7 +164,12 @@ def stack_engine(start: int, name: str, inline: str, addr: int, stack: list, pre
 
     # May be a jump enter or leave
     for idx, rets in enumerate(reversed(stack)):
-        # Get the real index from reversed indexworker
+        # Get the real index from reversed index
+        idx = -(idx + 1)
+
+        # Within one insn after call, assume a return
+        if (addr >= rets["ret"]) and (addr <= rets["ret"] + max_insn_bytes):
+            stack = stack[0 : idx]
             stack[-1]["inline"] = inline
             return (stack, True)
         # TODO: Probably we can detect jump enter near call?
