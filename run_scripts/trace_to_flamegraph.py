@@ -145,44 +145,44 @@ def lookup_symbol(sym_addrs, sym_names, addr, vmlinux_path, symbol_dict) -> str:
     return (0x0, "__UNKNOWN_SYMBOL__", "__UNKNOWN_SYMBOL__")
 
 def stack_engine(start: int, name: str, inline: str, addr: int, stack: list, prev_addr: int, prev_start: int, cntr: int):
-	# Not empty and in the same symbol (sequential execution), return
-	if len(stack) >= 1 and prev_start == start:
-		if stack[-1]["inline"] != inline:
-			stack[-1]["inline"] = inline
-			return (stack, True)
-		return (stack, False)
+    # Not empty and in the same symbol (sequential execution), return
+    if len(stack) >= 1 and prev_start == start:
+        if stack[-1]["inline"] != inline:
+            stack[-1]["inline"] = inline
+            return (stack, True)
+        return (stack, False)
 
-	# First instruction, must be a function enter
-	if addr == start:
-		stack.append({
-			"ret": prev_addr,
-			"start": start,
-			"sym": name,
-			"inline": inline,
-		})
-		return (stack, True)
+    # First instruction, must be a function enter
+    if addr == start:
+        stack.append({
+            "ret": prev_addr,
+            "start": start,
+            "sym": name,
+            "inline": inline,
+        })
+        return (stack, True)
 
-	# May be a jump enter or leave
-	for idx, rets in enumerate(reversed(stack)):
-		# Get the real index from reversed index
-		idx = -(idx + 1)
+    # May be a jump enter or leave
+    for idx, rets in enumerate(reversed(stack)):
+        # Get the real index from reversed index
+        idx = -(idx + 1)
 
-		# Within one insn after call, assume a return
-		if (addr >= rets["ret"]) and (addr <= rets["ret"] + max_insn_bytes):
-			stack = stack[0 : idx]
-			stack[-1]["inline"] = inline
-			return (stack, True)
-		# TODO: Probably we can detect jump enter near call?
+        # Within one insn after call, assume a return
+        if (addr >= rets["ret"]) and (addr <= rets["ret"] + max_insn_bytes):
+            stack = stack[0 : idx]
+            stack[-1]["inline"] = inline
+            return (stack, True)
+        # TODO: Probably we can detect jump enter near call?
 
-	# Definitely not a return, warn and continue
-	print(f"WARNING: at RIP {hex(addr)} ({hex(start)}:{name}+{hex(addr - start)}) RET {hex(prev_addr)} INSN# {hex(cntr)}: jump into the body of function")
-	stack.append({
-		"ret": prev_addr,
-		"start": start,
-		"sym": name,
-		"inline": inline,
-	})
-	return (stack, True)
+    # Definitely not a return, warn and continue
+    print(f"WARNING: at RIP {hex(addr)} ({hex(start)}:{name}+{hex(addr - start)}) RET {hex(prev_addr)} INSN# {hex(cntr)}: jump into the body of function")
+    stack.append({
+        "ret": prev_addr,
+        "start": start,
+        "sym": name,
+        "inline": inline,
+    })
+    return (stack, True)
 
 def split_line_remove_number(line):
     # Remove the trailing number using regular expression
