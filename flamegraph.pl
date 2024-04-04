@@ -1257,25 +1257,32 @@ while (my ($id, $node) = each %Node) {
 		"pmd_offset_ecpt" => 1,
 	);
 
+	my %radix_functions = (
+		"pte_offset_kernel" => 1,
+		"radix_pmd_is_data_page" => 1,
+		"pmd_offset" => 1,
+	);
+	
 	my %interface_functions = (
 		"set_pte_at" => 1,
 		"ptep_get_next" => 1,
 		"gen_pte_void" => 1,
 		"pmd_trans_unstable_aspace" => 1,
 		"pmd_next_level_not_accessible_gen" => 1,
+		"pte_offset_map_with_mm" => 1,
 	);
+
 
 	if (isInSet($func, \%ecpt_functions)) {
 		$color = "#DDC67B";
+	} esif (isInSet($func, \%radix_functions)) {
+		$color = "#B38CB4";
 	} elsif (isInSet($func, \%interface_functions)) {
 		$color = "#F8F272";
 	} else {
 		$color = "#B38CB4";
 	}
 
-	# if ($func eq "get_hpt_entry") {
-	# 	$color = "rgb(71, 33, 81)";
-	# }
 
 
 	$im->filledRectangle($x1, $y1, $x2, $y2, $color, 'rx="2" ry="2"');
