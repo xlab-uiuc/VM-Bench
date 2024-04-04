@@ -1249,41 +1249,94 @@ while (my ($id, $node) = each %Node) {
 		$color = color($colors, $hash, $func);
 	}
 
+	# 'pte_offset_ecpt': 'ecpt_locate_pte',
+	# 'get_hpt_entry': 'do_locate',
+	# 'ecpt_search_fit_entry': 'ecpt_search',
+
+	# 'pmd_offset_ecpt': 'ecpt_locate_pmd',
+
+
+	# 'set_pte_at' : 'insert_pte',
+	# 'ecpt_set_pte_at': 'ecpt_insert_pte',
+
 	my %ecpt_functions = (
 		"get_hpt_entry" => 1,
 		"pte_offset_ecpt" => 1,
 		"ecpt_search_fit_entry" => 1,
 		"ecpt_set_pte" => 1,
 		"pmd_offset_ecpt" => 1,
+		"ecpt_pmd_is_data_page" => 1,
+		# rephrased function
+		"ecpt_locate_pte" => 1,
+		"ecpt_locate_pmd" => 1,
+		"do_locate" => 1,
+		"ecpt_search" => 1,
+		"ecpt_insert_pte" => 1,
 	);
 
 	my %radix_functions = (
 		"pte_offset_kernel" => 1,
-		"radix_pmd_is_data_page" => 1,
 		"pmd_offset" => 1,
+		"pud_offset" => 1,
+		"p4d_offset" => 1,
+		"pgd_offset" => 1,
+		"radix_pmd_is_data_page" => 1,
+		"native_pmd_page_vaddr" => 1,
+		"pte_idx" => 1,
+		"pmd_offset" => 1,
+		"native_pmd_pfn" => 1,
+		"native_pmd_present" => 1,
+		"pmd_flags" => 1,
+		"pmd_flags_mask" => 1,
+		"native_pmd_trans_huge"  => 1,
+		"native_pud_trans_huge"  => 1,
+		"native_pud_bad" => 1,
+		"pud_flags" => 1,
 	);
 	
 	my %interface_functions = (
 		"set_pte_at" => 1,
 		"ptep_get_next" => 1,
 		"gen_pte_void" => 1,
+		"insert_pte" => 1,
 		"pmd_trans_unstable_aspace" => 1,
 		"pmd_next_level_not_accessible_gen" => 1,
+		"pmd_devmap_trans_unstable_aspace" => 1,
+		"pmd_devmap_trans_unstable_aspace" => 1,
+		"gen_pte_is_data_page" => 1, 
 		"pte_offset_map_with_mm" => 1,
+		"pmd_offset_map_with_mm" => 1,
+		"pud_offset_map_with_mm" => 1,
+		"p4d_offset_map_with_mm" => 1,
+		"pgd_offset_map_with_mm" => 1,
+
+		"pte_lockptr_with_addr" => 1,
+		"is_swap_pmd" => 1,
+
+		"pte_alloc"  => 1,
+		"pmd_alloc"   => 1,
+		"pud_alloc" => 1,
+		"p4d_alloc"  => 1,
+		"pgd_alloc" => 1,
+
+		"pud_none_or_trans_huge_or_dev_or_clear_bad" => 1,
 	);
 
 
+	my $tcolor = "#000000";
 	if (isInSet($func, \%ecpt_functions)) {
-		$color = "#DDC67B";
-	} esif (isInSet($func, \%radix_functions)) {
-		$color = "#B38CB4";
+		$color = "#0074D9";
+        $tcolor = "#B3DBFF";
+	} elsif (isInSet($func, \%radix_functions)) {
+		$color = "#85144B";
+        $tcolor = "#F2A6CB";
 	} elsif (isInSet($func, \%interface_functions)) {
-		$color = "#F8F272";
+		$color = "#FF851B";
+        $tcolor = "#663000";
 	} else {
-		$color = "#B38CB4";
+		$color = "#DDDDDD";
+        $tcolor = "#000000";
 	}
-
-
 
 	$im->filledRectangle($x1, $y1, $x2, $y2, $color, 'rx="2" ry="2"');
 
@@ -1297,7 +1350,7 @@ while (my ($id, $node) = each %Node) {
 		$text =~ s/</&lt;/g;
 		$text =~ s/>/&gt;/g;
 	}
-	$im->stringTTF(undef, $x1 + 3, 3 + ($y1 + $y2) / 2, $text);
+	$im->stringTTF(undef, $x1 + 3, 3 + ($y1 + $y2) / 2, $text, "style=\"fill: $tcolor\"");
 
 	$im->group_end($nameattr);
 }
