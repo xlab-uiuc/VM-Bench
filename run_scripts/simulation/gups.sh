@@ -3,6 +3,6 @@
 
 record_stage=$1
 
-./gups/gups_vanilla 28 1024 1000000 $record_stage
+./gups/gups_vanilla 33 1024 1000000 $record_stage
 
 
