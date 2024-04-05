@@ -106,7 +106,7 @@ def processing_syscall(parts):
 
 def shrink_parts(parts):
     shrinked_parts = parts
-    LIMIT = 6
+    LIMIT = 7
     if len(parts) > LIMIT:
         shrinked_parts = parts[:LIMIT]
     return shrinked_parts
@@ -130,6 +130,31 @@ def replace_key_function(parts):
             parts[i] = key_function_map[part]
     return parts
 
+def add_macro_functions(parts):
+    macro_functions = {
+        r'native_p*' : 'read_pte_attr',
+        r'p*d_mk*' : 'write_pte_attr',
+        r'pte_mk*' : 'write_pte_attr',
+        r'p*d_clear*' : 'write_pte_attr',
+        r'pte_clear*' : 'write_pte_attr',
+
+        'ecpt_locate_pte' : 'locate_pte',
+        'ecpt_locate_pmd' : 'locate_pte',
+    }
+    
+    output_parts = []
+    for i, part in enumerate(parts):
+        for pattern in macro_functions:
+            match = re.match(pattern, part)
+            if match:
+                output_parts.append(macro_functions[pattern])
+                break
+        output_parts.append(part)
+
+    # print('input:', parts)
+    # print('output:', output_parts)
+
+    return output_parts
 
 def make_flame_human_readable(flame_folded_path: str):
     print(f"Make {flame_folded_path} human readable")
@@ -151,14 +176,17 @@ def make_flame_human_readable(flame_folded_path: str):
                         parts = processing_syscall(parts)
                     else:
                         parts = shrink_parts(parts)
+                    
                     parts = replace_key_function(parts)
+                    parts = add_macro_functions(parts)
+                    parts = shrink_parts(parts)
                     print(f"{';'.join(parts).strip()} {number}", file = readable)
 
     return readable_flame_path
 
 def produce_flame_graph(folded_path: str):
     flamegraph_out_path = folded_path + ".svg"
-    command = f"./flamegraph.pl --width 1000 --height 18 --title \" \" {folded_path} > {flamegraph_out_path}"
+    command = f"./flamegraph.pl --bgcolors \#FFFFFF00 --width 850 --height 18 --title \" \" {folded_path} > {flamegraph_out_path}"
     print(command)
     subprocess.run(command, shell=True, check=True)
     print("Flamegraph saved to ", flamegraph_out_path)
@@ -171,6 +199,7 @@ if __name__ == '__main__':
     files = [f for f in os.listdir(f'{folder}')]
     
     for folded_path in files:
+        # if folded_path.endswith('ecpt_never_graphbig_bfs_no_iter_walk_log.bin.folded'):
         if folded_path.endswith('.folded'):
             print(folded_path)
             flame_folded_path = os.path.join(f'{folder}', folded_path)

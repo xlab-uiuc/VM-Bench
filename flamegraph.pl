@@ -264,7 +264,9 @@ if ($bgcolors eq "yellow") {
 	$bgcolor1 = "#f8f8f8"; $bgcolor2 = "#e8e8e8";
 } elsif ($bgcolors =~ /^#......$/) {
 	$bgcolor1 = $bgcolor2 = $bgcolors;
-} else {
+} elsif ($bgcolors =~ /^#........$/) {
+	$bgcolor1 = $bgcolor2 = $bgcolors;
+}else {
 	die "Unrecognized bgcolor option \"$bgcolors\""
 }
 
@@ -1320,6 +1322,14 @@ while (my ($id, $node) = each %Node) {
 		"pgd_alloc" => 1,
 
 		"pud_none_or_trans_huge_or_dev_or_clear_bad" => 1,
+
+		"read_pte_attr" => 1,
+		"write_pte_attr" => 1,
+
+		"locate_pte" => 1,
+		"insert_pte" => 1, 
+		"update_pte" => 1,
+		"delete_pte" => 1,
 	);
 
 
@@ -1328,8 +1338,10 @@ while (my ($id, $node) = each %Node) {
 		$color = "#0074D9";
         $tcolor = "#B3DBFF";
 	} elsif (isInSet($func, \%radix_functions)) {
-		$color = "#85144B";
-        $tcolor = "#F2A6CB";
+		# $color = "#85144B";
+        # $tcolor = "#F2A6CB";
+		$color = "#0074D9";
+        $tcolor = "#B3DBFF";
 	} elsif (isInSet($func, \%interface_functions)) {
 		$color = "#FF851B";
         $tcolor = "#663000";
