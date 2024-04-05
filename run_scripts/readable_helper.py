@@ -186,7 +186,7 @@ def make_flame_human_readable(flame_folded_path: str):
 
 def produce_flame_graph(folded_path: str):
     flamegraph_out_path = folded_path + ".svg"
-    command = f"./flamegraph.pl --bgcolors \#FFFFFF00 --width 850 --height 18 --title \" \" {folded_path} > {flamegraph_out_path}"
+    command = f"./flamegraph.pl --bgcolors \#FFFFFF00 --width 850 --height 20 --fontsize 16 --title \" \" {folded_path} > {flamegraph_out_path}"
     print(command)
     subprocess.run(command, shell=True, check=True)
     print("Flamegraph saved to ", flamegraph_out_path)
