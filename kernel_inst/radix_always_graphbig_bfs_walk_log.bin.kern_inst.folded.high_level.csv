@@ -1,0 +1,8 @@
+asm_exc_page_fault,3607585
+asm_sysvec_apic_timer_interrupt,1748642
+None,4428
+arch_static_branch,41
+syscall_enter_from_user_mode,287
+array_index_mask_nospec,82
+__x64_sys_brk,47437
+syscall_exit_to_user_mode,1927
