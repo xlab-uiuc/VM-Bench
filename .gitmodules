@@ -1,6 +1,3 @@
-[submodule "biobench2"]
-	path = biobench2
-	url = git@github.com:xlab-uiuc/biobench2.git
 [submodule "graphBIG"]
 	path = graphBIG
 	url = git@github.com:xlab-uiuc/graphBIG.git
