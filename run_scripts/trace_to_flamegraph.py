@@ -131,7 +131,43 @@ def get_symbol_name_addr2line(vmlinux_path: str, addr: int, symbol_dict) -> str:
     symbol_dict[addr] = concated
 
     return concated	
+
+
+def get_symbol_name_addr2line_batch(vmlinux_path: str, addrs: List[int], symbol_dict) -> List[str]:
     
+    res = []
+    def process_result(s):
+        is_prev_inline = False
+        funcs = []
+
+        for line in s.split("\n"):
+            is_inline = False
+            if '(inlined by)' in line:
+                is_inline = True
+
+            if is_inline: 
+                #  (inlined by) arch_atomic_long_read at ./include/linux/atomic/atomic-long.h:29:9
+                inline_func = line.strip().split(' ')[2]
+                funcs.append(inline_func)
+            else: # not a inline function
+                # special case: the first line
+                if len(funcs) > 0:
+                    res.append(';'.join(funcs[::-1])               )
+                func = line.strip().split(' ')[0]
+                funcs = [func]
+            is_prev_inline = is_inline
+        res.append(';'.join(funcs[::-1])               )
+
+    batch_size = 4096
+    for i in range(0, len(addrs), batch_size):
+        end = min(i + batch_size, len(addrs))  # Adjust end index based on array length
+        addrs_str = ' '.join([hex(a) for a in addrs[i:end]])
+        command = f"eu-addr2line --pretty-print -fie {vmlinux_path} {addrs_str}"
+        result = subprocess.run(command, shell=True, capture_output=True)
+        decoded = result.stdout.decode('utf-8').strip()
+        process_result(decoded)
+    return res
+
     
 def lookup_symbol(sym_addrs, sym_names, addr, vmlinux_path, symbol_dict) -> str:
     index = bisect.bisect_right(sym_addrs, addr)
@@ -143,6 +179,19 @@ def lookup_symbol(sym_addrs, sym_names, addr, vmlinux_path, symbol_dict) -> str:
         return (sym_addrs[index - 1], sym_names[index - 1], addr2line_name)
 
     return (0x0, "__UNKNOWN_SYMBOL__", "__UNKNOWN_SYMBOL__")
+
+def lookup_symbol_batch(sym_addrs, sym_names, addrs, vmlinux_path, symbol_dict):
+    symbols = []
+    addr2line_names = get_symbol_name_addr2line_batch(vmlinux_path, addrs, symbol_dict)
+
+    for i, addr in enumerate(addrs):
+        index = bisect.bisect_right(sym_addrs, addr)
+        if index:
+            symbols.append((sym_addrs[index - 1], sym_names[index - 1], addr2line_names[i]))
+        else:
+            symbols.append((0x0, "__UNKNOWN_SYMBOL__", "__UNKNOWN_SYMBOL__"))
+    return symbols
+
 
 def stack_engine(start: int, name: str, inline: str, addr: int, stack: list, prev_addr: int, prev_start: int, cntr: int):
     # Not empty and in the same symbol (sequential execution), return
@@ -247,7 +296,10 @@ def produce_flame_folded(vmlinux_path : str, trace_path : str, out_path : str, a
     flame = {}
 
     symbol_dict = {}
-    for addr in get_next_insn(trace_path, arch):
+    addrs = [addr for addr in get_next_insn(trace_path, arch)]
+    symbols = lookup_symbol_batch(sym_addrs, sym_names, addrs, vmlinux_path, symbol_dict) 
+
+    for i, addr in enumerate(addrs): 
         if addr == USER_PROGRAM_MAGIC:
             # user program execution now, clears kernel stack
             stack = []
@@ -256,7 +308,7 @@ def produce_flame_folded(vmlinux_path : str, trace_path : str, out_path : str, a
             call_chain = ""
             continue
 
-        (start, name, inline) = lookup_symbol(sym_addrs, sym_names, addr, vmlinux_path, symbol_dict)
+        (start, name, inline) = symbols[i] 
         # print(f"{hex(start)} {hex(addr)} {name} {inline}")
         
         (stack, changed) = stack_engine(start, name, inline, addr, stack, prev_addr, prev_start, cntr)
