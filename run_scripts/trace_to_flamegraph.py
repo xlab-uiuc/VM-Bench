@@ -140,7 +140,7 @@ def get_symbol_name_addr2line_batch(vmlinux_path: str, addrs: List[int], symbol_
         is_prev_inline = False
         funcs = []
 
-        for line in s.split("\n"):
+        for line in s.splitlines():
             is_inline = False
             if '(inlined by)' in line:
                 is_inline = True
@@ -152,20 +152,18 @@ def get_symbol_name_addr2line_batch(vmlinux_path: str, addrs: List[int], symbol_
             else: # not a inline function
                 # special case: the first line
                 if len(funcs) > 0:
-                    res.append(';'.join(funcs[::-1])               )
+                    res.append(';'.join(funcs[::-1]))
                 func = line.strip().split(' ')[0]
                 funcs = [func]
             is_prev_inline = is_inline
-        res.append(';'.join(funcs[::-1])               )
+        res.append(';'.join(funcs[::-1]))
 
-    batch_size = 4096
-    for i in range(0, len(addrs), batch_size):
-        end = min(i + batch_size, len(addrs))  # Adjust end index based on array length
-        addrs_str = ' '.join([hex(a) for a in addrs[i:end]])
-        command = f"eu-addr2line --pretty-print -fie {vmlinux_path} {addrs_str}"
-        result = subprocess.run(command, shell=True, capture_output=True)
-        decoded = result.stdout.decode('utf-8').strip()
-        process_result(decoded)
+    addrs_str = ' '.join([hex(a) for a in addrs])
+    command = f"eu-addr2line --pretty-print -fie {vmlinux_path} {addrs_str}"
+    result = subprocess.run(command, shell=True, capture_output=True)
+    decoded = result.stdout.decode('utf-8').strip()
+    process_result(decoded)
+
     return res
 
     
@@ -296,40 +294,47 @@ def produce_flame_folded(vmlinux_path : str, trace_path : str, out_path : str, a
     flame = {}
 
     symbol_dict = {}
+
+    batch_size = 4096
+
     addrs = [addr for addr in get_next_insn(trace_path, arch)]
-    symbols = lookup_symbol_batch(sym_addrs, sym_names, addrs, vmlinux_path, symbol_dict) 
+    print(len(addrs))
+    for i in range(0, len(addrs), batch_size):
+        end = min(i + batch_size, len(addrs))  # Adjust end index based on array length
+        sliced_addrs = addrs[i:end]
 
-    for i, addr in enumerate(addrs): 
-        if addr == USER_PROGRAM_MAGIC:
-            # user program execution now, clears kernel stack
-            stack = []
-            prev_addr = 0x0
-            prev_start = 0x0
-            call_chain = ""
-            continue
+        symbols = lookup_symbol_batch(sym_addrs, sym_names, sliced_addrs, vmlinux_path, symbol_dict) 
+        for j, addr in enumerate(sliced_addrs): 
+            if addr == USER_PROGRAM_MAGIC:
+                # user program execution now, clears kernel stack
+                stack = []
+                prev_addr = 0x0
+                prev_start = 0x0
+                call_chain = ""
+                continue
 
-        (start, name, inline) = symbols[i] 
-        # print(f"{hex(start)} {hex(addr)} {name} {inline}")
-        
-        (stack, changed) = stack_engine(start, name, inline, addr, stack, prev_addr, prev_start, cntr)
-        # print([ frame["inline"] for frame in stack ])
-        
-        # If stack has changed, we potentially need to generate a new call chain in flamegraph format
-        if changed:
-            trace = [ frame["inline"] for frame in stack ]
-            call_chain = ";".join(trace)
+            (start, name, inline) = symbols[j] 
+            # print(f"{hex(start)} {hex(addr)} {name} {inline}")
+            
+            (stack, changed) = stack_engine(start, name, inline, addr, stack, prev_addr, prev_start, cntr)
+            # print([ frame["inline"] for frame in stack ])
+            
+            # If stack has changed, we potentially need to generate a new call chain in flamegraph format
+            if changed:
+                trace = [ frame["inline"] for frame in stack ]
+                call_chain = ";".join(trace)
 
-            if call_chain not in flame:
-                flame[call_chain] = 0
+                if call_chain not in flame:
+                    flame[call_chain] = 0
 
-        flame[call_chain] += 1
+            flame[call_chain] += 1
 
-        prev_addr = addr
-        prev_start = start
-        cntr += 1
+            prev_addr = addr
+            prev_start = start
+            cntr += 1
 
-        if cntr % 10000 == 0:
-            print(f"Processed {cntr} instructions; flame size: {len(flame)}")
+            if cntr % 10000 == 0:
+                print(f"Processed {cntr} instructions; flame size: {len(flame)}")
 
     with open(out_path, 'w') as f:
         for key in flame:
