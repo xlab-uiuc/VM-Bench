@@ -1,8 +1,8 @@
+asm_exc_page_fault,3290920607
 None,108
 arch_static_branch,1
 syscall_enter_from_user_mode,7
 array_index_mask_nospec,2
-__x64_sys_mmap,4119
+__x64_sys_mmap,4199
 syscall_exit_to_user_mode,53
-asm_exc_page_fault,155332579
-asm_sysvec_apic_timer_interrupt,102791
+asm_sysvec_apic_timer_interrupt,4945314
