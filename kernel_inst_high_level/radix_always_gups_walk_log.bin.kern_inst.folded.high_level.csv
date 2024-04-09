@@ -4,5 +4,5 @@ syscall_enter_from_user_mode,21
 array_index_mask_nospec,6
 __x64_sys_mmap,5199
 syscall_exit_to_user_mode,159
-asm_exc_page_fault,219877033
-asm_sysvec_apic_timer_interrupt,2437163
+asm_exc_page_fault,219897439
+asm_sysvec_apic_timer_interrupt,2428459
