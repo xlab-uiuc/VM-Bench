@@ -166,6 +166,7 @@ def get_result_per_thp_tag(parent_folder, thp, tag, arch, bench):
 
     result_path = files[0]
 
+    print(result_path)
     # print('\n'.join(result_path_list))
     df = pd.read_csv(result_path, header=None, names=['symbol', f'{thp}_{translate_tag[tag]}'])
     df.set_index('symbol', inplace=True)
@@ -181,7 +182,7 @@ def get_stas(df):
 def show_relative_plot(pf_df, base):
     # plt.figure(figsize=(10, 6))  # Set the size of the figure
     plt.rcParams.update({'font.family': 'Times New Roman' })
-    plt.rcParams['font.size'] = 20 
+    plt.rcParams['font.size'] = 24
     print("base ", base)
     relative_df = pf_df / base 
     print(relative_df)
@@ -192,7 +193,7 @@ def show_relative_plot(pf_df, base):
     #1D3557', '#000000', '///'],
 	# ['#A8DADC', '#000000', '///'],
 	# ['#073B3A
-    relative_df.plot(kind="bar", figsize=(7, 8), color=["#1D3557", "#A8DADC", "#00c04b"], width=0.8)
+    relative_df.plot(kind="bar", figsize=(6, 8), color=["#1D3557", "#A8DADC", "#00c04b"], width=0.8)
 
     print(relative_df.columns)
     # plt.title("Comparison of optimization effects on PF handler instructions")
@@ -201,14 +202,14 @@ def show_relative_plot(pf_df, base):
     plt.xticks(rotation=0)
     # plt.legend(title="Optimizations")
     # plt.legend(bbox_to_anchor=(0.5, 1.15), loc='upper center', ncol=3)
-    plt.legend(bbox_to_anchor=(0.5, 1.2), loc='upper center', ncol=2, fontsize=18)
+    plt.legend(bbox_to_anchor=(0.5, 1.35), loc='upper center', ncol=1, fontsize=24)
     # plt.legend(loc='upper center', ncol=3)
     plt.tight_layout()
 
     path = f'opt_group_effect.svg'
     plt.show()
     print("save path " , path)
-    # plt.savefig(path)
+    plt.savefig(path)
     # plt.rcParams.update({'font.family': 'Times New Roman' })
 
     # categories = merged.columns
@@ -256,22 +257,34 @@ if __name__ == '__main__':
 
     tag = [
         "no_iter_no_place_opt",
+        # "no_iter_no_place_opt_run2",
         # "no_iter",
-        "no_iter0",
-        "default",
+        # "withIter_noPlace",
+        "withIter_noPlace_run2",
+        # "withIter_noPlace_run2",
+        # "no_iter0",
+        "withIter_withPlace"
+        # "default",
     ]
 
     translate_tag = {
-        "no_iter_no_place_opt": "base",
+        "no_iter_no_place_opt": "baseline",
+        "no_iter_no_place_opt_run2": "base 2",
+
+        "withIter_noPlace" : "Iterator only",
+        "withIter_noPlace_run2" : "iterator only",
         "no_iter" : "__With placement opt",
-        "no_iter0" : "thp_eligible",
+        "no_iter0" : "thp_eligible only",
         "default": "thp_eligible + Iterator",
+        "withIter_withPlace" : "iterator + hugepage"
     }
 
     translated_tags = [translate_tag[t] for t in tag]
 
     pf_time_data = {}
     total_time_data = {}
+    
+    all_thp_dfs = []
     for thp in THP_options:
         pf_time_data[thp] = []
         total_time_data[thp] = []
@@ -282,10 +295,25 @@ if __name__ == '__main__':
             pf_time_data[thp].append(pf_time)
             total_time_data[thp].append(total_time)
 
-    
-    pf_df = pd.DataFrame(pf_time_data)
-    pf_df.index = translated_tags
+        per_thp_df = pd.DataFrame(pf_time_data[thp])
+        per_thp_df.index = translated_tags
+        
+        
+        if thp == 'never':
+            per_thp_df.columns = ['4KB']
+        elif thp == 'always':
+            per_thp_df.columns = ['THP']
+        
+        print(per_thp_df)
 
+        all_thp_dfs.append(per_thp_df)
+    
+    pf_df = pd.concat(all_thp_dfs, axis=1)
     print(pf_df)
-    show_relative_plot(pf_df, pf_df['never']['base'])
+        # show_relative_plot_single(per_thp_df, per_thp_df.loc['base'], thp)
+    # pf_df = pd.DataFrame(pf_time_data)
+    # pf_df.index = translated_tags
+
+    # print(pf_df)
+    show_relative_plot(pf_df, pf_df.loc['baseline'])
     
