@@ -197,15 +197,15 @@ def show_relative_plot(pf_df, base):
 
     print(relative_df.columns)
     # plt.title("Comparison of optimization effects on PF handler instructions")
-    plt.ylabel("Relative # of instructions in PF handler")
+    plt.ylabel("Norm. # of instructions")
     # plt.xlabel("THP setup")
     plt.xticks(rotation=0)
     # plt.legend(title="Optimizations")
     # plt.legend(bbox_to_anchor=(0.5, 1.15), loc='upper center', ncol=3)
-    plt.legend(bbox_to_anchor=(0.5, 1.35), loc='upper center', ncol=1, fontsize=24)
+    plt.legend(bbox_to_anchor=(0.5, 1.27), loc='upper center', ncol=1, fontsize=22, frameon=False)
     # plt.legend(loc='upper center', ncol=3)
     plt.tight_layout()
-
+    plt.subplots_adjust(top=0.82)
     path = f'opt_group_effect.svg'
     plt.show()
     print("save path " , path)
@@ -260,9 +260,9 @@ if __name__ == '__main__':
         # "no_iter_no_place_opt_run2",
         # "no_iter",
         # "withIter_noPlace",
-        "withIter_noPlace_run2",
         # "withIter_noPlace_run2",
-        # "no_iter0",
+        # "withIter_noPlace_run2",
+        "no_iter0",
         "withIter_withPlace"
         # "default",
     ]
@@ -274,9 +274,9 @@ if __name__ == '__main__':
         "withIter_noPlace" : "Iterator only",
         "withIter_noPlace_run2" : "iterator only",
         "no_iter" : "__With placement opt",
-        "no_iter0" : "thp_eligible only",
+        "no_iter0" : "+ VMA opt",
         "default": "thp_eligible + Iterator",
-        "withIter_withPlace" : "iterator + hugepage"
+        "withIter_withPlace" : "+ iterator"
     }
 
     translated_tags = [translate_tag[t] for t in tag]
