@@ -1,0 +1,11 @@
+entry_SYSCALL_64,237
+do_syscall_64,57
+arch_static_branch,3
+syscall_enter_from_user_mode,21
+do_syscall_x64,24
+array_index_mask_nospec,6
+__x86_indirect_thunk_rax,6
+__x64_sys_mmap,5100
+syscall_exit_to_user_mode,141
+asm_exc_page_fault,444463425
+asm_sysvec_apic_timer_interrupt,4767710

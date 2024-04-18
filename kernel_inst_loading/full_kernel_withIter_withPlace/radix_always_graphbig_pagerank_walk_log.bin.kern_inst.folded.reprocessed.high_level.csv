@@ -1,0 +1,17 @@
+entry_SYSCALL_64,226651
+do_syscall_64,54511
+arch_static_branch,2869
+syscall_enter_from_user_mode,20083
+do_syscall_x64,22952
+array_index_mask_nospec,5738
+__x86_indirect_thunk_rax,5738
+__x64_sys_openat,76358
+syscall_exit_to_user_mode,135543
+asm_exc_page_fault,84774181
+__x64_sys_read,21841261
+__x64_sys_brk,1020670
+asm_sysvec_apic_timer_interrupt,4957426
+irq_entries_start,1061267
+khugepaged,9285061
+__x64_sys_mmap,18879
+__x64_sys_munmap,1043034
