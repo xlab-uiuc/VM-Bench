@@ -219,13 +219,14 @@ def get_high_level_distribution(flame_path):
             high_level_flame[high_level_key] += number
     
     high_level_path = flame_path + ".high_level.csv"
+
     print(f"Saving high level flamegraph to {high_level_path}")
     with open(flame_path + ".high_level.csv", 'w') as f:
         for key in high_level_flame:
             print(f"{key},{high_level_flame[key]}", file = f)
     return high_level_path
 
-def produce_flame_folded(vmlinux_path : str, trace_path : str, out_path : str, arch : str):
+def produce_flame_folded(vmlinux_path : str, trace_path : str, out_path : str, arch : str, max_insn_count : int):
     (sym_addrs, sym_names) = get_symbol_table(vmlinux_path)
 
     # Function call stack
@@ -248,7 +249,6 @@ def produce_flame_folded(vmlinux_path : str, trace_path : str, out_path : str, a
 
     symbol_dict = {}
     for addr in get_next_insn(trace_path, arch):
-        
         if addr == USER_PROGRAM_MAGIC:
             # user program execution now, clears kernel stack
             stack = []
@@ -280,6 +280,9 @@ def produce_flame_folded(vmlinux_path : str, trace_path : str, out_path : str, a
         if cntr % 10000 == 0:
             print(f"Processed {cntr} instructions; flame size: {len(flame)}")
 
+        if cntr != None and cntr == max_insn_count:
+            break
+
     with open(out_path, 'w') as f:
         for key in flame:
             print(f"{key} {flame[key]}", file = f)
@@ -294,14 +297,14 @@ def search_for_vmlinux(trace_path: str) -> str:
     # Use glob.iglob with recursive=True to find matches in all subdirectories
     files = glob.iglob(pattern, recursive=True)
     for file in files:
+        # tmpfs_path = f"/mnt/tmp/{os.path.basename(file).split('/')[-1]}"
+        # shutil.copyfile(file, tmpfs_path)
         return file
 
     print("No vmlinux found for trace ", trace_path)
     exit(1)
 
-data_folder = "kernel_inst_loading"
-
-def get_all_traces(folder_path: str, arch : str, tag):
+def get_all_traces(folder_path: str, arch : str, max_insn_count : int):
     print('folder_path', folder_path)
     benchmarks = [
         "graphbig_bfs",
@@ -332,12 +335,11 @@ def get_all_traces(folder_path: str, arch : str, tag):
 
     for trace in trace_list:
         vmlinux_path = search_for_vmlinux(trace)
-        out_path = trace + ".kern_inst.folded"
-        copy_folder = os.path.join(data_folder, tag)
-        run_info_list.append((vmlinux_path, trace, out_path, arch, copy_folder))
+        out_path = trace + "_insn_" + str(max_insn_count) + ".kern_inst.folded"
+        run_info_list.append((vmlinux_path, trace, out_path, arch, max_insn_count))
 
     # print remove folder path
-    print('\n'.join([f"{os.path.basename(run_info[0])} {os.path.basename(run_info[1])} {os.path.basename(run_info[2])} {run_info[4]}" for run_info in run_info_list]))
+    print('\n'.join([f"{os.path.basename(run_info[0])} {os.path.basename(run_info[1])} {os.path.basename(run_info[2])}" for run_info in run_info_list]))
     return run_info_list
 
 def produce_flame_graph(folded_path: str):
@@ -348,19 +350,15 @@ def produce_flame_graph(folded_path: str):
     print("Flamegraph saved to ", flamegraph_out_path)
     return flamegraph_out_path
 
-
-def wrapper(vmlinux_path, trace_path, out_path, arch, copy_folder):
-    produce_flame_folded(vmlinux_path, trace_path, out_path, arch)
-    
+def wrapper(vmlinux_path, trace_path, out_path, arch, max_insn_count):
+    produce_flame_folded(vmlinux_path, trace_path, out_path, arch, max_insn_count)
     high_level_path = get_high_level_distribution(out_path)
-    
-    if not os.path.exists(copy_folder):
-        os.makedirs(copy_folder)
+    data_folder = "kernel_inst_high_level"
 
-    shutil.copy(out_path, os.path.join(copy_folder, os.path.basename(out_path)))
-    shutil.copy(high_level_path, os.path.join(copy_folder, os.path.basename(high_level_path)))
+    shutil.copy(out_path, os.path.join(data_folder, os.path.basename(out_path)))
+    shutil.copy(high_level_path, os.path.join(data_folder, os.path.basename(high_level_path)))
 
-    produce_flame_graph(os.path.join(copy_folder, os.path.basename(out_path)))
+    produce_flame_graph(os.path.join(data_folder, os.path.basename(out_path)))
 
 
 def main():
@@ -369,18 +367,18 @@ def main():
     parser.add_argument('--vmlinux', type=str, help='vmlinux path')
     parser.add_argument('--trace', type=str, help='binary log path')
     parser.add_argument('--out', type=str, help='output path')
+    parser.add_argument('--insn', type=int, help='Max Instruction Count')
 
     # group run
     parser.add_argument('--folder', type=str, help='folder path')
-    parser.add_argument('--tag', type=str, help='tag for the run')
-
+    
     parser.add_argument('--arch', type=str, help='radix or ecpt. Must choose one')
     parser.add_argument('--dry', type=bool, help='dry run')
-    
+
     args = parser.parse_args()
 
     if args.folder != None:
-        run_info_list = get_all_traces(args.folder, args.arch, args.tag)
+        run_info_list = get_all_traces(args.folder, args.arch, args.insn)
         if args.dry:
             print("Dry run done")
             exit(0)
@@ -409,9 +407,12 @@ def main():
         print("Please provide vmlinux and binary log path and arch")
         exit(1)
     if (args.out == None):
-        out_path = "flamegraph.folded"
+        if(args.insn != None):
+            out_path = "_insn_" + str(args.insn) + "flamegraph.folded"
+        else:
+            out_path = "flamegraph.folded"
 
-    produce_flame_folded(vmlinux_path, trace_path, out_path, arch)
+    produce_flame_folded(vmlinux_path, trace_path, out_path, arch, args.insn)
     get_high_level_distribution(out_path)
 
 if __name__ == "__main__":

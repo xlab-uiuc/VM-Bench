@@ -202,11 +202,11 @@ def merge_per_thp_per_test(per_thp_test_dfs, key):
     return percent_cleaned, merged
 
 def get_result_per_kernel_thp_test(kernel, thp, test_name):
-    folder = f'kernel_inst_high_level'
+    folder = f'kernel_inst'
     file_prefix = f'{kernel}_{thp}_{test_name}'
 
-    if kernel == 'ecpt' and thp == 'always':
-        folder = os.path.join('kernel_inst_loading', 'withIter_withPlace')
+    # if kernel == 'ecpt' and thp == 'always':
+    #     folder = os.path.join('kernel_inst_loading', 'withIter_withPlace')
 
     # example radix_never_graphbig_tc_walk_log.bin.kern_inst.folded.high_level.csv
     # paper_results/5.15.0-vanilla/LEBench/
@@ -214,16 +214,16 @@ def get_result_per_kernel_thp_test(kernel, thp, test_name):
 
     if 'graphbig' in test_name:
         test_name = test_name.replace('graphbig_', '')
-
-    col = ''
-    if thp == 'always':
-        col = f'{test_name}_{kernel}_THP'
-    else:
-        col = f'{test_name}_{kernel}_4KB'
-
+    col = f'{test_name}_{kernel}'
+    # col = ''
+    # if thp == 'always':
+    #     col = f'{test_name}_{kernel}_THP'
+    # else:
+    #     col = f'{test_name}_{kernel}_4KB'
+    
     print(result_path)
 
-    df = pd.read_csv(result_path, header=None, names=['symbol', col])
+    df = pd.read_csv(result_path, header=None, names=['symbol', file_prefix])
     df.set_index('symbol', inplace=True)
     return df
 
@@ -391,8 +391,8 @@ if __name__ == '__main__':
     ]
 
     THP_options = [
-        # "never",
-        "always",
+        "never",
+        # "always",
     ]
 
     tests = [
@@ -403,50 +403,51 @@ if __name__ == '__main__':
         "graphbig_cc" ,
         "graphbig_tc" ,
         "graphbig_pagerank" ,
-        "sysbench" ,
-        "gups",
+        # "sysbench" ,
+        # "gups",
     ]
 
     
-    # for thp in THP_options:
-    #     per_thp = []
-    #     for test in tests:  
-    #         per_thp_test = []
-    #         for kernel in archs:
-    #             df = get_result_per_kernel_thp_test(kernel, thp, test)
-    #             per_thp_test.append(df)
-
-    #         key = f'radix_{test}'
-    #         if 'graphbig' in test:
-    #             stripped = test.replace('graphbig_', '')
-    #             key = f'radix_{stripped}'
-
-    #         test_df = merge_per_thp_per_test(per_thp_test, key)
-    #         per_thp.append(test_df)
-
-        # show_relative_plot(per_thp, thp)
-                # perf_df.append(merged)
-    # for thp in THP_options:
     for thp in THP_options:
-        all_tests = []
-        raws = []
+        per_thp = []
         for test in tests:  
-            per_test = []
+            per_thp_test = []
             for kernel in archs:
                 df = get_result_per_kernel_thp_test(kernel, thp, test)
-                per_test.append(df)
-
+                print(df)
+                per_thp_test.append(df)
+            key = f'{kernel}_{thp}_{test}'
             # key = f'radix_{test}'
             # if 'graphbig' in test:
             #     stripped = test.replace('graphbig_', '')
             #     key = f'radix_{stripped}'
 
-            test_df, merged_raw = merge_per_thp_per_test(per_test, per_test[0].columns[0])
-            all_tests.append(test_df)
-            raws.append(merged_raw)
-        
-        all_merge(raws, thp)
+            test_df = merge_per_thp_per_test(per_thp_test, key)
+            per_thp.append(test_df)
 
-        transform_to_atlair(all_tests, group_factor=len(archs), thp=thp)
+        show_relative_plot(per_thp, thp)
+                # perf_df.append(merged)
+    # for thp in THP_options:
+    # for thp in THP_options:
+    #     all_tests = []
+    #     raws = []
+    #     for test in tests:  
+    #         per_test = []
+    #         for kernel in archs:
+    #             df = get_result_per_kernel_thp_test(kernel, thp, test)
+    #             per_test.append(df)
+
+    #         # key = f'radix_{test}'
+    #         # if 'graphbig' in test:
+    #         #     stripped = test.replace('graphbig_', '')
+    #         #     key = f'radix_{stripped}'
+
+    #         test_df, merged_raw = merge_per_thp_per_test(per_test, per_test[0].columns[0])
+    #         all_tests.append(test_df)
+    #         raws.append(merged_raw)
+        
+    #     all_merge(raws, thp)
+
+    #     transform_to_atlair(all_tests, group_factor=len(archs), thp=thp)
     
         # per_thp.append(test_df)

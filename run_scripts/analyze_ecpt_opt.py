@@ -179,7 +179,7 @@ def get_stas(df):
 
     return pf_time, total_time
 
-def show_relative_plot(pf_df, base):
+def show_relative_plot(pf_df, base, thp):
     # plt.figure(figsize=(10, 6))  # Set the size of the figure
     plt.rcParams.update({'font.family': 'Times New Roman' })
     plt.rcParams['font.size'] = 24
@@ -187,26 +187,31 @@ def show_relative_plot(pf_df, base):
     relative_df = pf_df / base 
     print(relative_df)
 
-    relative_df = relative_df.T
+    # relative_df = relative_df.T
     print(relative_df)
-    relative_df.index = ['4KB', 'THP']
+    relative_df = relative_df.iloc[::-1]
+    # relative_df.index = ['4KB', 'THP']
     #1D3557', '#000000', '///'],
 	# ['#A8DADC', '#000000', '///'],
 	# ['#073B3A
-    relative_df.plot(kind="bar", figsize=(6, 8), color=["#1D3557", "#A8DADC", "#00c04b"], width=0.8)
-
-    print(relative_df.columns)
+    # relative_df.plot(kind="barh", figsize=(6, 3), color=["#1D3557", "#A8DADC", "#00c04b"], width=0.8)
+    ax = relative_df.plot(kind="barh", color=['#96ceb4'], figsize=(6, 3), width=0.9)
+    # print(relative_df.columns)
     # plt.title("Comparison of optimization effects on PF handler instructions")
-    plt.ylabel("Norm. # of instructions")
-    # plt.xlabel("THP setup")
+    # plt.ylabel("Norm. # of instructions")
+    
+    plt.xlabel("Norm. # of instructions")
     plt.xticks(rotation=0)
+    ax.get_legend().set_visible(False)
     # plt.legend(title="Optimizations")
     # plt.legend(bbox_to_anchor=(0.5, 1.15), loc='upper center', ncol=3)
-    plt.legend(bbox_to_anchor=(0.5, 1.27), loc='upper center', ncol=1, fontsize=22, frameon=False)
+    # plt.legend(bbox_to_anchor=(0.5, 1.27), loc='upper center', ncol=1, fontsize=22, frameon=False)
     # plt.legend(loc='upper center', ncol=3)
+    # plt.legend(None)
+    plt.setp(ax.yaxis.get_majorticklabels(), rotation=340, ha="right", rotation_mode="anchor") 
     plt.tight_layout()
     plt.subplots_adjust(top=0.82)
-    path = f'opt_group_effect.svg'
+    path = f'opt_group_effect_{thp}.svg'
     plt.show()
     print("save path " , path)
     plt.savefig(path)
@@ -305,15 +310,15 @@ if __name__ == '__main__':
             per_thp_df.columns = ['THP']
         
         print(per_thp_df)
-
-        all_thp_dfs.append(per_thp_df)
+        show_relative_plot(per_thp_df, per_thp_df.loc['baseline'], thp)
+    #     all_thp_dfs.append(per_thp_df)
     
-    pf_df = pd.concat(all_thp_dfs, axis=1)
-    print(pf_df)
-        # show_relative_plot_single(per_thp_df, per_thp_df.loc['base'], thp)
-    # pf_df = pd.DataFrame(pf_time_data)
-    # pf_df.index = translated_tags
-
+    # pf_df = pd.concat(all_thp_dfs, axis=1)
     # print(pf_df)
-    show_relative_plot(pf_df, pf_df.loc['baseline'])
+    #     # show_relative_plot_single(per_thp_df, per_thp_df.loc['base'], thp)
+    # # pf_df = pd.DataFrame(pf_time_data)
+    # # pf_df.index = translated_tags
+
+    # # print(pf_df)
+    # show_relative_plot(pf_df, pf_df.loc['baseline'])
     
