@@ -195,17 +195,20 @@ def show_relative_plot(pf_df, base, thp):
 	# ['#A8DADC', '#000000', '///'],
 	# ['#073B3A
     # relative_df.plot(kind="barh", figsize=(6, 3), color=["#1D3557", "#A8DADC", "#00c04b"], width=0.8)
-    ax = relative_df.plot(kind="barh", color=['#96ceb4'], figsize=(6, 3), width=0.9)
+    # ax = relative_df.plot(kind="barh", color=['#96ceb4'], edgecolor="Black", figsize=(6, 3), width=0.9) rgbkymc
+    ax = relative_df.T.plot(kind="barh", color=["#96ceb4", "#A8DADC", "#00c04b"], edgecolor="Black", figsize=(6, 3), width=0.9)
     # print(relative_df.columns)
     # plt.title("Comparison of optimization effects on PF handler instructions")
     # plt.ylabel("Norm. # of instructions")
-    
+
     plt.xlabel("Norm. # of instructions")
     plt.xticks(rotation=0)
     ax.get_legend().set_visible(False)
+    ax.get_yaxis().set_visible(False)
     # plt.legend(title="Optimizations")
     # plt.legend(bbox_to_anchor=(0.5, 1.15), loc='upper center', ncol=3)
     # plt.legend(bbox_to_anchor=(0.5, 1.27), loc='upper center', ncol=1, fontsize=22, frameon=False)
+
     # plt.legend(loc='upper center', ncol=3)
     # plt.legend(None)
     plt.setp(ax.yaxis.get_majorticklabels(), rotation=340, ha="right", rotation_mode="anchor") 
@@ -215,6 +218,33 @@ def show_relative_plot(pf_df, base, thp):
     plt.show()
     print("save path " , path)
     plt.savefig(path)
+
+
+    # plt.gcf().set_size_inches(1, 1)
+    # plt.gca().set_xlim(0, 0.0000001)
+    # plt.gca().set_ylim(0, 0.0000001)   
+    # plt.gca().set_xticks([])
+    # plt.gca().set_yticks([])
+    # plt.gca().spines['top'].set_visible(False)
+    # plt.gca().spines['right'].set_visible(False)
+    # plt.gca().spines['bottom'].set_visible(False)
+    # plt.gca().spines['left'].set_visible(False)
+    # ax.axis('off')
+    # ax.get_legend().set_visible(True)
+    # handles, labels = ax.get_legend_handles_labels()
+    # ax.legend(handles[::-1], labels[::-1], bbox_to_anchor=(.5, 1.35), loc='upper center', ncol=3, fontsize="15")
+    # legend = plt.legend()
+    # plt.show() 
+    path = f'opt_group_effect_{thp}.legend.svg'
+    # print("save path " , path)
+    # plt.savefig(path, transparent=True)
+    handles, labels = ax.get_legend_handles_labels()
+    fig, ax = plt.subplots(1)
+    ax.legend(handles=handles[::-1], labels=labels[::-1], loc='upper center', ncol=3, fontsize="15")
+    ax.axis('off')
+    fig.savefig(path, bbox_inches='tight')
+
+
     # plt.rcParams.update({'font.family': 'Times New Roman' })
 
     # categories = merged.columns
@@ -281,7 +311,7 @@ if __name__ == '__main__':
         "no_iter" : "__With placement opt",
         "no_iter0" : "+ VMA opt",
         "default": "thp_eligible + Iterator",
-        "withIter_withPlace" : "+ iterator"
+        "withIter_withPlace" : "+ iterator opt"
     }
 
     translated_tags = [translate_tag[t] for t in tag]
