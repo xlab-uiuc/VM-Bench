@@ -240,7 +240,8 @@ def show_relative_plot(pf_df, base, thp):
     # plt.savefig(path, transparent=True)
     handles, labels = ax.get_legend_handles_labels()
     fig, ax = plt.subplots(1)
-    ax.legend(handles=handles[::-1], labels=labels[::-1], loc='upper center', ncol=3, fontsize="15")
+    fig.set_size_inches(4, .5)
+    ax.legend(handles=handles[::-1], labels=labels[::-1], loc='upper center', ncol=3, fontsize="15", frameon=False)
     ax.axis('off')
     fig.savefig(path, bbox_inches='tight')
 
