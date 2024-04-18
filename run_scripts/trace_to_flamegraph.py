@@ -298,7 +298,9 @@ def search_for_vmlinux(trace_path: str) -> str:
     print("No vmlinux found for trace ", trace_path)
     exit(1)
 
-def get_all_traces(folder_path: str, arch : str):
+data_folder = "kernel_inst_loading"
+
+def get_all_traces(folder_path: str, arch : str, tag):
     print('folder_path', folder_path)
     benchmarks = [
         "graphbig_bfs",
@@ -330,10 +332,11 @@ def get_all_traces(folder_path: str, arch : str):
     for trace in trace_list:
         vmlinux_path = search_for_vmlinux(trace)
         out_path = trace + ".kern_inst.folded"
-        run_info_list.append((vmlinux_path, trace, out_path, arch))
+        copy_folder = os.path.join(data_folder, tag)
+        run_info_list.append((vmlinux_path, trace, out_path, arch, copy_folder))
 
     # print remove folder path
-    print('\n'.join([f"{os.path.basename(run_info[0])} {os.path.basename(run_info[1])} {os.path.basename(run_info[2])}" for run_info in run_info_list]))
+    print('\n'.join([f"{os.path.basename(run_info[0])} {os.path.basename(run_info[1])} {os.path.basename(run_info[2])} {run_info[4]}" for run_info in run_info_list]))
     return run_info_list
 
 def produce_flame_graph(folded_path: str):
@@ -344,15 +347,19 @@ def produce_flame_graph(folded_path: str):
     print("Flamegraph saved to ", flamegraph_out_path)
     return flamegraph_out_path
 
-def wrapper(vmlinux_path, trace_path, out_path, arch):
+
+
+def wrapper(vmlinux_path, trace_path, out_path, arch, copy_folder):
     produce_flame_folded(vmlinux_path, trace_path, out_path, arch)
     high_level_path = get_high_level_distribution(out_path)
-    data_folder = "kernel_inst"
+    
+    if not os.path.exists(copy_folder):
+        os.makedirs(copy_folder)
 
-    shutil.copy(out_path, os.path.join(data_folder, os.path.basename(out_path)))
-    shutil.copy(high_level_path, os.path.join(data_folder, os.path.basename(high_level_path)))
+    shutil.copy(out_path, os.path.join(copy_folder, os.path.basename(out_path)))
+    shutil.copy(high_level_path, os.path.join(copy_folder, os.path.basename(high_level_path)))
 
-    produce_flame_graph(os.path.join(data_folder, os.path.basename(out_path)))
+    produce_flame_graph(os.path.join(copy_folder, os.path.basename(out_path)))
 
 
 def main():
@@ -364,14 +371,15 @@ def main():
 
     # group run
     parser.add_argument('--folder', type=str, help='folder path')
-    
+    parser.add_argument('--tag', type=str, help='tag for the run')
+
     parser.add_argument('--arch', type=str, help='radix or ecpt. Must choose one')
     parser.add_argument('--dry', type=bool, help='dry run')
-
+    
     args = parser.parse_args()
 
     if args.folder != None:
-        run_info_list = get_all_traces(args.folder, args.arch)
+        run_info_list = get_all_traces(args.folder, args.arch, args.tag)
         if args.dry:
             print("Dry run done")
             exit(0)
