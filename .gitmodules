@@ -16,3 +16,6 @@
 [submodule "ltp"]
 	path = ltp
 	url = https://github.com/linux-test-project/ltp
+[submodule "ycsb"]
+	path = ycsb
+	url = git@github.com:xlab-uiuc/ycsb.git
