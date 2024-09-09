@@ -408,12 +408,13 @@ def main():
         exit(1)
     if (args.out == None):
         if(args.insn != None):
-            out_path = "_insn_" + str(args.insn) + "flamegraph.folded"
+            out_path = trace_path + "_insn_" + str(args.insn) + ".kern_inst.folded"
         else:
-            out_path = "flamegraph.folded"
+            out_path = trace_path + ".kern_inst.folded"
 
     produce_flame_folded(vmlinux_path, trace_path, out_path, arch, args.insn)
     get_high_level_distribution(out_path)
-
+    produce_flame_graph(out_path)
+    
 if __name__ == "__main__":
     main()
