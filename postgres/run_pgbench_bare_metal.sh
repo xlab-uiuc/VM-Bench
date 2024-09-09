@@ -70,7 +70,9 @@ done
 sleep 1
 echo "Output folder: $OUTPUT_FOLDER"
 
+python3 collect_postgres.py --folder $OUTPUT_FOLDER
 
+sleep 1
 # pgbench --client=10 --time=120
 
 # sleep 30
