@@ -19,3 +19,6 @@
 [submodule "ycsb"]
 	path = ycsb
 	url = git@github.com:xlab-uiuc/ycsb.git
+[submodule "memcached_rethinkvm"]
+	path = memcached_rethinkvm
+	url = git@github.com:xlab-uiuc/memcached_rethinkvm.git
