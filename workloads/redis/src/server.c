@@ -34,6 +34,8 @@
 #include "latency.h"
 #include "atomicvar.h"
 
+#include <stdint.h>
+#include <stdio.h>
 #include <time.h>
 #include <signal.h>
 #include <sys/wait.h>
@@ -3717,8 +3719,8 @@ int redisIsSupervised(int mode) {
 
 #define BENCHMARK_VALUE_SIZE (8 * sizeof(long))
 
-#define KEY_MAX (1UL << 29)
-#define ITER_MAX (30000000UL)
+#define KEY_MAX (1UL << 18)
+#define ITER_MAX (3000000UL)
 
 ////////////////////////////////////// ARGUMENTS //////////////////////////////////////////
 
@@ -3728,6 +3730,10 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static void *reader_run(void *arg)
 {
     fprintf(stderr, "reader thread started\n");
+
+    struct timeval tstart, tend;
+    gettimeofday(&tstart, NULL);
+
     char key[128+1];
 
     for (size_t k = 0; k < ITER_MAX; k++) {
@@ -3745,6 +3751,13 @@ static void *reader_run(void *arg)
             printf("XXXX: not the right value: %s", v);
         }
     }
+    gettimeofday(&tend, NULL);
+    int64_t elapsed = (tend.tv_sec - tstart.tv_sec) * 1000000 + tend.tv_usec - tstart.tv_usec;
+
+    fprintf(stderr, "[READ] reader thread took: %zu.%03zu seconds\n", elapsed / 1000000, (elapsed % 1000000) / 1000);
+    fprintf(stderr, "[READ] average latency %.03f us throughput %.03f ops/sec\n", 
+        (double)elapsed / ITER_MAX, ITER_MAX / ((double)elapsed / 1000000));
+
     return NULL;
 }
 #endif
@@ -3948,6 +3961,10 @@ int real_main(int argc, char **argv) {
     fprintf(stderr, "SERVERD DB: %p\n", (void *)server.db);
     fprintf(stderr, "Number of Keys: %lu M\n", KEY_MAX >> 20);
     fprintf(stderr, "Estimated workingset size: %lu G\n", (KEY_MAX * (256)) >> 30);
+
+    struct timeval loading_tstart, loading_tend;
+    gettimeofday(&loading_tstart, NULL);
+
     for (size_t i = 0; i < KEY_MAX; i++) {
         char key[128+1];
         char val[BENCHMARK_VALUE_SIZE+1];
@@ -3963,6 +3980,11 @@ int real_main(int argc, char **argv) {
         assert(rvalue);
         setKey(server.db, rkey, rvalue);
     }
+    gettimeofday(&loading_tend, NULL);
+
+    int64_t time_taken_usec = (loading_tend.tv_sec - loading_tstart.tv_sec) * 1000000 + loading_tend.tv_usec - loading_tstart.tv_usec;
+
+    printf("Loading phase took: %zu.%03zu seconds\n", time_taken_usec / 1000000, (time_taken_usec % 1000000) / 1000);
 
     // time_t timer;
     // char buffer[26];
@@ -3992,6 +4014,8 @@ int real_main(int argc, char **argv) {
 
     redisSrand48(0xcafebabe);
 
+    struct timeval running_tstart, running_tend;
+    gettimeofday(&running_tstart, NULL);
     __asm__ volatile ("xchgq %r10, %r10");
 
     #ifdef _OPENMP
@@ -4044,6 +4068,9 @@ int real_main(int argc, char **argv) {
 
     pthread_create(&reader_thread, NULL, reader_run, NULL);
 
+    struct timeval udpate_tstart, update_tend;
+    gettimeofday(&udpate_tstart, NULL);
+
     for (size_t k = 0; k < ITER_MAX; k++) {
         char key[128+1];
         char val[512+1];
@@ -4058,11 +4085,25 @@ int real_main(int argc, char **argv) {
     }
 
 
+    gettimeofday(&update_tend, NULL);
+    int64_t elapsed_update = (update_tend.tv_sec - udpate_tstart.tv_sec) * 1000000 + update_tend.tv_usec - udpate_tstart.tv_usec;
+
+    printf("[UPDATE] update took: %zu.%03zu seconds\n", elapsed_update / 1000000, (elapsed_update % 1000000) / 1000);
+    printf("[UPDATE] average latency %.03f us throughput %.03f ops/sec\n", 
+        (double)elapsed_update / ITER_MAX, ITER_MAX / ((double)elapsed_update / 1000000));
+
     pthread_join(reader_thread, NULL);
+
     #endif
 
     __asm__ volatile ("xchgq %r11, %r11");
-    
+
+    gettimeofday(&running_tend, NULL);
+
+    int64_t time_taken_usec_run = (running_tend.tv_sec - running_tstart.tv_sec) * 1000000 + running_tend.tv_usec - running_tstart.tv_usec;
+    printf("Running phase took: %zu.%03zu seconds\n", time_taken_usec_run / 1000000, (time_taken_usec_run % 1000000) / 1000);
+    printf("Running phase overall throughput: %.03f ops/sec\n", (2 * ITER_MAX) / ((double) time_taken_usec_run / 1000000));
+
     #else
     aeSetBeforeSleepProc(server.el,beforeSleep);
     aeSetAfterSleepProc(server.el,afterSleep);
