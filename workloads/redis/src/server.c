@@ -3719,8 +3719,8 @@ int redisIsSupervised(int mode) {
 
 #define BENCHMARK_VALUE_SIZE (8 * sizeof(long))
 
-#define KEY_MAX (1UL << 18)
-#define ITER_MAX (3000000UL)
+#define KEY_MAX (1UL << 29)
+#define ITER_MAX (30000000UL)
 
 ////////////////////////////////////// ARGUMENTS //////////////////////////////////////////
 
