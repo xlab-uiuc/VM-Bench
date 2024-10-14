@@ -1,5 +1,5 @@
-# DMT Workloads
+# Only Redis Workload used
 
-To rebuild workloads, run `make clean-all && make all`
+To build try `make clean-redis` and `make redis`
 
 This is a fork of `mitosis-project/vmitosis-workloads`
