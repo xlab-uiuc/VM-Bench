@@ -3992,6 +3992,8 @@ int real_main(int argc, char **argv) {
 
     redisSrand48(0xcafebabe);
 
+    __asm__ volatile ("xchgq %r10, %r10");
+
     #ifdef _OPENMP
 
     size_t num_threads = omp_get_num_threads();
@@ -4059,6 +4061,8 @@ int real_main(int argc, char **argv) {
     pthread_join(reader_thread, NULL);
     #endif
 
+    __asm__ volatile ("xchgq %r11, %r11");
+    
     #else
     aeSetBeforeSleepProc(server.el,beforeSleep);
     aeSetAfterSleepProc(server.el,afterSleep);
