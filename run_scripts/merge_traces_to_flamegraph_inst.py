@@ -426,7 +426,7 @@ def main():
     if (args.out == None):
         # TODO this is currently just the loading instructions
         if(args.insn_loading != None):
-            out_path = trace_path_loading + "_insn_" + str(args.insn) + ".kern_inst.folded"
+            out_path = trace_path_loading + "_insn_" + str(args.insn_loading) + ".kern_inst.folded"
         else:
             out_path = trace_path_loading + ".kern_inst.folded"
 
