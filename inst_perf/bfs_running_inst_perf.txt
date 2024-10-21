@@ -1,0 +1,35 @@
+Events disabled
+==================================================================
+   ________                    .__   __________.___  ________ 
+  /  _____/___________  ______ |  |__\______   \   |/  _____/ 
+ /   \  __\_  __ \__  \ \____ \|  |  \|    |  _/   /   \  ___ 
+ \    \_\  \  | \// __ \|  |_> >   Y  \    |   \   \    \_\  \
+  \______  /__|  (____  /   __/|___|  /______  /___|\______  /
+         \/           \/|__|        \/       \/            \/ 
+                                                                 
+==================================================================
+Benchmark: BFS
+loading data... 
+== 1000000 vertices  28826024 edges
+== time: 32.9962 sec
+
+BFS root: 0
+System call returned -1
+Events enabled
+System call returned -1
+Events disabled
+BFS finish: 
+== time: 2.722 sec
+==================================================================
+
+ Performance counter stats for 'taskset -ac 8 /disk/ssd1/rethinkVM_bench/run_scripts/graphbig_bfs.sh ctl.fifo ack.fifo 1':
+
+       753,371,770      instructions:u                                              
+         8,707,108      instructions:k                                              
+
+      45.876686291 seconds time elapsed
+
+       0.000000000 seconds user
+       0.000000000 seconds sys
+
+
