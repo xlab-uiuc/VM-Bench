@@ -11,7 +11,7 @@ Events disabled
 Benchmark: BFS
 loading data... 
 == 1000000 vertices  28826024 edges
-== time: 32.9962 sec
+== time: 32.8995 sec
 
 BFS root: 0
 System call returned -1
@@ -19,15 +19,15 @@ Events enabled
 System call returned -1
 Events disabled
 BFS finish: 
-== time: 2.722 sec
+== time: 2.73903 sec
 ==================================================================
 
  Performance counter stats for 'taskset -ac 8 /disk/ssd1/rethinkVM_bench/run_scripts/graphbig_bfs.sh ctl.fifo ack.fifo 1':
 
-       753,371,770      instructions:u                                              
-         8,707,108      instructions:k                                              
+       753,371,760      instructions:u                                              
+         8,737,014      instructions:k                                              
 
-      45.876686291 seconds time elapsed
+      45.800501803 seconds time elapsed
 
        0.000000000 seconds user
        0.000000000 seconds sys

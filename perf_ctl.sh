@@ -1,24 +1,30 @@
 #!/usr/bin/bash
+# small_anony_page_fault
 
-set -x
+# sudo /home/siyuan/linux_5.15_vanilla/tools/perf/perf stat -e instructions -- ./gups_vanilla 20 1000 1024;
+# cd postgresql-14.13/build_dir/bin/
 
-mkfifo ctl.fifo
-# exec {ctl_fd}<>ctl_fd.fifo
-mkfifo ack.fifo
-# exec {ctl_fd_ack}<>ctl_fd_ack.fifo
-# echo ctl_fd: $ctl_fd
+if [ ! -p ctl.fifo ]; then
+    mkfifo ctl.fifo
+fi
 
-# echo ctrl_fd_ack: $ctl_fd_ack
-# + PERF_CTL_FD=$ctl_fd PERF_CTL_ACK_FD=$ctl_fd_ack perf stat --delay=-1 --control fd:${ctl_fd},${ctl_fd_ack} -- build/prog
-# ++ PERF_CTL_FD=10
-# ++ PERF_CTL_ACK_FD=11
+if [ ! -p ack.fifo ]; then
+    mkfifo ack.fifo
+fi
 
-# sudo perf stat --delay=-1 --control fd:${ctl_fd} -- ./a.out $ctl_fd $ctl_fd_ack
-# sudo perf stat --delay=-1 --control=fifo:ctl_fd.fifo,ack.fifo -- ./a.out
-sudo perf stat -e instructions -e page-faults --delay=-1 --control=fifo:ctl.fifo,ack.fifo -- ./mem_test ctl.fifo ack.fifo
-# sudo perf stat --delay=-1 --control=fifo:ctl_fd.fifo -- ./perf_ctl
-# ++ perf stat --delay=-1 --control fd:10,11 -- build/prog
-# sudo perf stat -- ./a.out
-# sudo perf report
+FOLDER=inst_perf
 
-# -e instructions page-faults 
+# sudo perf stat -e instructions -e page-faults --delay=-1 --control=fifo:ctl.fifo,ack.fifo -- su siyuan -c './postgres --single -D /disk/ssd1/siyuan_pgsql_perf/data/ postgres -R 33000 -L ctl.fifo -A ack.fifo'
+sudo perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:ctl.fifo,ack.fifo \
+    -- taskset -ac 8 /disk/ssd1/rethinkVM_bench/run_scripts/graphbig_bfs.sh ctl.fifo ack.fifo 2 2>&1 | tee ${FOLDER}/bfs_loading_inst_perf.txt
+
+sudo perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:ctl.fifo,ack.fifo \
+    -- taskset -ac 8 /disk/ssd1/rethinkVM_bench/run_scripts/graphbig_bfs.sh ctl.fifo ack.fifo 1 2>&1 | tee ${FOLDER}/bfs_running_inst_perf.txt 
+
+
+# MEMCACHED_COMMAND="./memcached_rethinkvm/memcached --user=root --memory-limit=131000 --key-max 56000000 --running-insertion 20 --perf-ctrl-fifo=ctl.fifo --perf-ack-fifo=ack.fifo"
+# sudo perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:ctl.fifo,ack.fifo \
+#     -- taskset -ac 8 ${MEMCACHED_COMMAND} --record-stage 2 2>&1 | tee ${FOLDER}/MEMCACHED_loading_inst_perf.txt
+
+# sudo perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:ctl.fifo,ack.fifo \
+#     -- taskset -ac 8 ${MEMCACHED_COMMAND} --record-stage 1 2>&1 | tee ${FOLDER}/MEMCACHED_running_inst_perf.txt 
