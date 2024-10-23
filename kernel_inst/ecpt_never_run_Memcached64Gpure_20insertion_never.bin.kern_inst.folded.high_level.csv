@@ -1,0 +1,11 @@
+None,131039
+arch_static_branch,2024
+syscall_enter_from_user_mode,14168
+array_index_mask_nospec,4048
+__x64_sys_write,271291
+syscall_exit_to_user_mode,26029
+asm_sysvec_apic_timer_interrupt,10104590
+__x64_sys_clock_nanosleep,3990426
+__x64_sys_mmap,20804
+asm_exc_page_fault,16694206
+__x64_sys_futex,87161
