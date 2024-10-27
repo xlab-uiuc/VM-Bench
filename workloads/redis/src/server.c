@@ -309,6 +309,15 @@ struct redisCommand redisCommandTable[] = {
     {"latency",latencyCommand,-2,"aslt",0,NULL,0,0,0,0,0}
 };
 
+/* Record specified stage */
+#define RECORD_RUNNING 1
+#define RECORD_LOADING 2
+static int record_stage = 1; 
+
+/* enable / disable perf */
+#define ENABLE_PERF __asm__ volatile("xchg %r10, %r10")
+#define DISABLE_PERF __asm__ volatile("xchg %r11, %r11")
+
 /*============================ Utility functions ============================ */
 
 /* Low level logging. To use only for very big messages, otherwise
@@ -3878,6 +3887,11 @@ int real_main(int argc, char **argv) {
                     j++;
                     continue;
                 }
+                else if (strcmp(argv[1], "--loading-phase") == 0) {
+                    record_stage = RECORD_LOADING; 
+                    j++; 
+                    continue;
+                }
                 if (sdslen(options)) options = sdscat(options,"\n");
                 options = sdscat(options,argv[j]+2);
                 options = sdscat(options," ");
@@ -3965,6 +3979,11 @@ int real_main(int argc, char **argv) {
     struct timeval loading_tstart, loading_tend;
     gettimeofday(&loading_tstart, NULL);
 
+    // Loading phase
+    if(record_stage & RECORD_LOADING) {
+        ENABLE_PERF;
+    }
+
     for (size_t i = 0; i < KEY_MAX; i++) {
         char key[128+1];
         char val[BENCHMARK_VALUE_SIZE+1];
@@ -3980,6 +3999,11 @@ int real_main(int argc, char **argv) {
         assert(rvalue);
         setKey(server.db, rkey, rvalue);
     }
+
+    if(record_stage & RECORD_LOADING) {
+        DISABLE_PERF;
+    }
+
     gettimeofday(&loading_tend, NULL);
 
     int64_t time_taken_usec = (loading_tend.tv_sec - loading_tstart.tv_sec) * 1000000 + loading_tend.tv_usec - loading_tstart.tv_usec;
@@ -4016,7 +4040,11 @@ int real_main(int argc, char **argv) {
 
     struct timeval running_tstart, running_tend;
     gettimeofday(&running_tstart, NULL);
-    __asm__ volatile ("xchgq %r10, %r10");
+
+    // Running phase
+    if(record_stage & RECORD_RUNNING) {
+        ENABLE_PERF;
+    }
 
     #ifdef _OPENMP
 
@@ -4096,7 +4124,9 @@ int real_main(int argc, char **argv) {
 
     #endif
 
-    __asm__ volatile ("xchgq %r11, %r11");
+    if(record_stage & RECORD_RUNNING) {
+        DISABLE_PERF;
+    }
 
     gettimeofday(&running_tend, NULL);
 
