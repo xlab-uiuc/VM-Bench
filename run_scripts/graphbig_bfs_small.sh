@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -x
 
-if [ $# -ne 1 ]; then
-    echo "baremetal Usage: $0 <perf_ctrl_fifo> <ack_fifo> <record_stage> (fifo and record)"
+# `if [ $# -ne 3 ]; then
+#     echo "baremetal Usage: $0 <perf_ctrl_fifo> <ack_fifo> <record_stage> (fifo and record)"
 
-    echo "Usage: $0 <perf_ctrl_fifo> <ack_fifo> <record_stage> (fifo and record)"
-    echo "Usage: $0 <record_stage> (record but not perf)"
-    echo "Usage: $0 (record running phase in simulation but not perf)"
-    exit 1
-fi
+#     echo "Usage: $0 <perf_ctrl_fifo> <ack_fifo> <record_stage> (fifo and record)"
+#     echo "Usage: $0 <record_stage> (record but not perf)"
+#     echo "Usage: $0 (record running phase in simulation but not perf)"
+#     exit 1
+# fi
 
 
 perf_ctrl_fifo=$1
