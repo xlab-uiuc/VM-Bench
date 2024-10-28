@@ -312,11 +312,62 @@ struct redisCommand redisCommandTable[] = {
 /* Record specified stage */
 #define RECORD_RUNNING 1
 #define RECORD_LOADING 2
+
+
 static int record_stage = 1; 
+static int perf_ctl_fd = -1;
+static int perf_ack_fd = -1;
+
+static int get_fifo_fd(const char * fifo_name, int flags) {
+    printf("Opening FIFO %s\n", fifo_name);
+    int fd = open(fifo_name, flags);
+    if (fd == -1) {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+    return fd;
+}
+
+static void enable_perf(int perf_ctl_fd, int perf_ack_fd)
+{
+    char ack[5];
+    #define SYS_show_pgtable 600
+    long res = syscall(SYS_show_pgtable);
+    printf("System call returned %ld\n", res);
+    if (perf_ctl_fd != -1) {
+        ssize_t bytes_written = write(perf_ctl_fd, "enable\n", 8);
+        assert(bytes_written == 8);
+    }
+
+    if (perf_ack_fd != -1) {
+        ssize_t bytes_read = read(perf_ack_fd, ack, 5);
+        assert(bytes_read == 5 && strcmp(ack, "ack\n") == 0);
+    }
+    __asm__ volatile ("xchgq %r10, %r10");
+}
+
+static void disable_perf(int perf_ctl_fd, int perf_ack_fd)
+{
+    char ack[5];
+    __asm__ volatile ("xchgq %r11, %r11");
+    #define SYS_show_pgtable 600
+    long res = syscall(SYS_show_pgtable);
+    printf("System call returned %ld\n", res);
+    if (perf_ctl_fd != -1) {
+        ssize_t bytes_written = write(perf_ctl_fd, "disable\n", 9);
+        assert(bytes_written == 9);
+    }
+
+    if (perf_ack_fd != -1) {
+        ssize_t bytes_read = read(perf_ack_fd, ack, 5);
+        assert(bytes_read == 5 && strcmp(ack, "ack\n") == 0);
+    }
+}
+
 
 /* enable / disable perf */
-#define ENABLE_PERF __asm__ volatile("xchg %r10, %r10")
-#define DISABLE_PERF __asm__ volatile("xchg %r11, %r11")
+// #define ENABLE_PERF __asm__ volatile("xchg %r10, %r10")
+// #define DISABLE_PERF __asm__ volatile("xchg %r11, %r11")
 
 /*============================ Utility functions ============================ */
 
@@ -3864,6 +3915,7 @@ int real_main(int argc, char **argv) {
             }
         }
 
+        printf("j= %d\n", j);
         /* First argument is the config file name? */
         if (argv[j][0] != '-' || argv[j][1] != '-') {
             configfile = argv[j];
@@ -3874,12 +3926,13 @@ int real_main(int argc, char **argv) {
             server.exec_argv[j] = zstrdup(server.configfile);
             j++;
         }
-
+        printf("j= %d\n", j);
         /* All the other options are parsed and conceptually appended to the
          * configuration file. For instance --port 6380 will generate the
          * string "port 6380\n" to be parsed after the actual file name
          * is parsed, if any. */
         while(j != argc) {
+            printf("j= %d argc=%d\n", j, argc);
             if (argv[j][0] == '-' && argv[j][1] == '-') {
                 /* Option name */
                 if (!strcmp(argv[j], "--check-rdb")) {
@@ -3887,9 +3940,18 @@ int real_main(int argc, char **argv) {
                     j++;
                     continue;
                 }
-                else if (strcmp(argv[1], "--loading-phase") == 0) {
+                else if (strcmp(argv[j], "--loading-phase") == 0) {
                     record_stage = RECORD_LOADING; 
+                    printf("record_stage= %d\n", record_stage);
                     j++; 
+                    continue;
+                } else if (strcmp(argv[j], "--perf_ctl_fifo") == 0) {
+                    perf_ctl_fd = get_fifo_fd(argv[j + 1], O_WRONLY);
+                    j += 2;
+                    continue;
+                } else if (strcmp(argv[j], "--perf_ack_fifo") == 0) {
+                    perf_ack_fd = get_fifo_fd(argv[j + 1], O_RDONLY);
+                    j += 2;
                     continue;
                 }
                 if (sdslen(options)) options = sdscat(options,"\n");
@@ -3981,7 +4043,7 @@ int real_main(int argc, char **argv) {
 
     // Loading phase
     if(record_stage & RECORD_LOADING) {
-        ENABLE_PERF;
+        enable_perf(perf_ctl_fd, perf_ack_fd);
     }
 
     for (size_t i = 0; i < KEY_MAX; i++) {
@@ -4001,7 +4063,7 @@ int real_main(int argc, char **argv) {
     }
 
     if(record_stage & RECORD_LOADING) {
-        DISABLE_PERF;
+        disable_perf(perf_ctl_fd, perf_ack_fd);
     }
 
     gettimeofday(&loading_tend, NULL);
@@ -4043,7 +4105,7 @@ int real_main(int argc, char **argv) {
 
     // Running phase
     if(record_stage & RECORD_RUNNING) {
-        ENABLE_PERF;
+        enable_perf(perf_ctl_fd, perf_ack_fd);
     }
 
     #ifdef _OPENMP
@@ -4125,7 +4187,7 @@ int real_main(int argc, char **argv) {
     #endif
 
     if(record_stage & RECORD_RUNNING) {
-        DISABLE_PERF;
+        disable_perf(perf_ctl_fd, perf_ack_fd);
     }
 
     gettimeofday(&running_tend, NULL);
