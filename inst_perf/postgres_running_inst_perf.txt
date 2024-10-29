@@ -1,0 +1,36 @@
+sudo taskset -ac 4 perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:perf_ctrl_fifo,perf_ack_fifo -C 8 -- taskset -ac 8 su postgres -c /disk/ssd1/rethinkVM_bench/postgresql-14.13/build_dir/bin/postgres --single -D /disk/ssd1/rethinkVM_bench/postgresql-14.13/data postgres -R 12000 -L perf_ctrl_fifo -A perf_ack_fifo
+Events disabled
+
+PostgreSQL stand-alone backend 14.13
+main thread begin
+[PerformInsertions] SPI connected
+Read (0 * 1000) / (12 * 1000)
+Read (1 * 1000) / (12 * 1000)
+Read (2 * 1000) / (12 * 1000)
+Read (3 * 1000) / (12 * 1000)
+Read (4 * 1000) / (12 * 1000)
+Read (5 * 1000) / (12 * 1000)
+Read (6 * 1000) / (12 * 1000)
+Read (7 * 1000) / (12 * 1000)
+Read (8 * 1000) / (12 * 1000)
+Read (9 * 1000) / (12 * 1000)
+Read (10 * 1000) / (12 * 1000)
+Read (11 * 1000) / (12 * 1000)
+Events enabled
+Loading phase 12000 operations took: 1.151 seconds
+Loading phase average latency 95.979 us, throughput 10418.928 ops/sec
+System call returned -1
+Read (0 * 1000) / (2 * 1000)
+Read (1 * 1000) / (2 * 1000)
+Events disabled
+System call returned -1
+Running phase 2000 operations took: 0.726 seconds
+Running phase average latency 363.237 us, throughput 2753.024 ops/sec
+
+ Performance counter stats for 'CPU(s) 8':
+
+       215,376,093      instructions:u                                              
+       245,877,485      instructions:k                                              
+
+       3.010616918 seconds time elapsed
+

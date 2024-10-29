@@ -1,0 +1,29 @@
+sudo taskset -ac 4 perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:perf_ctrl_fifo,perf_ack_fifo -C 8 -- taskset -ac 8 run_scripts/gups.sh perf_ctrl_fifo perf_ack_fifo 1
+Events disabled
+narg = 7
+Opening FIFO perf_ctrl_fifo
+Opening FIFO perf_ack_fifo
+perf_ctl_fd = 5, perf_ack_fd = 6 record_stage=1
+logtable=33 nprocs=1
+nlocal=0x200000000 nglobal=0x200000000 chunkbig=0xf42400
+Starting iterations
+System call returned -1
+Events enabled
+System call returned -1
+Events disabled
+Number of procs: 1
+Vector size: 8589934592
+Max datums during comm: 0
+Max datums after comm: 1000000
+Excess datums (frac): 0 (0)
+Bad locality count: 0
+Update time (secs):    45.285
+Gups:  0.022612
+
+ Performance counter stats for 'CPU(s) 8':
+
+    25,600,056,111      instructions:u                                              
+       103,708,332      instructions:k                                              
+
+      76.310388088 seconds time elapsed
+

@@ -1,3 +1,4 @@
+sudo taskset -ac 4 perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:perf_ctrl_fifo,perf_ack_fifo -C 8 -- taskset -ac 8 run_scripts/graphbig_tc.sh perf_ctrl_fifo perf_ack_fifo 2
 Events disabled
 ==================================================================
    ________                    .__   __________.___  ________ 
@@ -8,28 +9,26 @@ Events disabled
          \/           \/|__|        \/       \/            \/ 
                                                                  
 ==================================================================
-Benchmark: BFS
+Benchmark: triangle count
 loading data... 
 System call returned -1
 Events enabled
 System call returned -1
 Events disabled
 == 1000000 vertices  28826024 edges
-== time: 33.1239 sec
+== time: 32.6268 sec
 
-BFS root: 0
-BFS finish: 
-== time: 2.73573 sec
+preparing neighbor sets...
+
+computing triangle count...
+== total triangle count: 20552899
+== time: 15.0973 sec
 ==================================================================
 
- Performance counter stats for 'taskset -ac 8 /disk/ssd1/rethinkVM_bench/run_scripts/graphbig_bfs.sh ctl.fifo ack.fifo 2':
+ Performance counter stats for 'CPU(s) 8':
 
-   110,971,933,199      instructions:u                                              
-     6,882,993,272      instructions:k                                              
+   110,994,220,288      instructions:u                                              
+     6,899,253,284      instructions:k                                              
 
-      46.017535474 seconds time elapsed
-
-       0.000000000 seconds user
-       0.000000000 seconds sys
-
+      61.218161841 seconds time elapsed
 

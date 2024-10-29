@@ -1,3 +1,4 @@
+sudo taskset -ac 4 perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:perf_ctrl_fifo,perf_ack_fifo -C 8 -- taskset -ac 8 run_scripts/graphbig_dc.sh perf_ctrl_fifo perf_ack_fifo 1
 Events disabled
 ==================================================================
    ________                    .__   __________.___  ________ 
@@ -8,28 +9,25 @@ Events disabled
          \/           \/|__|        \/       \/            \/ 
                                                                  
 ==================================================================
-Benchmark: BFS
+Benchmark: Degree Centrality
 loading data... 
 == 1000000 vertices  28826024 edges
-== time: 32.8995 sec
+== time: 32.6493 sec
 
-BFS root: 0
+computing DC for all vertices...
 System call returned -1
 Events enabled
 System call returned -1
 Events disabled
-BFS finish: 
-== time: 2.73903 sec
+DC finish: 
+== inDegree[Max-100 Min-0]  outDegree[Max-100 Min-0]
+== time: 2.62545 sec
 ==================================================================
 
- Performance counter stats for 'taskset -ac 8 /disk/ssd1/rethinkVM_bench/run_scripts/graphbig_bfs.sh ctl.fifo ack.fifo 1':
+ Performance counter stats for 'CPU(s) 8':
 
-       753,371,760      instructions:u                                              
-         8,737,014      instructions:k                                              
+       474,214,581      instructions:u                                              
+         5,911,525      instructions:k                                              
 
-      45.800501803 seconds time elapsed
-
-       0.000000000 seconds user
-       0.000000000 seconds sys
-
+      45.519097816 seconds time elapsed
 

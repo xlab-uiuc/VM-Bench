@@ -1,0 +1,33 @@
+sudo taskset -ac 4 perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:perf_ctrl_fifo,perf_ack_fifo -C 8 -- taskset -ac 8 ./workloads/bin/bench_redis_st -- --perf_ctl_fifo perf_ctrl_fifo --perf_ack_fifo perf_ack_fifo
+Events disabled
+./workloads/bin/bench_redis_st -- --perf_ctl_fifo perf_ctrl_fifo --perf_ack_fifo perf_ack_fifo 
+prog_argv[0]=./workloads/bin/bench_redis_st
+prog_argv[1]=--perf_ctl_fifo
+prog_argv[2]=perf_ctrl_fifo
+prog_argv[3]=--perf_ack_fifo
+prog_argv[4]=perf_ack_fifo
+<benchmark exec="./workloads/bin/bench_redis_st">
+<config>
+  <openmp>off</openmp>  <memsize>1G <memsize>  <hugetlb>0</hugetlb>
+  <data>0</data>  <pte>0</pte>  <run>0</run>
+  <interference>0</interference>
+</config>
+<run>
+j= 1
+j= 1
+j= 1 argc=5
+Opening FIFO perf_ctrl_fifo
+j= 3 argc=5
+Opening FIFO perf_ack_fifo
+89134:C 28 Oct 00:43:12.403 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+89134:C 28 Oct 00:43:12.403 # Redis version=4.0.10, bits=64, commit=abed213d, modified=1, pid=89134, just started
+89134:C 28 Oct 00:43:12.403 # Configuration loaded
+89134:M 28 Oct 00:43:12.404 * Running mode=standalone, port=6379.
+89134:M 28 Oct 00:43:12.404 # Server initialized
+89134:M 28 Oct 00:43:12.404 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+89134:M 28 Oct 00:43:12.404 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+89134:M 28 Oct 00:43:12.404 * Ready to accept connections
+SERVERD DB: 0x9b1c78
+Number of Keys: 512 M
+Estimated workingset size: 128 G
+Key 0 M / 512 M

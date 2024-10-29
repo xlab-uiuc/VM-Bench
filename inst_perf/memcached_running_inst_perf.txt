@@ -1,6 +1,7 @@
+sudo taskset -ac 4 perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:perf_ctrl_fifo,perf_ack_fifo -C 8 -- taskset -ac 8 ./memcached_rethinkvm/memcached --user=root --memory-limit=131000 --key-max 56000000 --running-insertion-ratio=20 --perf-ctrl-fifo=perf_ctrl_fifo --perf-ack-fifo=perf_ack_fifo --record-stage=1
 Events disabled
-Long option --perf-ctrl-fifo with value ctl.fifo, perf_ctl_fd=3
-Long option --perf-ack-fifo with value ack.fifo, perf_ack_fd=4
+Long option --perf-ctrl-fifo with value perf_ctrl_fifo, perf_ctl_fd=3
+Long option --perf-ack-fifo with value perf_ack_fifo, perf_ack_fd=4
 stop_main_loop=0
 key_max=56000000 BENCHMARK_VALUE_SIZE=1024
 Key 0 M / 56 M
@@ -59,8 +60,8 @@ Key 52 M / 56 M
 Key 53 M / 56 M
 Key 54 M / 56 M
 Key 55 M / 56 M
-Loading phase took: 4388.337 seconds
-Loading average latency 78.363 us throughput 12761.096 ops/sec
+Loading phase took: 4388.287 seconds
+Loading average latency 78.362 us throughput 12761.242 ops/sec
 Key insertion done
 running phase starts! n_running_phase_ops=10000000 insertion ratio=20%
 Error: Failed to write 5 bytes to perf_ack_fd
@@ -10069,22 +10070,18 @@ Error: Failed to write 8 bytes to perf_ctl_fd
 Error: Failed to write 5 bytes to perf_ack_fd
 System call returned -1
 System call returned -1
-Running phase took: 994.352 seconds
-Running phase average latency 99.435 us, throughput 10056.794 ops/sec
-[READ] 7999131 operations, average latency 81.869 us, throughput 12214.612 ops/sec
-[UPDATE] 2000869 operations, average latency 169.445 us, throughput 5901.613 ops/sec
+Running phase took: 998.122 seconds
+Running phase average latency 99.812 us, throughput 10018.806 ops/sec
+[READ] 7999131 operations, average latency 82.256 us, throughput 12157.214 ops/sec
+[UPDATE] 2000869 operations, average latency 169.784 us, throughput 5889.838 ops/sec
 running phase finishes!
 Gracefully stopping
 Events disabled
 
- Performance counter stats for 'taskset -ac 8 ./memcached_rethinkvm/memcached --user=root --memory-limit=131000 --key-max 56000000 --running-insertion 20 --perf-ctrl-fifo=ctl.fifo --perf-ack-fifo=ack.fifo --record-stage 1':
+ Performance counter stats for 'CPU(s) 8':
 
-   278,136,518,181      instructions:u                                              
-    14,212,753,173      instructions:k                                              
+   278,152,586,890      instructions:u                                              
+    14,363,185,081      instructions:k                                              
 
-    5385.870153487 seconds time elapsed
-
-       0.000000000 seconds user
-       0.000000000 seconds sys
-
+    5389.602157092 seconds time elapsed
 

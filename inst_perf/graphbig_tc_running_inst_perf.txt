@@ -1,0 +1,34 @@
+sudo taskset -ac 4 perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:perf_ctrl_fifo,perf_ack_fifo -C 8 -- taskset -ac 8 run_scripts/graphbig_tc.sh perf_ctrl_fifo perf_ack_fifo 1
+Events disabled
+==================================================================
+   ________                    .__   __________.___  ________ 
+  /  _____/___________  ______ |  |__\______   \   |/  _____/ 
+ /   \  __\_  __ \__  \ \____ \|  |  \|    |  _/   /   \  ___ 
+ \    \_\  \  | \// __ \|  |_> >   Y  \    |   \   \    \_\  \
+  \______  /__|  (____  /   __/|___|  /______  /___|\______  /
+         \/           \/|__|        \/       \/            \/ 
+                                                                 
+==================================================================
+Benchmark: triangle count
+loading data... 
+== 1000000 vertices  28826024 edges
+== time: 32.4277 sec
+
+preparing neighbor sets...
+
+computing triangle count...
+System call returned -1
+Events enabled
+System call returned -1
+Events disabled
+== total triangle count: 20552899
+== time: 15.1212 sec
+==================================================================
+
+ Performance counter stats for 'CPU(s) 8':
+
+    16,120,202,517      instructions:u                                              
+        32,740,026      instructions:k                                              
+
+      61.073004471 seconds time elapsed
+

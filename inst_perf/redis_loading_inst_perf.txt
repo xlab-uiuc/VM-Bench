@@ -1,0 +1,115 @@
+sudo taskset -ac 4 perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:perf_ctrl_fifo,perf_ack_fifo -C 8 -- taskset -ac 8 ./workloads/bin/bench_redis_st -- --perf_ctl_fifo perf_ctrl_fifo --perf_ack_fifo perf_ack_fifo --loading-phase
+Events disabled
+./workloads/bin/bench_redis_st -- --perf_ctl_fifo perf_ctrl_fifo --perf_ack_fifo perf_ack_fifo --loading-phase 
+prog_argv[0]=./workloads/bin/bench_redis_st
+prog_argv[1]=--perf_ctl_fifo
+prog_argv[2]=perf_ctrl_fifo
+prog_argv[3]=--perf_ack_fifo
+prog_argv[4]=perf_ack_fifo
+prog_argv[5]=--loading-phase
+<benchmark exec="./workloads/bin/bench_redis_st">
+<config>
+  <openmp>off</openmp>  <memsize>1G <memsize>  <hugetlb>0</hugetlb>
+  <data>0</data>  <pte>0</pte>  <run>0</run>
+  <interference>0</interference>
+</config>
+<run>
+j= 1
+j= 1
+j= 1 argc=6
+Opening FIFO perf_ctrl_fifo
+j= 3 argc=6
+Opening FIFO perf_ack_fifo
+j= 5 argc=6
+record_stage= 2
+57350:C 27 Oct 16:20:46.173 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+57350:C 27 Oct 16:20:46.173 # Redis version=4.0.10, bits=64, commit=abed213d, modified=1, pid=57350, just started
+57350:C 27 Oct 16:20:46.173 # Configuration loaded
+57350:M 27 Oct 16:20:46.176 * Running mode=standalone, port=6379.
+57350:M 27 Oct 16:20:46.176 # Server initialized
+57350:M 27 Oct 16:20:46.176 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+57350:M 27 Oct 16:20:46.176 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+57350:M 27 Oct 16:20:46.176 * Ready to accept connections
+SERVERD DB: 0x17d5ca8
+Number of Keys: 512 M
+Estimated workingset size: 128 G
+Events enabled
+Key 0 M / 512 M
+Key 9 M / 512 M
+Key 19 M / 512 M
+Key 28 M / 512 M
+Key 38 M / 512 M
+Key 47 M / 512 M
+Key 57 M / 512 M
+Key 66 M / 512 M
+Key 76 M / 512 M
+Key 85 M / 512 M
+Key 95 M / 512 M
+Key 104 M / 512 M
+Key 114 M / 512 M
+Key 123 M / 512 M
+Key 133 M / 512 M
+Key 143 M / 512 M
+Key 152 M / 512 M
+Key 162 M / 512 M
+Key 171 M / 512 M
+Key 181 M / 512 M
+Key 190 M / 512 M
+Key 200 M / 512 M
+Key 209 M / 512 M
+Key 219 M / 512 M
+Key 228 M / 512 M
+Key 238 M / 512 M
+Key 247 M / 512 M
+Key 257 M / 512 M
+Key 267 M / 512 M
+Key 276 M / 512 M
+Key 286 M / 512 M
+Key 295 M / 512 M
+Key 305 M / 512 M
+Key 314 M / 512 M
+Key 324 M / 512 M
+Key 333 M / 512 M
+Key 343 M / 512 M
+Key 352 M / 512 M
+Key 362 M / 512 M
+Key 371 M / 512 M
+Key 381 M / 512 M
+Key 391 M / 512 M
+Key 400 M / 512 M
+Key 410 M / 512 M
+Key 419 M / 512 M
+Key 429 M / 512 M
+Key 438 M / 512 M
+Key 448 M / 512 M
+Key 457 M / 512 M
+Key 467 M / 512 M
+Key 476 M / 512 M
+Key 486 M / 512 M
+Key 495 M / 512 M
+Key 505 M / 512 M
+Events disabled
+reader thread started
+[READ] reader thread took: 83.396 seconds
+[READ] average latency 2.780 us throughput 359727.202 ops/sec
+System call returned -1
+System call returned -1
+Loading phase took: 797.016 seconds
+Initialization complete
+Running simulation....
+[UPDATE] update took: 96.958 seconds
+[UPDATE] average latency 3.232 us throughput 309411.752 ops/sec
+Running phase took: 96.958 seconds
+Running phase overall throughput: 618823.120 ops/sec
+</run>
+Took: 893.978 seconds
+Took: 893.978 seconds
+</benchmark>
+
+ Performance counter stats for 'CPU(s) 8':
+
+ 2,658,061,604,668      instructions:u                                              
+   139,143,767,663      instructions:k                                              
+
+     902.768788038 seconds time elapsed
+

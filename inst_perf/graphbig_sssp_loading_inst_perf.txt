@@ -1,0 +1,31 @@
+sudo taskset -ac 4 perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:perf_ctrl_fifo,perf_ack_fifo -C 8 -- taskset -ac 8 run_scripts/graphbig_sssp.sh perf_ctrl_fifo perf_ack_fifo 2
+Events disabled
+==================================================================
+   ________                    .__   __________.___  ________ 
+  /  _____/___________  ______ |  |__\______   \   |/  _____/ 
+ /   \  __\_  __ \__  \ \____ \|  |  \|    |  _/   /   \  ___ 
+ \    \_\  \  | \// __ \|  |_> >   Y  \    |   \   \    \_\  \
+  \______  /__|  (____  /   __/|___|  /______  /___|\______  /
+         \/           \/|__|        \/       \/            \/ 
+                                                                 
+==================================================================
+Benchmark: sssp shortest path
+loading data... 
+System call returned -1
+Events enabled
+System call returned -1
+Events disabled
+== 1000000 vertices  28826024 edges
+== time: 32.4833 sec
+
+Shortest Path: source-0...
+== time: 3.09017 sec
+==================================================================
+
+ Performance counter stats for 'CPU(s) 8':
+
+   108,668,292,911      instructions:u                                              
+     6,899,682,423      instructions:k                                              
+
+      48.304624843 seconds time elapsed
+

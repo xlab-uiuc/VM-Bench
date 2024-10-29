@@ -1,0 +1,32 @@
+sudo taskset -ac 4 perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:perf_ctrl_fifo,perf_ack_fifo -C 8 -- taskset -ac 8 run_scripts/graphbig_cc.sh perf_ctrl_fifo perf_ack_fifo 1
+Events disabled
+==================================================================
+   ________                    .__   __________.___  ________ 
+  /  _____/___________  ______ |  |__\______   \   |/  _____/ 
+ /   \  __\_  __ \__  \ \____ \|  |  \|    |  _/   /   \  ___ 
+ \    \_\  \  | \// __ \|  |_> >   Y  \    |   \   \    \_\  \
+  \______  /__|  (____  /   __/|___|  /______  /___|\______  /
+         \/           \/|__|        \/       \/            \/ 
+                                                                 
+==================================================================
+Benchmark: connected component
+loading data... 
+== 1000000 vertices  28826024 edges
+== time: 33.0071 sec
+
+computing connected component...
+System call returned -1
+Events enabled
+System call returned -1
+Events disabled
+== total component num: 1800
+== time: 2.79654 sec
+==================================================================
+
+ Performance counter stats for 'CPU(s) 8':
+
+       614,968,348      instructions:u                                              
+        10,413,519      instructions:k                                              
+
+      45.983492100 seconds time elapsed
+

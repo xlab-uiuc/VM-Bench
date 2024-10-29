@@ -1,0 +1,36 @@
+sudo taskset -ac 4 perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:perf_ctrl_fifo,perf_ack_fifo -C 8 -- taskset -ac 8 run_scripts/graphbig_pagerank.sh perf_ctrl_fifo perf_ack_fifo 1
+Events disabled
+==================================================================
+   ________                    .__   __________.___  ________ 
+  /  _____/___________  ______ |  |__\______   \   |/  _____/ 
+ /   \  __\_  __ \__  \ \____ \|  |  \|    |  _/   /   \  ___ 
+ \    \_\  \  | \// __ \|  |_> >   Y  \    |   \   \    \_\  \
+  \______  /__|  (____  /   __/|___|  /______  /___|\______  /
+         \/           \/|__|        \/       \/            \/ 
+                                                                 
+==================================================================
+Benchmark: Degree Centrality
+loading data... 
+== 1000000 vertices  28826024 edges
+== time: 33.3645 sec
+threadnum: 1
+damping factor: 0.85
+quadratic error: 0.001
+
+computing Page Rank ...
+System call returned -1
+Events enabled
+System call returned -1
+Events disabled
+Page Rank finish 
+== iteration #: 1
+== time: 5.47449 sec
+==================================================================
+
+ Performance counter stats for 'CPU(s) 8':
+
+     1,801,927,687      instructions:u                                              
+        11,798,138      instructions:k                                              
+
+      51.861980341 seconds time elapsed
+
