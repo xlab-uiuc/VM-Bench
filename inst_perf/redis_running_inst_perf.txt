@@ -19,15 +19,95 @@ j= 1 argc=5
 Opening FIFO perf_ctrl_fifo
 j= 3 argc=5
 Opening FIFO perf_ack_fifo
-89134:C 28 Oct 00:43:12.403 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
-89134:C 28 Oct 00:43:12.403 # Redis version=4.0.10, bits=64, commit=abed213d, modified=1, pid=89134, just started
-89134:C 28 Oct 00:43:12.403 # Configuration loaded
-89134:M 28 Oct 00:43:12.404 * Running mode=standalone, port=6379.
-89134:M 28 Oct 00:43:12.404 # Server initialized
-89134:M 28 Oct 00:43:12.404 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
-89134:M 28 Oct 00:43:12.404 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
-89134:M 28 Oct 00:43:12.404 * Ready to accept connections
-SERVERD DB: 0x9b1c78
+311272:C 31 Oct 12:48:23.403 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+311272:C 31 Oct 12:48:23.403 # Redis version=4.0.10, bits=64, commit=abed213d, modified=1, pid=311272, just started
+311272:C 31 Oct 12:48:23.403 # Configuration loaded
+311272:M 31 Oct 12:48:23.404 * Increased maximum number of open files to 10032 (it was originally set to 1024).
+311272:M 31 Oct 12:48:23.405 * Running mode=standalone, port=6379.
+311272:M 31 Oct 12:48:23.405 # Server initialized
+311272:M 31 Oct 12:48:23.405 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+311272:M 31 Oct 12:48:23.405 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+311272:M 31 Oct 12:48:23.405 * Ready to accept connections
+SERVERD DB: 0xd54c38
 Number of Keys: 512 M
 Estimated workingset size: 128 G
 Key 0 M / 512 M
+Key 9 M / 512 M
+Key 19 M / 512 M
+Key 28 M / 512 M
+Key 38 M / 512 M
+Key 47 M / 512 M
+Key 57 M / 512 M
+Key 66 M / 512 M
+Key 76 M / 512 M
+Key 85 M / 512 M
+Key 95 M / 512 M
+Key 104 M / 512 M
+Key 114 M / 512 M
+Key 123 M / 512 M
+Key 133 M / 512 M
+Key 143 M / 512 M
+Key 152 M / 512 M
+Key 162 M / 512 M
+Key 171 M / 512 M
+Key 181 M / 512 M
+Key 190 M / 512 M
+Key 200 M / 512 M
+Key 209 M / 512 M
+Key 219 M / 512 M
+Key 228 M / 512 M
+Key 238 M / 512 M
+Key 247 M / 512 M
+Key 257 M / 512 M
+Key 267 M / 512 M
+Key 276 M / 512 M
+Key 286 M / 512 M
+Key 295 M / 512 M
+Key 305 M / 512 M
+Key 314 M / 512 M
+Key 324 M / 512 M
+Key 333 M / 512 M
+Key 343 M / 512 M
+Key 352 M / 512 M
+Key 362 M / 512 M
+Key 371 M / 512 M
+Key 381 M / 512 M
+Key 391 M / 512 M
+Key 400 M / 512 M
+Key 410 M / 512 M
+Key 419 M / 512 M
+Key 429 M / 512 M
+Key 438 M / 512 M
+Key 448 M / 512 M
+Key 457 M / 512 M
+Key 467 M / 512 M
+Key 476 M / 512 M
+Key 486 M / 512 M
+Key 495 M / 512 M
+Key 505 M / 512 M
+Events enabled
+reader thread started
+[READ] reader thread took: 82.792 seconds
+[READ] average latency 2.760 us throughput 362350.332 ops/sec
+Events disabled
+Loading phase took: 920.180 seconds
+Initialization complete
+Running simulation....
+System call returned -1
+[UPDATE] update took: 97.034 seconds
+[UPDATE] average latency 3.234 us throughput 309167.528 ops/sec
+System call returned -1
+Running phase took: 97.060 seconds
+Running phase overall throughput: 618173.707 ops/sec
+</run>
+Took: 1017.250 seconds
+Took: 1017.250 seconds
+</benchmark>
+
+ Performance counter stats for 'CPU(s) 8':
+
+   231,847,932,974      instructions:u                                              
+     7,949,187,566      instructions:k                                              
+
+    1026.347164864 seconds time elapsed
+
