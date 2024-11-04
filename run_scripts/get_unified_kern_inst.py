@@ -26,7 +26,7 @@ def merge_inst_distributions(running_distro, loading_distro):
     
     merged = pd.concat([running_df, loading_df], axis=1)
     merged.fillna(0,inplace=True)
-    print(merged)
+    merged.index = merged.index.to_series().fillna('syscall entry')
 
     return merged
 
@@ -44,8 +44,6 @@ def produce_unified(bench_data):
     print(bench_data)
     running_inst = extract_instructions_u(bench_data["grd_running_inst"])
     loading_inst = extract_instructions_u(bench_data["grd_loading_inst"])
-    if bench_data["workload"] == "redis":
-        running_inst = 290340178296
     
     
     TARGET_SIM_INST = 2000000000
@@ -62,9 +60,11 @@ def produce_unified(bench_data):
     merged["running_kern_inst_per_user_inst"] = merged["running_kern_inst"] / bench_data["sim_running_inst"] 
     merged["loading_kern_inst_per_user_inst"] = merged["loading_kern_inst"] / bench_data["sim_loading_inst"] 
     
-    merged["unified"] = (merged["running_kern_inst_per_user_inst"] * running_ratio) + (merged["loading_kern_inst_per_user_inst"] * loading_ratio) *TARGET_SIM_INST
+    merged["unified_ratio"] = (merged["running_kern_inst_per_user_inst"] * running_ratio + merged["loading_kern_inst_per_user_inst"] * loading_ratio)
     
-    # print(merged)
+    merged["unified"] = merged["unified_ratio"] *TARGET_SIM_INST
+    
+    print(merged)
     return merged
 
 def read_sim_inst_csv(file_path):
@@ -87,9 +87,10 @@ def rephrase_with_unified(unified_df, bench_data):
     # unified_only = unified_df[['unified']]
     unified_df.rename(columns={'unified': col}, inplace=True)
     
-    final_unified_df = unified_df[[col]]
+    unified_only = unified_df[[col]]
+    running_loading_and_unified = unified_df[["running_kern_inst", "loading_kern_inst", col]]
     # print(final_unified_df)
-    return final_unified_df
+    return unified_only, running_loading_and_unified
     
 
 def get_result_per_kernel_thp_test(arch, thp, test_name, sim_inst_df):
@@ -114,29 +115,36 @@ def get_result_per_kernel_thp_test(arch, thp, test_name, sim_inst_df):
         bench_data["sim_running_distro"] = os.path.abspath(f"kernel_inst/{arch}_{thp}_{test_code_name}.bin.kern_inst.folded.high_level.csv")
         bench_data["sim_loading_distro"] = os.path.abspath(f"kernel_inst_high_level/{arch}_{thp}_{test_code_name}_kexec_loading_first_2B.bin.kern_inst.folded.high_level.csv")
     elif test_name == 'postgres':
-        test_code_name = 'run_postgres64G_two_different_seed_64_shared_mem_40M_entries'
-        test_code_name_real_inst = 'postgres_12M_read'
+        test_code_name = 'run_postgres64G_sequential_load'
+        # test_code_name = 'run_postgres64G_two_different_seed_64_shared_mem_40M_entries'
+        test_code_name_real_inst = 'postgres_seqeuntial_21M'
         bench_data['grd_running_inst'] = os.path.abspath(f"inst_perf/{test_code_name_real_inst}_running_inst_perf.txt")
         bench_data['grd_loading_inst'] = os.path.abspath(f"inst_perf/{test_code_name_real_inst}_loading_inst_perf.txt")
         
         bench_data["sim_running_distro"] = os.path.abspath(f"kernel_inst/{arch}_{thp}_{test_code_name}.bin.kern_inst.folded.high_level.csv")
-        bench_data["sim_loading_distro"] = os.path.abspath(f"kernel_inst_high_level/{arch}_{thp}_{test_code_name}_kexec_loading_first_2B.bin.kern_inst.folded.high_level.csv")
-    
+        # bench_data["sim_loading_distro"] = os.path.abspath(f"kernel_inst_high_level/{arch}_{thp}_{test_code_name}_kexec_loading_first_2B.bin.kern_inst.folded.high_level.csv")
+        bench_data["sim_loading_distro"] = os.path.abspath(f"kernel_inst_high_level/{arch}_{thp}_{test_code_name}_loading.bin.kern_inst.folded.high_level.csv")
+        
     bench_data["sim_running_inst"] = get_running_sim_inst(sim_inst_df, bench_data)  # Get running simulation instructions
     bench_data["sim_loading_inst"] = get_loading_sim_inst(bench_data)  # Get loading simulation instructions
 
     df = produce_unified(bench_data)  # Call the function to produce unified instructions
-    df = rephrase_with_unified(df, bench_data)
+    unified_only, running_loading_and_unified  = rephrase_with_unified(df, bench_data)
     
-    return df
+    return unified_only, running_loading_and_unified
 
 def reprocess_with_category(percent_df):
-    
+
     df = percent_df.copy()
 
+    df.rename(index={
+        "asm_exc_page_fault": "Page Faults",
+        "asm_sysvec_apic_timer_interrupt": "Timers",
+    }, inplace=True)
+    
     system_calls_sum = df[df.index.str.contains('sys')].sum()
     df = df[~df.index.str.contains('sys')]
-    print(df)
+
     df.loc["System Calls"] = system_calls_sum
     
     df.fillna(0, inplace=True)
@@ -159,25 +167,25 @@ def merge_per_thp_per_test(per_thp_test_dfs, key):
         merged = pd.concat([merged, df], axis=1)
     merged.fillna(0,inplace=True)
     
-    print(merged)
 
     # get relative base
     base_sum = merged[key].sum()
     relative = merged / base_sum
 
-    # print(relative)
-    # print(relative)
     small_idx = relative < 0.009
 
     percent_cleaned = relative[~small_idx].dropna(how='all')
     # append those small entries to the last entry
     other_sums = relative[small_idx].sum(axis=0).rename('others')
     percent_cleaned = percent_cleaned._append(other_sums)
-    percent_cleaned.index = np.array([element.lstrip("__") for element in percent_cleaned.index])
 
+    percent_cleaned.index = np.array([element.lstrip("__") for element in percent_cleaned.index])
+    
     print(percent_cleaned)
-    atlair_reprocessed = reprocess_with_category(percent_cleaned)
-    return percent_cleaned, merged, atlair_reprocessed
+    # print(merged)
+
+    return percent_cleaned
+    # return percent_cleaned, merged, atlair_reprocessed
 
 def all_merge(raws_alltests, thp):
     merged = pd.DataFrame()
@@ -185,16 +193,16 @@ def all_merge(raws_alltests, thp):
         merged = pd.concat([merged, df], axis=1)
     merged.fillna(0,inplace=True)
 
-    
-    merged.to_csv(f'merged_unified_{thp}.csv')
+    merged.to_csv(f'merged_unified_raw_{thp}.csv')
 
-    print('raw result saved to', f'merged_unified_{thp}.csv')
+    print('raw result saved to', f'merged_unified_raw_{thp}.csv')
     
 def transform_to_atlair(all_tests, group_factor, thp):
 
     merged = pd.DataFrame()
     for df in all_tests:
-        merged = pd.concat([merged, df], axis=1)
+        altlair_form_df = reprocess_with_category(df)
+        merged = pd.concat([merged, altlair_form_df], axis=1)
     merged.fillna(0,inplace=True)
 
     print(merged)
@@ -243,38 +251,36 @@ if __name__ == "__main__":
     ]
 
     tests = [
-        # "graphbig_bfs" ,
-        # "graphbig_dfs" ,
-        # "graphbig_dc" ,
-        # "graphbig_sssp" ,
-        # "graphbig_cc" ,
-        # "graphbig_tc" ,
-        # "graphbig_pagerank" ,
-        # "sysbench" ,
-        # "gups",
-        # "redis",
-        # "memcached",
+        "graphbig_bfs" ,
+        "graphbig_dfs" ,
+        "graphbig_dc" ,
+        "graphbig_sssp" ,
+        "graphbig_cc" ,
+        "graphbig_tc" ,
+        "graphbig_pagerank" ,
+        "sysbench" ,
+        "gups",
+        "redis",
+        "memcached",
         "postgres",
     ]
     
-    
     for thp in THP_options:
-        all_tests = []
+        all_tests_percents = []
         raws = []
         atlair_dfs = []
         for test in tests:  
             per_test = []
             for kernel in archs:
-                df = get_result_per_kernel_thp_test(kernel, thp, test, sim_inst_df)
+                df, running_loading_and_unified = get_result_per_kernel_thp_test(kernel, thp, test, sim_inst_df)
                 per_test.append(df)
+                raws.append(running_loading_and_unified)
             
             
-            test_df, merged_raw, atlair_df = merge_per_thp_per_test(per_test, per_test[0].columns[0])
-            all_tests.append(test_df)
-            raws.append(merged_raw)
-            atlair_dfs.append(atlair_df)
+            percent_df = merge_per_thp_per_test(per_test, per_test[0].columns[0])
+            all_tests_percents.append(percent_df)
     
         all_merge(raws, thp)
 
-        transform_to_atlair(atlair_dfs, group_factor=len(archs), thp=thp)
+        transform_to_atlair(all_tests_percents, group_factor=len(archs), thp=thp)
     
