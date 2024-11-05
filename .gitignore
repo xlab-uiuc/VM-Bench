@@ -1,2 +1,8 @@
 perf_results/*
 /*.csv
+kernel_inst/*.svg
+kernel_inst/*.readable
+kernel_inst/*.folded
+kernel_inst_high_level/*.svg
+kernel_inst_high_level/*.readable
+kernel_inst_high_level/*.folded
