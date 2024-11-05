@@ -207,7 +207,31 @@ def extract_number_at_end(line):
         return int(match.group())
     else:
         return None
-    
+
+def split_to_parts(line):
+    parts = split_line_remove_number(line)
+    parts = [part.strip() for part in parts]
+    return parts
+
+def reprocess_folded(flame_folded_path):
+    print(f"Reprocess {flame_folded_path}")
+    reprocess_flame_path =  flame_folded_path + ".reprocessed"
+
+    with open(reprocess_flame_path, 'w') as reprocessed:
+        with open(flame_folded_path, 'r') as file:
+            for line in file:
+                # high_level_key, parts = get_high_level_symbol(line)
+                parts = split_to_parts(line)
+                # high_level_key = parts[0]
+                
+                number = extract_number_at_end(line)
+                if ('khugepaged' in parts):
+                    parts = parts[parts.index('khugepaged'):]
+                
+                print(f"{';'.join(parts).strip()} {number}", file = reprocessed)
+                    
+    return reprocess_flame_path
+
 def get_high_level_distribution(flame_path):
     high_level_flame = {}
     with open(flame_path, 'r') as file:
@@ -415,6 +439,10 @@ def main():
     produce_flame_folded(vmlinux_path, trace_path, out_path, arch, args.insn)
     get_high_level_distribution(out_path)
     produce_flame_graph(out_path)
+    
+    if 'always' in trace_path:
+        reprocess_folded_path = reprocess_folded(out_path)
+        get_high_level_distribution(reprocess_folded_path)
     
 if __name__ == "__main__":
     main()

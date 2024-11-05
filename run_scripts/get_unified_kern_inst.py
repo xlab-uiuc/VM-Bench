@@ -109,6 +109,11 @@ def get_result_per_kernel_thp_test(arch, thp, test_name, sim_inst_df):
         test_code_name = 'jiyuan_redis_run_128G'
         bench_data["sim_running_distro"] = os.path.abspath(f"kernel_inst/{arch}_{thp}_{test_code_name}.bin.kern_inst.folded.high_level.csv")
         bench_data["sim_loading_distro"] = os.path.abspath(f"kernel_inst_high_level/{arch}_{thp}_run_{test_code_name}_kexec_loading_first_2B.bin.kern_inst.folded.high_level.csv")
+        
+        if arch == 'ecpt':
+            # bench_data["sim_running_distro"] = os.path.abspath(f"kernel_inst/{arch}_{thp}_ecpt_never_run_{test_code_name}.bin.kern_inst.folded.high_level.csv")
+            bench_data["sim_loading_distro"] = '/hdd/alan_loading_phase/jiyuan_redis_run_128G_rerun/ecpt_never_run_jiyuan_redis_run_128G_rerun_loading.bin.kern_inst.folded.high_level.csv'
+        
         # ecpt_never_run_jiyuan_redis_run_128G_kexec_loading_first_2B.bin.kern_inst.folded.high_level.csv
     elif test_name == 'memcached': 
         test_code_name = 'run_Memcached64Gpure_20insertion_never'
