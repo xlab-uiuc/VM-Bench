@@ -1,0 +1,15 @@
+asm_exc_page_fault,121333
+entry_SYSCALL_64,395
+do_syscall_64,87
+arch_static_branch,5
+syscall_enter_from_user_mode,35
+do_syscall_x64,39
+array_index_mask_nospec,10
+__x86_indirect_thunk_rax,10
+__x64_sys_write,6670
+syscall_exit_to_user_mode,1464
+__x64_sys_futex,3505256
+__x64_sys_alarm,405
+asm_sysvec_apic_timer_interrupt,2014135251
+khugepaged,10646
+source_path,CSL-PowerEdge-R750:/disk/bak1/kexec_full_kernel_running/ecpt/ecpt_always_sysbench_walk_log.bin_insn_None.kern_inst.folded.reprocessed

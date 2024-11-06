@@ -1,0 +1,14 @@
+asm_exc_page_fault,8994012
+entry_SYSCALL_64,869
+do_syscall_64,209
+arch_static_branch,11
+syscall_enter_from_user_mode,77
+do_syscall_x64,88
+array_index_mask_nospec,22
+__x86_indirect_thunk_rax,22
+__x64_sys_brk,5805
+syscall_exit_to_user_mode,583
+asm_sysvec_apic_timer_interrupt,3744276
+__x64_sys_mmap,4542
+__x64_sys_munmap,1208495
+source_path,CSL-PowerEdge-R750:/disk/bak1/kexec_full_kernel_running/radix/radix_always_graphbig_sssp_walk_log.bin_insn_None.kern_inst.folded.reprocessed

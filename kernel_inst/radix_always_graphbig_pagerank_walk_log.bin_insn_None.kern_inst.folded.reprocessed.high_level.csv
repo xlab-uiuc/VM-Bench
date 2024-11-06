@@ -1,0 +1,11 @@
+asm_sysvec_apic_timer_interrupt,4085931
+entry_SYSCALL_64,711
+do_syscall_64,171
+arch_static_branch,9
+syscall_enter_from_user_mode,63
+do_syscall_x64,72
+array_index_mask_nospec,18
+__x86_indirect_thunk_rax,18
+__x64_sys_futex,2421
+syscall_exit_to_user_mode,477
+source_path,CSL-PowerEdge-R750:/disk/bak1/kexec_full_kernel_running/radix/radix_always_graphbig_pagerank_walk_log.bin_insn_None.kern_inst.folded.reprocessed
