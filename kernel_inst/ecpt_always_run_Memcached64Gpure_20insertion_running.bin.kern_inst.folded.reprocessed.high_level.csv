@@ -1,0 +1,15 @@
+entry_SYSCALL_64,83500
+do_syscall_64,28750
+arch_static_branch,2020
+syscall_enter_from_user_mode,14140
+do_syscall_x64,14243
+array_index_mask_nospec,4040
+__x86_indirect_thunk_rax,4040
+__x64_sys_write,271289
+syscall_exit_to_user_mode,23656
+asm_sysvec_apic_timer_interrupt,10217083
+__x64_sys_clock_nanosleep,3996088
+__x64_sys_mmap,21084
+asm_exc_page_fault,87565178
+__x64_sys_futex,77319
+source_path,ajisai:/data1/memcached_nonetwork/ecpt_always_run_Memcached64Gpure_20insertion_running.bin.kern_inst.folded.reprocessed
