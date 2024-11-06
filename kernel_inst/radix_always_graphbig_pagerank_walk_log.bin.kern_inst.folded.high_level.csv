@@ -1,6 +1,0 @@
-asm_sysvec_apic_timer_interrupt,3931126
-None,558
-arch_static_branch,9
-syscall_enter_from_user_mode,63
-array_index_mask_nospec,18
-__x64_sys_futex,3204
