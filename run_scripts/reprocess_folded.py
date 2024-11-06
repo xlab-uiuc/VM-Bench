@@ -249,6 +249,12 @@ def get_high_level_distribution(flame_path):
     with open(flame_path + ".high_level.csv", 'w') as f:
         for key in high_level_flame:
             print(f"{key},{high_level_flame[key]}", file = f)
+        print(f"source_path,{socket.gethostname()}:{flame_path}", file = f)
+    
+    # shutil.copy(high_level_path, 'kernel_inst_loading/full_kernel_withIter_withPlace')
+    shutil.copy(high_level_path, 'kernel_inst/')
+    print('copy to ', 'kernel_inst/')
+    
     return high_level_path
 
 
@@ -279,7 +285,7 @@ if __name__ == '__main__':
     folder = 'kernel_inst_loading/full_kernel_withIter_withPlace'
     files = [f for f in os.listdir(f'{folder}')]
     for folded_path in files:
-        if folded_path.endswith('kern_inst.folded'):
+        if folded_path.endswith('kern_inst.folded') and 'always' in folded_path:
             print(folded_path)
             flame_folded_path = os.path.join(f'{folder}', folded_path)
             reprocessed_flame_path = reprocess_folded(flame_folded_path)

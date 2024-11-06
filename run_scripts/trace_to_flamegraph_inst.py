@@ -248,6 +248,8 @@ def get_high_level_distribution(flame_path):
     with open(flame_path + ".high_level.csv", 'w') as f:
         for key in high_level_flame:
             print(f"{key},{high_level_flame[key]}", file = f)
+        print(f"source_path,{socket.gethostname()}:{flame_path}", file = f)
+            
     return high_level_path
 
 def produce_flame_folded(vmlinux_path : str, trace_path : str, out_path : str, arch : str, max_insn_count : int):
