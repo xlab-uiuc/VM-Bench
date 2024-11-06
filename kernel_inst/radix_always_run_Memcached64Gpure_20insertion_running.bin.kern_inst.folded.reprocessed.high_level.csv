@@ -1,0 +1,16 @@
+entry_SYSCALL_64,82078
+do_syscall_64,28456
+arch_static_branch,2002
+syscall_enter_from_user_mode,14014
+do_syscall_x64,14105
+array_index_mask_nospec,4004
+__x86_indirect_thunk_rax,4004
+__x64_sys_write,126131
+syscall_exit_to_user_mode,16395
+asm_sysvec_apic_timer_interrupt,10489120
+__x64_sys_clock_nanosleep,4123152
+__x64_sys_mmap,23184
+asm_exc_page_fault,9716045
+irq_entries_start,156386
+__x64_sys_futex,35018
+source_path,CSL-PowerEdge-R750:/disk/bak1/siyuan/memcached_nonetwork/radix_always_run_Memcached64Gpure_20insertion_running.bin.kern_inst.folded.reprocessed

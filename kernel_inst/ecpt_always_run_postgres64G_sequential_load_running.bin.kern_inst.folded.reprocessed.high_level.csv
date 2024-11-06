@@ -12,3 +12,4 @@ asm_sysvec_apic_timer_interrupt,4911387
 asm_exc_page_fault,58533170
 __x64_sys_mmap,7655
 irq_entries_start,8503
+source_path,CSL-PowerEdge-R750:/disk/bak1/siyuan/postgres64G_sequential_load/ecpt_always_run_postgres64G_sequential_load_running.bin.kern_inst.folded.reprocessed

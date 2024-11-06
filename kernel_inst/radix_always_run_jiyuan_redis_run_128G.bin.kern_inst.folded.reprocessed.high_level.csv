@@ -18,3 +18,4 @@ __x64_sys_set_robust_list,11
 __x64_sys_write,7167
 __x64_sys_munmap,8912
 __x64_sys_futex,743141
+source_path,CSL-PowerEdge-R750:/siyuan_data/radix_always_run_jiyuan_redis_run_128G.bin.kern_inst.folded.reprocessed
