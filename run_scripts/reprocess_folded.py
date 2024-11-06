@@ -1,6 +1,8 @@
 import re
 import subprocess
 import os
+import socket
+import shutil
 
 LIMIT = 8 
 def split_line_remove_number(line):
@@ -251,9 +253,9 @@ def get_high_level_distribution(flame_path):
             print(f"{key},{high_level_flame[key]}", file = f)
         print(f"source_path,{socket.gethostname()}:{flame_path}", file = f)
     
-    # shutil.copy(high_level_path, 'kernel_inst_loading/full_kernel_withIter_withPlace')
-    shutil.copy(high_level_path, 'kernel_inst/')
-    print('copy to ', 'kernel_inst/')
+    shutil.copy(high_level_path, 'kernel_inst_loading/full_kernel_withIter_withPlace')
+    # shutil.copy(high_level_path, 'kernel_inst/')
+    print('copy to ', 'kernel_inst_loading/full_kernel_withIter_withPlace')
     
     return high_level_path
 
@@ -282,7 +284,9 @@ def run_reprocess():
 
 if __name__ == '__main__':
     
-    folder = 'kernel_inst_loading/full_kernel_withIter_withPlace'
+    # folder = 'kernel_inst_loading/full_kernel_withIter_withPlace'
+    folder = '/hdd/alan_loading_phase'
+    
     files = [f for f in os.listdir(f'{folder}')]
     for folded_path in files:
         if folded_path.endswith('kern_inst.folded') and 'always' in folded_path:
