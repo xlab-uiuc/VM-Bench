@@ -1,0 +1,12 @@
+asm_exc_page_fault,26740
+None,531
+arch_static_branch,5
+syscall_enter_from_user_mode,35
+array_index_mask_nospec,10
+__x64_sys_write,9266
+syscall_exit_to_user_mode,1412
+__x64_sys_futex,4661
+__x64_sys_alarm,364
+asm_sysvec_apic_timer_interrupt,4815222
+khugepaged,10151
+source_path,ajisai:/data2/sysbench_recollect/ecpt/running/ecpt_always_sysbench_running_walk_log.bin.kern_inst.folded.reprocessed
