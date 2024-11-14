@@ -13,6 +13,8 @@ from typing import List, Tuple
 import struct
 import argparse
 import cProfile
+import socket
+
 
 max_insn_bytes = 15 # by intel
 USER_PROGRAM_MAGIC = 0xdeadbeef
