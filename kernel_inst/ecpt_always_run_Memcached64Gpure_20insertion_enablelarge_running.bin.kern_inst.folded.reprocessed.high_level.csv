@@ -1,0 +1,11 @@
+None,126867
+arch_static_branch,1983
+syscall_enter_from_user_mode,13881
+array_index_mask_nospec,3966
+__x64_sys_write,375585
+syscall_exit_to_user_mode,14812
+asm_sysvec_apic_timer_interrupt,10220170
+__x64_sys_clock_nanosleep,3983050
+__x64_sys_futex,1292220
+asm_exc_page_fault,1231934
+source_path,ajisai:/data1/memcached_nonetwork/Memcached64Gpure_20insertion_enablelarge/ecpt_always_run_Memcached64Gpure_20insertion_enablelarge_running.bin.kern_inst.folded.reprocessed
