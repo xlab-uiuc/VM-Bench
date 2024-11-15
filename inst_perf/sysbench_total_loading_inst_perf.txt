@@ -1,0 +1,55 @@
+sudo taskset -ac 4 perf stat -e instructions:u -e instructions:k --delay=-1 --control=fifo:perf_ctrl_fifo,perf_ack_fifo -C 8 -- taskset -ac 8 run_scripts/sysbench_total.sh perf_ctrl_fifo perf_ack_fifo 2
+Events disabled
+perf_ctl_fd = 3, perf_ack_fd = 4
+record_stage = 2
+WARNING: Both event and time limits are disabled, running an endless test
+sysbench 1.1.0-bc42061 (using bundled LuaJIT 2.1.0-beta3)
+
+System call returned -1
+Events enabled
+System call returned -1
+Events disabled
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from current time
+
+
+Running memory speed test with the following options:
+  block size: 67108864KiB
+  total size: 65536MiB
+  operation: write
+  scope: global
+
+Initializing worker threads...
+
+Threads started!
+
+Total operations: 1 (    0.10 per second)
+
+65536.00 MiB transferred (6513.16 MiB/sec)
+
+
+Throughput:
+    events/s (eps):                      0.0994
+    time elapsed:                        10.0621s
+    total number of events:              1
+
+Latency (ms):
+         min:                                10062.05
+         avg:                                10062.05
+         max:                                10062.05
+         95th percentile:                     9977.52
+         sum:                                10062.05
+
+Threads fairness:
+    events (avg/stddev):           1.0000/0.00
+    execution time (avg/stddev):   10.0620/0.00
+
+
+ Performance counter stats for 'CPU(s) 8':
+
+        16,785,587      instructions:u                                              
+    50,179,232,750      instructions:k                                              
+
+      41.650232014 seconds time elapsed
+
