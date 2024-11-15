@@ -214,6 +214,14 @@ def get_result_per_kernel_thp_test(arch, thp, test_name, sim_inst_df):
         ),
     }
 
+    if test_name == "sysbench":
+        bench_data["grd_running_inst"] = os.path.abspath(
+            f"inst_perf/{test_name}_total_running_inst_perf.txt"
+        )
+        bench_data["grd_loading_inst"] = os.path.abspath(
+            f"inst_perf/{test_name}_total_loading_inst_perf.txt"
+        )
+
     if test_name == "sysbench" and thp == "always":
         bench_data["sim_running_distro"] = os.path.abspath(
             f"{sim_running_distro_folder}/{arch}_{thp}_{test_name}_running_walk_log.bin.kern_inst.folded{csv_file_suffix}"
@@ -451,19 +459,19 @@ if __name__ == "__main__":
     ]
 
     THP_options = [
-        # "never",
+        "never",
         "always",
     ]
 
     tests = [
-        # "graphbig_bfs",
-        # "graphbig_dfs",
-        # "graphbig_dc",
-        # "graphbig_sssp",
-        # "graphbig_cc",
-        # "graphbig_tc",
-        # "graphbig_pagerank",
-        # "sysbench",
+        "graphbig_bfs",
+        "graphbig_dfs",
+        "graphbig_dc",
+        "graphbig_sssp",
+        "graphbig_cc",
+        "graphbig_tc",
+        "graphbig_pagerank",
+        "sysbench",
         "gups",
         "redis",
         "memcached",
