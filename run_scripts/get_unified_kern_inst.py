@@ -266,7 +266,8 @@ def reprocess_with_category(percent_df):
     df.rename(
         index={
             "asm_exc_page_fault": "Page Faults",
-            "asm_sysvec_apic_timer_interrupt": "Timers",
+            "asm_sysvec_apic_timer_interrupt": "__Timers",
+            'irq_entries_start' : "__Timers",
         },
         inplace=True,
     )
@@ -277,11 +278,11 @@ def reprocess_with_category(percent_df):
 
     df.loc["System Calls"] = system_calls_sum
 
-    # timer_idx = df.index.str.contains('__Timers')
-    # timer_sum = df[timer_idx].sum()
-    # df = df[~timer_idx]
+    timer_idx = df.index.str.contains('__Timers')
+    timer_sum = df[timer_idx].sum()
+    df = df[~timer_idx]
 
-    # df.loc["Timers"] = timer_sum
+    df.loc["Timers"] = timer_sum
 
     df.fillna(0, inplace=True)
 
@@ -303,7 +304,8 @@ def reprocess_with_category(percent_df):
 def merge_per_thp_per_test(per_thp_test_dfs, key):
     merged = pd.DataFrame()
     for df in per_thp_test_dfs:
-        # df = df.drop('asm_sysvec_apic_timer_interrupt')
+        # if 'irq_entries_start' in df.index:
+        #     df = df.drop('irq_entries_start')
         merged = pd.concat([merged, df], axis=1)
     merged.fillna(0, inplace=True)
 
