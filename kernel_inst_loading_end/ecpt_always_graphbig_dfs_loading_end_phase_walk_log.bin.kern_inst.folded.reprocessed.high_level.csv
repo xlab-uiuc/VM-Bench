@@ -1,0 +1,11 @@
+asm_exc_page_fault,262556183
+asm_sysvec_apic_timer_interrupt,5216040
+None,248400
+arch_static_branch,2300
+syscall_enter_from_user_mode,23041
+array_index_mask_nospec,4600
+__x64_sys_brk,1534224
+syscall_exit_to_user_mode,108100
+__x64_sys_read,4244673
+khugepaged,10983827
+source_path,frontier:/hdd/alan_loading_phase_end/loading_end_phase/ecpt_always_graphbig_dfs_loading_end_phase_walk_log.bin.kern_inst.folded.reprocessed

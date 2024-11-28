@@ -1,0 +1,10 @@
+asm_exc_page_fault,113066786
+None,248400
+arch_static_branch,2300
+syscall_enter_from_user_mode,18380
+array_index_mask_nospec,4600
+__x64_sys_brk,1530120
+syscall_exit_to_user_mode,108100
+__x64_sys_read,4236941
+asm_sysvec_apic_timer_interrupt,4831000
+source_path,frontier:/hdd/alan_loading_phase_end/loading_end_phase/radix_always_graphbig_dfs_loading_end_phase_walk_log.bin.kern_inst.folded.reprocessed

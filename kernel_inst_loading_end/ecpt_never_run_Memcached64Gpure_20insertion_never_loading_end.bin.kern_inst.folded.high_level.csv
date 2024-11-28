@@ -1,0 +1,10 @@
+asm_sysvec_apic_timer_interrupt,10075942
+None,136800
+arch_static_branch,2072
+syscall_enter_from_user_mode,14504
+array_index_mask_nospec,4144
+__x64_sys_clock_nanosleep,3952981
+__x64_sys_mmap,60926
+syscall_exit_to_user_mode,69062
+asm_exc_page_fault,48491806
+__x64_sys_futex,213099
