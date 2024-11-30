@@ -447,6 +447,7 @@ def main():
     if 'always' in trace_path:
         reprocess_folded_path = reprocess_folded(out_path)
         get_high_level_distribution(reprocess_folded_path)
+        produce_flame_graph(reprocess_folded_path)
     
 if __name__ == "__main__":
     main()
