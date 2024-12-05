@@ -3782,6 +3782,80 @@ int redisIsSupervised(int mode) {
 #define KEY_MAX (1UL << 29)
 #define ITER_MAX (30000000UL)
 
+// #define KEY_MAX (1UL << 22)
+// #define ITER_MAX (3000000UL)
+
+#define MAX_LATENCY 100000 // Maximum latency expected in nanoseconds (1ms)
+#define BUCKET_SIZE 1 // Bucket size in nano
+#define N_BUCKET (MAX_LATENCY / BUCKET_SIZE)
+
+
+int64_t read_latencies[N_BUCKET];
+int64_t update_latencies[N_BUCKET];
+int64_t total_latencies[N_BUCKET];
+
+static int64_t get_elapsed_time(struct timespec *start, struct timespec *end) {
+    return (end->tv_sec - start->tv_sec) * 1000000000 + (end->tv_nsec - start->tv_nsec);
+}
+
+static int64_t fill_bucket(int64_t elaspsed_time, int64_t * buckets)
+{
+    size_t bucket_index = (elaspsed_time < MAX_LATENCY) ? (elaspsed_time / BUCKET_SIZE) : (N_BUCKET - 1);
+    buckets[bucket_index]++;
+}
+
+static int64_t get_tail_latency(int64_t * buckets, uint64_t n_ops ,float percentile) {
+    size_t i = 0;
+    size_t total = 0;
+    size_t tail = n_ops * percentile;
+    // printf("n_ops %lu, percentile=%f tail %lu\n", 
+    //     n_ops, percentile, tail);
+    while (i < N_BUCKET && total < tail) {
+        total += buckets[i];
+        i++;
+    }
+    return i * BUCKET_SIZE;
+}
+
+static int64_t get_p90(int64_t * buckets, uint64_t n_ops) {
+    return get_tail_latency(buckets, n_ops, 0.90);
+}
+
+static int64_t get_p95(int64_t * buckets, uint64_t n_ops) {
+    return get_tail_latency(buckets, n_ops, 0.95);
+}
+
+static int64_t get_p99(int64_t * buckets, uint64_t n_ops) {
+    return get_tail_latency(buckets, n_ops, 0.99);
+}
+
+static int64_t get_p999(int64_t * buckets, uint64_t n_ops) {
+    return get_tail_latency(buckets, n_ops, 0.999);
+}
+
+static int64_t get_p9999(int64_t * buckets, uint64_t n_ops) {
+    return get_tail_latency(buckets, n_ops, 0.9999);
+}
+
+static int64_t get_total_time(int64_t * buckets) {
+    int64_t total = 0;
+    for (int64_t i = 0; i < N_BUCKET; i++) {
+        total += buckets[i] * i * BUCKET_SIZE;
+    }
+    return total;
+}
+static double get_average(int64_t * buckets, uint64_t n_ops) {
+    int64_t total = get_total_time(buckets);
+    return (double) total / n_ops;
+}
+
+static double get_throughput(int64_t * buckets, uint64_t n_ops) {
+    int64_t total = get_total_time(buckets);
+    return ((double) n_ops / total) * 1000000000;
+}
+
+
+
 ////////////////////////////////////// ARGUMENTS //////////////////////////////////////////
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -3792,6 +3866,10 @@ static void *reader_run(void *arg)
     fprintf(stderr, "reader thread started\n");
 
     struct timeval tstart, tend;
+
+    struct timespec read_each_tstart, read_each_tend; 
+    int64_t elapsed_read_each;
+
     gettimeofday(&tstart, NULL);
 
     char key[128+1];
@@ -3804,8 +3882,19 @@ static void *reader_run(void *arg)
 
         robj *rkey = createStringObject(key, strlen(key));
         pthread_mutex_lock(&mutex);
+
+        clock_gettime(CLOCK_REALTIME, &read_each_tstart);
+
         robj *rvalue = lookupKeyRead(server.db, rkey);
+
+        clock_gettime(CLOCK_REALTIME, &read_each_tend);
+
+        elapsed_read_each = get_elapsed_time(&read_each_tstart, &read_each_tend);
+        fill_bucket(elapsed_read_each, total_latencies);
+
         pthread_mutex_unlock(&mutex);
+
+        fill_bucket(elapsed_read_each, read_latencies);
         sds v = rvalue->ptr;
         if ((v && v[0] != 'm') || !v) {
             printf("XXXX: not the right value: %s", v);
@@ -3817,6 +3906,17 @@ static void *reader_run(void *arg)
     fprintf(stderr, "[READ] reader thread took: %zu.%03zu seconds\n", elapsed / 1000000, (elapsed % 1000000) / 1000);
     fprintf(stderr, "[READ] average latency %.03f us throughput %.03f ops/sec\n", 
         (double)elapsed / ITER_MAX, ITER_MAX / ((double)elapsed / 1000000));
+
+    fprintf(stderr, "[READ] precise time: %ld ns\n", get_total_time(read_latencies));
+    fprintf(stderr, "[READ] precise throughput: %.03f ops/sec\n", get_throughput(read_latencies, ITER_MAX));
+    fprintf(stderr, "[READ] precise average latency %.03f ns\n", get_average(read_latencies, ITER_MAX));
+    
+    fprintf(stderr, "[READ] precise p90 %ld p95 %ld p99 %ld p999 %ld ns\n",
+        get_p90(read_latencies, ITER_MAX),
+        get_p95(read_latencies, ITER_MAX),
+        get_p99(read_latencies, ITER_MAX),
+        get_p999(read_latencies, ITER_MAX));
+
 
     return NULL;
 }
@@ -4093,6 +4193,10 @@ int real_main(int argc, char **argv) {
     //     fprintf(fd2, "%lu\n", (unsigned long) time(NULL));
     //     fclose(fd2);
     // }
+    memset(read_latencies, 0, sizeof(read_latencies));
+    memset(update_latencies, 0, sizeof(update_latencies));
+    memset(total_latencies, 0, sizeof(total_latencies));
+
 
     printf("Initialization complete\nRunning simulation....\n");
 
@@ -4159,6 +4263,10 @@ int real_main(int argc, char **argv) {
     pthread_create(&reader_thread, NULL, reader_run, NULL);
 
     struct timeval udpate_tstart, update_tend;
+
+    struct timespec update_each_tstart, update_each_tend; 
+    int64_t elapsed_update_each;
+
     gettimeofday(&udpate_tstart, NULL);
 
     for (size_t k = 0; k < ITER_MAX; k++) {
@@ -4169,9 +4277,20 @@ int real_main(int argc, char **argv) {
         robj *rkey = createStringObject(key, strlen(key));
         snprintf(val, 512, "my-dummy-value-for-key-0x%016lx-updated-%zu", i, k);
         robj *rvalue = createStringObject(val, strlen(val));
+        
         pthread_mutex_lock(&mutex);
+        // gettimeofday(&update_each_tstart, NULL);
+        clock_gettime(CLOCK_REALTIME, &update_each_tstart);
+
+
         setKey(server.db, rkey, rvalue);
+        clock_gettime(CLOCK_REALTIME, &update_each_tend);
+        // gettimeofday(&update_each_tend, NULL);
+        elapsed_update_each = get_elapsed_time(&update_each_tstart, &update_each_tend);
+        fill_bucket(elapsed_update_each, total_latencies);
+
         pthread_mutex_unlock(&mutex);
+        fill_bucket(elapsed_update_each, update_latencies);
     }
 
 
@@ -4181,6 +4300,17 @@ int real_main(int argc, char **argv) {
     printf("[UPDATE] update took: %zu.%03zu seconds\n", elapsed_update / 1000000, (elapsed_update % 1000000) / 1000);
     printf("[UPDATE] average latency %.03f us throughput %.03f ops/sec\n", 
         (double)elapsed_update / ITER_MAX, ITER_MAX / ((double)elapsed_update / 1000000));
+
+
+    printf("[UPDATE] precise time: %ld ns\n", get_total_time(update_latencies));
+    printf("[UPDATE] precise throughput: %.03f ops/sec\n", get_throughput(update_latencies, ITER_MAX));
+    printf("[UPDATE] precise average latency %.03f ns\n", get_average(update_latencies, ITER_MAX));
+
+    printf("[UPDATE] p90 %ld p95 %ld p99 %ld p999 %ld ns\n",
+        get_p90(update_latencies, ITER_MAX),
+        get_p95(update_latencies, ITER_MAX),
+        get_p99(update_latencies, ITER_MAX),
+        get_p999(update_latencies, ITER_MAX));
 
     pthread_join(reader_thread, NULL);
 
@@ -4194,7 +4324,20 @@ int real_main(int argc, char **argv) {
 
     int64_t time_taken_usec_run = (running_tend.tv_sec - running_tstart.tv_sec) * 1000000 + running_tend.tv_usec - running_tstart.tv_usec;
     printf("Running phase took: %zu.%03zu seconds\n", time_taken_usec_run / 1000000, (time_taken_usec_run % 1000000) / 1000);
+    printf("Running phase average latency %.03f\n", 
+        (double) time_taken_usec_run / (2 * ITER_MAX));
     printf("Running phase overall throughput: %.03f ops/sec\n", (2 * ITER_MAX) / ((double) time_taken_usec_run / 1000000));
+
+
+    printf("Running phase precise time: %ld ns\n", get_total_time(total_latencies));
+    printf("Running phase precise throughput: %.03f ops/sec\n", get_throughput(total_latencies, 2 * ITER_MAX));
+    printf("Running phase precise average latency %.03f ns\n", get_average(total_latencies, 2 * ITER_MAX));
+
+    printf("Running phase precise p90 %ld p95 %ld p99 %ld p999 %ld ns\n",
+        get_p90(total_latencies, 2 * ITER_MAX),
+        get_p95(total_latencies, 2 * ITER_MAX),
+        get_p99(total_latencies, 2 * ITER_MAX),
+        get_p999(total_latencies, 2 * ITER_MAX));
 
     #else
     aeSetBeforeSleepProc(server.el,beforeSleep);
