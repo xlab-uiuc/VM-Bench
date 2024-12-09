@@ -1,0 +1,1166 @@
+gef➤  disas __handle_mm_fault
+Dump of assembler code for function __handle_mm_fault:
+   0xffffffff812a5910 <+0>:     call   0xffffffff81075eb0 <__fentry__>
+   0xffffffff812a5915 <+5>:     push   rbp
+   0xffffffff812a5916 <+6>:     mov    ecx,0xc
+   0xffffffff812a591b <+11>:    mov    rbp,rsp
+   0xffffffff812a591e <+14>:    push   r15
+   0xffffffff812a5920 <+16>:    push   r14
+   0xffffffff812a5922 <+18>:    mov    r14,rsi
+   0xffffffff812a5925 <+21>:    push   r13
+   0xffffffff812a5927 <+23>:    mov    r13d,edx
+   0xffffffff812a592a <+26>:    push   r12
+   0xffffffff812a592c <+28>:    push   rbx
+   0xffffffff812a592d <+29>:    mov    rbx,rdi
+   0xffffffff812a5930 <+32>:    lea    rdi,[rbp-0x90]
+   0xffffffff812a5937 <+39>:    sub    rsp,0x90
+   0xffffffff812a593e <+46>:    mov    rdx,QWORD PTR [rbx+0xa0]
+   0xffffffff812a5945 <+53>:    mov    rax,QWORD PTR gs:0x28
+   0xffffffff812a594e <+62>:    mov    QWORD PTR [rbp-0x30],rax
+   0xffffffff812a5952 <+66>:    xor    eax,eax
+   0xffffffff812a5954 <+68>:    mov    QWORD PTR [rbp-0x98],rbx
+   0xffffffff812a595b <+75>:    rep stos QWORD PTR es:[rdi],rax
+   0xffffffff812a595e <+78>:    mov    eax,0xcc0
+   0xffffffff812a5963 <+83>:    test   rdx,rdx
+   0xffffffff812a5966 <+86>:    je     0xffffffff812a5974 <__handle_mm_fault+100>
+   0xffffffff812a5968 <+88>:    mov    rax,QWORD PTR [rdx+0xd8]
+   0xffffffff812a596f <+95>:    mov    eax,DWORD PTR [rax+0x40]
+   0xffffffff812a5972 <+98>:    or     al,0xc0
+   0xffffffff812a5974 <+100>:   mov    DWORD PTR [rbp-0x90],eax
+   0xffffffff812a597a <+106>:   test   BYTE PTR [rbx+0x52],0x40
+   0xffffffff812a597e <+110>:   jne    0xffffffff812a60f7 <__handle_mm_fault+2023>
+   0xffffffff812a5984 <+116>:   mov    rax,r14
+   0xffffffff812a5987 <+119>:   sub    rax,QWORD PTR [rbx]
+   0xffffffff812a598a <+122>:   shr    rax,0xc
+   0xffffffff812a598e <+126>:   add    rax,QWORD PTR [rbx+0x98]
+   0xffffffff812a5995 <+133>:   mov    rsi,QWORD PTR [rbx+0x40]
+   0xffffffff812a5999 <+137>:   mov    ecx,DWORD PTR [rip+0x1410eb5]        # 0xffffffff826b6854 <pgdir_shift>
+   0xffffffff812a599f <+143>:   mov    QWORD PTR [rbp-0x88],rax
+   0xffffffff812a59a6 <+150>:   mov    rax,r14
+   0xffffffff812a59a9 <+153>:   and    rax,0xfffffffffffff000
+   0xffffffff812a59af <+159>:   mov    DWORD PTR [rbp-0x78],r13d
+   0xffffffff812a59b3 <+163>:   mov    QWORD PTR [rbp-0x80],rax
+   0xffffffff812a59b7 <+167>:   mov    rax,r14
+   0xffffffff812a59ba <+170>:   mov    rdx,QWORD PTR [rsi+0x50]
+   0xffffffff812a59be <+174>:   shr    rax,cl
+   0xffffffff812a59c1 <+177>:   mov    QWORD PTR [rbp-0xb8],rsi
+   0xffffffff812a59c8 <+184>:   and    eax,0x1ff
+   0xffffffff812a59cd <+189>:   lea    r12,[rdx+rax*8]
+   0xffffffff812a59d1 <+193>:   mov    rdi,QWORD PTR [r12]
+   0xffffffff812a59d5 <+197>:   call   0xffffffff8129df20 <pgd_none>
+   0xffffffff812a59da <+202>:   test   eax,eax
+   0xffffffff812a59dc <+204>:   jne    0xffffffff812a6107 <__handle_mm_fault+2039>
+   0xffffffff812a59e2 <+210>:   mov    rdi,r12
+   0xffffffff812a59e5 <+213>:   mov    rsi,r14
+   0xffffffff812a59e8 <+216>:   call   0xffffffff8129e1c0 <p4d_offset>
+   0xffffffff812a59ed <+221>:   mov    r12,rax
+   0xffffffff812a59f0 <+224>:   test   rax,rax
+   0xffffffff812a59f3 <+227>:   je     0xffffffff812a5de4 <__handle_mm_fault+1236>
+   0xffffffff812a59f9 <+233>:   test   QWORD PTR [rax],0xffffffffffffff9f
+   0xffffffff812a5a00 <+240>:   je     0xffffffff812a6126 <__handle_mm_fault+2070>
+   0xffffffff812a5a06 <+246>:   mov    rdi,QWORD PTR [r12]
+   0xffffffff812a5a0a <+250>:   mov    rsi,r14
+   0xffffffff812a5a0d <+253>:   call   0xffffffff8129e210 <pud_offset>
+   0xffffffff812a5a12 <+258>:   mov    QWORD PTR [rbp-0x68],rax
+   0xffffffff812a5a16 <+262>:   mov    r15,rax
+   0xffffffff812a5a19 <+265>:   test   rax,rax
+   0xffffffff812a5a1c <+268>:   je     0xffffffff812a5de4 <__handle_mm_fault+1236>
+   0xffffffff812a5a22 <+274>:   mov    rax,r14
+   0xffffffff812a5a25 <+277>:   and    r13d,0x1
+   0xffffffff812a5a29 <+281>:   movabs r12,0x400000000000080
+   0xffffffff812a5a33 <+291>:   shr    rax,0x12
+   0xffffffff812a5a37 <+295>:   mov    DWORD PTR [rbp-0xac],r13d
+   0xffffffff812a5a3e <+302>:   and    eax,0xff8
+   0xffffffff812a5a43 <+307>:   mov    QWORD PTR [rbp-0xa8],rax
+   0xffffffff812a5a4a <+314>:   mov    r13,QWORD PTR [r15]
+   0xffffffff812a5a4d <+317>:   test   r13,0xffffffffffffff9f
+   0xffffffff812a5a54 <+324>:   jne    0xffffffff812a5ac7 <__handle_mm_fault+439>
+   0xffffffff812a5a56 <+326>:   mov    rdx,QWORD PTR [rip+0x1ec7953]        # 0xffffffff8316d3b0 <transparent_hugepage_flags>
+   0xffffffff812a5a5d <+333>:   test   dl,0x1
+   0xffffffff812a5a60 <+336>:   jne    0xffffffff812a5ac7 <__handle_mm_fault+439>
+   0xffffffff812a5a62 <+338>:   mov    rcx,QWORD PTR [rbx+0x50]
+   0xffffffff812a5a66 <+342>:   test   ecx,0x40000000
+   0xffffffff812a5a6c <+348>:   jne    0xffffffff812a5ac7 <__handle_mm_fault+439>
+   0xffffffff812a5a6e <+350>:   mov    rax,QWORD PTR [rbx+0x40]
+   0xffffffff812a5a72 <+354>:   mov    rax,QWORD PTR [rax+0x380]
+   0xffffffff812a5a79 <+361>:   test   eax,0x1000000
+   0xffffffff812a5a7e <+366>:   jne    0xffffffff812a5ac7 <__handle_mm_fault+439>
+   0xffffffff812a5a80 <+368>:   test   ch,0x1
+   0xffffffff812a5a83 <+371>:   je     0xffffffff812a5a95 <__handle_mm_fault+389>
+   0xffffffff812a5a85 <+373>:   mov    rax,rcx
+   0xffffffff812a5a88 <+376>:   and    eax,0x18000
+   0xffffffff812a5a8d <+381>:   cmp    rax,0x18000
+   0xffffffff812a5a93 <+387>:   je     0xffffffff812a5ac7 <__handle_mm_fault+439>
+   0xffffffff812a5a95 <+389>:   test   dl,0x2
+   0xffffffff812a5a98 <+392>:   jne    0xffffffff812a5d44 <__handle_mm_fault+1076>
+   0xffffffff812a5a9e <+398>:   mov    rax,QWORD PTR [rbx+0xa0]
+   0xffffffff812a5aa5 <+405>:   test   rax,rax
+   0xffffffff812a5aa8 <+408>:   je     0xffffffff812a5abe <__handle_mm_fault+430>
+   0xffffffff812a5aaa <+410>:   mov    rax,QWORD PTR [rax+0xd8]
+   0xffffffff812a5ab1 <+417>:   mov    rax,QWORD PTR [rax]
+   0xffffffff812a5ab4 <+420>:   test   BYTE PTR [rax+0xd],0x20
+   0xffffffff812a5ab8 <+424>:   jne    0xffffffff812a5d44 <__handle_mm_fault+1076>
+   0xffffffff812a5abe <+430>:   and    edx,0x4
+   0xffffffff812a5ac1 <+433>:   jne    0xffffffff812a5d38 <__handle_mm_fault+1064>
+   0xffffffff812a5ac7 <+439>:   mov    rdi,r13
+   0xffffffff812a5aca <+442>:   call   0xffffffff8129de60 <pud_val>
+   0xffffffff812a5acf <+447>:   and    rax,r12
+   0xffffffff812a5ad2 <+450>:   cmp    rax,0x80
+   0xffffffff812a5ad8 <+456>:   je     0xffffffff812a5af1 <__handle_mm_fault+481>
+   0xffffffff812a5ada <+458>:   mov    rdi,r13
+   0xffffffff812a5add <+461>:   call   0xffffffff8129de60 <pud_val>
+   0xffffffff812a5ae2 <+466>:   movabs rcx,0x400000000000000
+   0xffffffff812a5aec <+476>:   test   rax,rcx
+   0xffffffff812a5aef <+479>:   je     0xffffffff812a5b65 <__handle_mm_fault+597>
+   0xffffffff812a5af1 <+481>:   mov    ecx,DWORD PTR [rbp-0xac]
+   0xffffffff812a5af7 <+487>:   test   ecx,ecx
+   0xffffffff812a5af9 <+489>:   je     0xffffffff812a60e0 <__handle_mm_fault+2000>
+   0xffffffff812a5aff <+495>:   mov    rax,QWORD PTR [rip+0x142984a]        # 0xffffffff826cf350 <physical_mask>
+   0xffffffff812a5b06 <+502>:   mov    rdx,rax
+   0xffffffff812a5b09 <+505>:   and    rax,0xfffffffffffff000
+   0xffffffff812a5b0f <+511>:   and    rdx,0xffffffffc0000000
+   0xffffffff812a5b16 <+518>:   test   r13b,0x80
+   0xffffffff812a5b1a <+522>:   cmovne rax,rdx
+   0xffffffff812a5b1e <+526>:   not    rax
+   0xffffffff812a5b21 <+529>:   and    rax,r13
+   0xffffffff812a5b24 <+532>:   test   al,0x2
+   0xffffffff812a5b26 <+534>:   jne    0xffffffff812a60e0 <__handle_mm_fault+2000>
+   0xffffffff812a5b2c <+540>:   mov    rax,QWORD PTR [rbp-0x98]
+   0xffffffff812a5b33 <+547>:   mov    rax,QWORD PTR [rax+0x90]
+   0xffffffff812a5b3a <+554>:   test   rax,rax
+   0xffffffff812a5b3d <+557>:   je     0xffffffff812a5b65 <__handle_mm_fault+597>
+   0xffffffff812a5b3f <+559>:   mov    rax,QWORD PTR [rax+0x30]
+   0xffffffff812a5b43 <+563>:   test   rax,rax
+   0xffffffff812a5b46 <+566>:   je     0xffffffff812a5b65 <__handle_mm_fault+597>
+   0xffffffff812a5b48 <+568>:   mov    esi,0x2
+   0xffffffff812a5b4d <+573>:   lea    rdi,[rbp-0x98]
+   0xffffffff812a5b54 <+580>:   call   0xffffffff82002460 <__x86_indirect_thunk_rax>
+   0xffffffff812a5b59 <+585>:   mov    r10d,eax
+   0xffffffff812a5b5c <+588>:   test   ah,0x8
+   0xffffffff812a5b5f <+591>:   je     0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a5b65 <+597>:   mov    r15,QWORD PTR [rbp-0x68]
+   0xffffffff812a5b69 <+601>:   mov    r13,QWORD PTR [r15]
+   0xffffffff812a5b6c <+604>:   test   r13,0xffffffffffffff9f
+   0xffffffff812a5b73 <+611>:   je     0xffffffff812a5da8 <__handle_mm_fault+1176>
+   0xffffffff812a5b79 <+617>:   mov    rdi,r13
+   0xffffffff812a5b7c <+620>:   call   0xffffffff8129de60 <pud_val>
+   0xffffffff812a5b81 <+625>:   and    r13d,0x80
+   0xffffffff812a5b88 <+632>:   mov    rdx,QWORD PTR [rip+0x14297c1]        # 0xffffffff826cf350 <physical_mask>
+   0xffffffff812a5b8f <+639>:   je     0xffffffff812a5d1b <__handle_mm_fault+1035>
+   0xffffffff812a5b95 <+645>:   and    rdx,0xffffffffc0000000
+   0xffffffff812a5b9c <+652>:   and    rax,rdx
+   0xffffffff812a5b9f <+655>:   add    rax,QWORD PTR [rip+0x1410ca2]        # 0xffffffff826b6848 <page_offset_base>
+   0xffffffff812a5ba6 <+662>:   add    rax,QWORD PTR [rbp-0xa8]
+   0xffffffff812a5bad <+669>:   mov    QWORD PTR [rbp-0x70],rax
+   0xffffffff812a5bb1 <+673>:   je     0xffffffff812a5de4 <__handle_mm_fault+1236>
+   0xffffffff812a5bb7 <+679>:   mov    r15,QWORD PTR [rbp-0x68]
+   0xffffffff812a5bbb <+683>:   mov    r13,QWORD PTR [r15]
+   0xffffffff812a5bbe <+686>:   test   r13,0xffffffffffffff9f
+   0xffffffff812a5bc5 <+693>:   je     0xffffffff812a5a4a <__handle_mm_fault+314>
+   0xffffffff812a5bcb <+699>:   mov    rdi,r13
+   0xffffffff812a5bce <+702>:   call   0xffffffff8129de60 <pud_val>
+   0xffffffff812a5bd3 <+707>:   and    rax,r12
+   0xffffffff812a5bd6 <+710>:   cmp    rax,0x80
+   0xffffffff812a5bdc <+716>:   je     0xffffffff812a5d2f <__handle_mm_fault+1055>
+   0xffffffff812a5be2 <+722>:   mov    rdi,r13
+   0xffffffff812a5be5 <+725>:   call   0xffffffff8129de60 <pud_val>
+   0xffffffff812a5bea <+730>:   movabs rsi,0x400000000000000
+   0xffffffff812a5bf4 <+740>:   test   rax,rsi
+   0xffffffff812a5bf7 <+743>:   jne    0xffffffff812a5d2f <__handle_mm_fault+1055>
+   0xffffffff812a5bfd <+749>:   mov    rax,QWORD PTR [rip+0x142974c]        # 0xffffffff826cf350 <physical_mask>
+   0xffffffff812a5c04 <+756>:   mov    rcx,rax
+   0xffffffff812a5c07 <+759>:   and    rax,0xfffffffffffff000
+   0xffffffff812a5c0d <+765>:   and    rcx,0xffffffffc0000000
+   0xffffffff812a5c14 <+772>:   test   r13b,0x80
+   0xffffffff812a5c18 <+776>:   cmovne rax,rcx
+   0xffffffff812a5c1c <+780>:   mov    rcx,QWORD PTR [rip+0x1bb7af5]        # 0xffffffff82e5d718 <sme_me_mask>
+   0xffffffff812a5c23 <+787>:   or     rcx,0x67
+   0xffffffff812a5c27 <+791>:   not    rax
+   0xffffffff812a5c2a <+794>:   not    rcx
+   0xffffffff812a5c2d <+797>:   and    rcx,r13
+   0xffffffff812a5c30 <+800>:   test   rcx,rax
+   0xffffffff812a5c33 <+803>:   jne    0xffffffff812a5d27 <__handle_mm_fault+1047>
+   0xffffffff812a5c39 <+809>:   mov    rax,QWORD PTR [rbp-0x70]
+   0xffffffff812a5c3d <+813>:   test   QWORD PTR [rax],0xffffffffffffff9f
+   0xffffffff812a5c44 <+820>:   je     0xffffffff812a6150 <__handle_mm_fault+2112>
+   0xffffffff812a5c4a <+826>:   mov    rax,QWORD PTR [rax]
+   0xffffffff812a5c4d <+829>:   mov    QWORD PTR [rbp-0x60],rax
+   0xffffffff812a5c51 <+833>:   mov    rdi,QWORD PTR [rbp-0x60]
+   0xffffffff812a5c55 <+837>:   test   rdi,0xffffffffffffff9f
+   0xffffffff812a5c5c <+844>:   jne    0xffffffff812a5def <__handle_mm_fault+1247>
+   0xffffffff812a5c62 <+850>:   mov    rdi,QWORD PTR [rbp-0x60]
+   0xffffffff812a5c66 <+854>:   call   0xffffffff8129de50 <pmd_val>
+   0xffffffff812a5c6b <+859>:   movabs rdx,0x400000000000080
+   0xffffffff812a5c75 <+869>:   and    rax,rdx
+   0xffffffff812a5c78 <+872>:   cmp    rax,0x80
+   0xffffffff812a5c7e <+878>:   je     0xffffffff812a5c94 <__handle_mm_fault+900>
+   0xffffffff812a5c80 <+880>:   mov    rdi,QWORD PTR [rbp-0x60]
+   0xffffffff812a5c84 <+884>:   call   0xffffffff8129de50 <pmd_val>
+   0xffffffff812a5c89 <+889>:   bt     rax,0x3a
+   0xffffffff812a5c8e <+894>:   jae    0xffffffff812a5ec2 <__handle_mm_fault+1458>
+   0xffffffff812a5c94 <+900>:   mov    rax,QWORD PTR [rip+0x14296b5]        # 0xffffffff826cf350 <physical_mask>
+   0xffffffff812a5c9b <+907>:   mov    rdx,QWORD PTR [rbp-0x60]
+   0xffffffff812a5c9f <+911>:   mov    rcx,rax
+   0xffffffff812a5ca2 <+914>:   and    rax,0xffffffffffe00000
+   0xffffffff812a5ca8 <+920>:   and    rcx,0xfffffffffffff000
+   0xffffffff812a5caf <+927>:   test   dl,0x80
+   0xffffffff812a5cb2 <+930>:   cmove  rax,rcx
+   0xffffffff812a5cb6 <+934>:   not    rax
+   0xffffffff812a5cb9 <+937>:   and    rax,rdx
+   0xffffffff812a5cbc <+940>:   mov    rdx,rax
+   0xffffffff812a5cbf <+943>:   and    edx,0x101
+   0xffffffff812a5cc5 <+949>:   cmp    rdx,0x100
+   0xffffffff812a5ccc <+956>:   je     0xffffffff812a6226 <__handle_mm_fault+2326>
+   0xffffffff812a5cd2 <+962>:   mov    edx,DWORD PTR [rbp-0xac]
+   0xffffffff812a5cd8 <+968>:   test   edx,edx
+   0xffffffff812a5cda <+970>:   je     0xffffffff812a5ce4 <__handle_mm_fault+980>
+   0xffffffff812a5cdc <+972>:   test   al,0x2
+   0xffffffff812a5cde <+974>:   je     0xffffffff812a5e69 <__handle_mm_fault+1369>
+   0xffffffff812a5ce4 <+980>:   lea    rdi,[rbp-0x98]
+   0xffffffff812a5ceb <+987>:   call   0xffffffff81301fe0 <huge_pmd_set_accessed>
+   0xffffffff812a5cf0 <+992>:   xor    r10d,r10d
+   0xffffffff812a5cf3 <+995>:   mov    rax,QWORD PTR [rbp-0x30]
+   0xffffffff812a5cf7 <+999>:   xor    rax,QWORD PTR gs:0x28
+   0xffffffff812a5d00 <+1008>:  jne    0xffffffff812a6c01 <__handle_mm_fault+4849>
+   0xffffffff812a5d06 <+1014>:  add    rsp,0x90
+   0xffffffff812a5d0d <+1021>:  mov    eax,r10d
+   0xffffffff812a5d10 <+1024>:  pop    rbx
+   0xffffffff812a5d11 <+1025>:  pop    r12
+   0xffffffff812a5d13 <+1027>:  pop    r13
+   0xffffffff812a5d15 <+1029>:  pop    r14
+   0xffffffff812a5d17 <+1031>:  pop    r15
+   0xffffffff812a5d19 <+1033>:  pop    rbp
+   0xffffffff812a5d1a <+1034>:  ret    
+   0xffffffff812a5d1b <+1035>:  and    rdx,0xfffffffffffff000
+   0xffffffff812a5d22 <+1042>:  jmp    0xffffffff812a5b9c <__handle_mm_fault+652>
+   0xffffffff812a5d27 <+1047>:  mov    rdi,r15
+   0xffffffff812a5d2a <+1050>:  call   0xffffffff812b6770 <pud_clear_bad>
+   0xffffffff812a5d2f <+1055>:  mov    r15,QWORD PTR [rbp-0x68]
+   0xffffffff812a5d33 <+1059>:  jmp    0xffffffff812a5a4a <__handle_mm_fault+314>
+   0xffffffff812a5d38 <+1064>:  test   ecx,0x20000000
+   0xffffffff812a5d3e <+1070>:  je     0xffffffff812a5ac7 <__handle_mm_fault+439>
+   0xffffffff812a5d44 <+1076>:  mov    rdi,QWORD PTR [rbp-0x98]
+   0xffffffff812a5d4b <+1083>:  mov    rax,QWORD PTR [rdi+0x90]
+   0xffffffff812a5d52 <+1090>:  test   rax,rax
+   0xffffffff812a5d55 <+1093>:  je     0xffffffff812a5d88 <__handle_mm_fault+1144>
+   0xffffffff812a5d57 <+1095>:  mov    rax,QWORD PTR [rax+0x30]
+   0xffffffff812a5d5b <+1099>:  test   rax,rax
+   0xffffffff812a5d5e <+1102>:  je     0xffffffff812a5d88 <__handle_mm_fault+1144>
+   0xffffffff812a5d60 <+1104>:  mov    esi,0x2
+   0xffffffff812a5d65 <+1109>:  lea    rdi,[rbp-0x98]
+   0xffffffff812a5d6c <+1116>:  call   0xffffffff82002460 <__x86_indirect_thunk_rax>
+   0xffffffff812a5d71 <+1121>:  mov    r10d,eax
+   0xffffffff812a5d74 <+1124>:  test   ah,0x8
+   0xffffffff812a5d77 <+1127>:  je     0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a5d7d <+1133>:  mov    r15,QWORD PTR [rbp-0x68]
+   0xffffffff812a5d81 <+1137>:  mov    rdi,QWORD PTR [rbp-0x98]
+   0xffffffff812a5d88 <+1144>:  mov    rdx,QWORD PTR [rbp-0x80]
+   0xffffffff812a5d8c <+1148>:  mov    rsi,r15
+   0xffffffff812a5d8f <+1151>:  call   0xffffffff813035d0 <__split_huge_pud>
+   0xffffffff812a5d94 <+1156>:  mov    r15,QWORD PTR [rbp-0x68]
+   0xffffffff812a5d98 <+1160>:  mov    r13,QWORD PTR [r15]
+   0xffffffff812a5d9b <+1163>:  test   r13,0xffffffffffffff9f
+   0xffffffff812a5da2 <+1170>:  jne    0xffffffff812a5b79 <__handle_mm_fault+617>
+   0xffffffff812a5da8 <+1176>:  mov    rdi,QWORD PTR [rbp-0xb8]
+   0xffffffff812a5daf <+1183>:  mov    rdx,r14
+   0xffffffff812a5db2 <+1186>:  mov    rsi,r15
+   0xffffffff812a5db5 <+1189>:  call   0xffffffff812a2a50 <__pmd_alloc>
+   0xffffffff812a5dba <+1194>:  test   eax,eax
+   0xffffffff812a5dbc <+1196>:  jne    0xffffffff812a5de4 <__handle_mm_fault+1236>
+   0xffffffff812a5dbe <+1198>:  mov    r13,QWORD PTR [r15]
+   0xffffffff812a5dc1 <+1201>:  jmp    0xffffffff812a5b79 <__handle_mm_fault+617>
+   0xffffffff812a5dc6 <+1206>:  mov    rdi,r12
+   0xffffffff812a5dc9 <+1209>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a5dd0 <+1216>:  call   0xffffffff812b9b10 <__anon_vma_prepare>
+   0xffffffff812a5dd5 <+1221>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a5ddc <+1228>:  test   eax,eax
+   0xffffffff812a5dde <+1230>:  je     0xffffffff812a642f <__handle_mm_fault+2847>
+   0xffffffff812a5de4 <+1236>:  mov    r10d,0x1
+   0xffffffff812a5dea <+1242>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a5def <+1247>:  mov    rax,QWORD PTR [rip+0x142955a]        # 0xffffffff826cf350 <physical_mask>
+   0xffffffff812a5df6 <+1254>:  test   dil,0x80
+   0xffffffff812a5dfa <+1258>:  jne    0xffffffff812a6145 <__handle_mm_fault+2101>
+   0xffffffff812a5e00 <+1264>:  and    rax,0xfffffffffffff000
+   0xffffffff812a5e06 <+1270>:  mov    rdx,rax
+   0xffffffff812a5e09 <+1273>:  not    rdx
+   0xffffffff812a5e0c <+1276>:  and    rdx,rdi
+   0xffffffff812a5e0f <+1279>:  test   edx,0x181
+   0xffffffff812a5e15 <+1285>:  jne    0xffffffff812a5c62 <__handle_mm_fault+850>
+   0xffffffff812a5e1b <+1291>:  mov    rcx,rdi
+   0xffffffff812a5e1e <+1294>:  not    rax
+   0xffffffff812a5e21 <+1297>:  and    rcx,0xfffffffffffffffd
+   0xffffffff812a5e25 <+1301>:  and    edx,0x2
+   0xffffffff812a5e28 <+1304>:  cmovne rdi,rcx
+   0xffffffff812a5e2c <+1308>:  and    rax,rdi
+   0xffffffff812a5e2f <+1311>:  mov    rdx,rdi
+   0xffffffff812a5e32 <+1314>:  and    rdx,0xfffffffffffffffb
+   0xffffffff812a5e36 <+1318>:  test   al,0x4
+   0xffffffff812a5e38 <+1320>:  cmovne rdi,rdx
+   0xffffffff812a5e3c <+1324>:  call   0xffffffff8129de50 <pmd_val>
+   0xffffffff812a5e41 <+1329>:  shr    rax,0x3b
+   0xffffffff812a5e45 <+1333>:  cmp    rax,0x1a
+   0xffffffff812a5e49 <+1337>:  je     0xffffffff812a5e51 <__handle_mm_fault+1345>
+   0xffffffff812a5e4b <+1339>:  cmp    rax,0x1b
+   0xffffffff812a5e4f <+1343>:  jne    0xffffffff812a5e61 <__handle_mm_fault+1361>
+   0xffffffff812a5e51 <+1345>:  mov    rsi,QWORD PTR [rbp-0x70]
+   0xffffffff812a5e55 <+1349>:  mov    rdi,QWORD PTR [rbp-0xb8]
+   0xffffffff812a5e5c <+1356>:  call   0xffffffff812fe430 <pmd_migration_entry_wait>
+   0xffffffff812a5e61 <+1361>:  xor    r10d,r10d
+   0xffffffff812a5e64 <+1364>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a5e69 <+1369>:  mov    rdi,QWORD PTR [rbp-0x98]
+   0xffffffff812a5e70 <+1376>:  mov    rdx,QWORD PTR [rdi+0x90]
+   0xffffffff812a5e77 <+1383>:  test   rdx,rdx
+   0xffffffff812a5e7a <+1386>:  je     0xffffffff812a630c <__handle_mm_fault+2556>
+   0xffffffff812a5e80 <+1392>:  mov    rax,QWORD PTR [rdx+0x30]
+   0xffffffff812a5e84 <+1396>:  test   rax,rax
+   0xffffffff812a5e87 <+1399>:  je     0xffffffff812a5eb0 <__handle_mm_fault+1440>
+   0xffffffff812a5e89 <+1401>:  lea    r14,[rbp-0x98]
+   0xffffffff812a5e90 <+1408>:  mov    esi,0x1
+   0xffffffff812a5e95 <+1413>:  mov    rdi,r14
+   0xffffffff812a5e98 <+1416>:  call   0xffffffff82002460 <__x86_indirect_thunk_rax>
+   0xffffffff812a5e9d <+1421>:  mov    r10d,eax
+   0xffffffff812a5ea0 <+1424>:  test   ah,0x8
+   0xffffffff812a5ea3 <+1427>:  je     0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a5ea9 <+1433>:  mov    rdi,QWORD PTR [rbp-0x98]
+   0xffffffff812a5eb0 <+1440>:  mov    rdx,QWORD PTR [rbp-0x80]
+   0xffffffff812a5eb4 <+1444>:  mov    rsi,QWORD PTR [rbp-0x70]
+   0xffffffff812a5eb8 <+1448>:  xor    r8d,r8d
+   0xffffffff812a5ebb <+1451>:  xor    ecx,ecx
+   0xffffffff812a5ebd <+1453>:  call   0xffffffff813038f0 <__split_huge_pmd>
+   0xffffffff812a5ec2 <+1458>:  mov    r12,QWORD PTR [rbp-0x70]
+   0xffffffff812a5ec6 <+1462>:  mov    rdi,QWORD PTR [r12]
+   0xffffffff812a5eca <+1466>:  test   rdi,0xffffffffffffff9f
+   0xffffffff812a5ed1 <+1473>:  je     0xffffffff812a6333 <__handle_mm_fault+2595>
+   0xffffffff812a5ed7 <+1479>:  call   0xffffffff8129de50 <pmd_val>
+   0xffffffff812a5edc <+1484>:  bt     rax,0x3a
+   0xffffffff812a5ee1 <+1489>:  jb     0xffffffff812a5e61 <__handle_mm_fault+1361>
+   0xffffffff812a5ee7 <+1495>:  mov    rdi,r12
+   0xffffffff812a5eea <+1498>:  call   0xffffffff8129dfb0 <pmd_none_or_trans_huge_or_clear_bad>
+   0xffffffff812a5eef <+1503>:  test   eax,eax
+   0xffffffff812a5ef1 <+1505>:  jne    0xffffffff812a5e61 <__handle_mm_fault+1361>
+   0xffffffff812a5ef7 <+1511>:  mov    rax,QWORD PTR [rbp-0x70]
+   0xffffffff812a5efb <+1515>:  mov    rbx,QWORD PTR [rbp-0x80]
+   0xffffffff812a5eff <+1519>:  mov    rdi,QWORD PTR [rax]
+   0xffffffff812a5f02 <+1522>:  call   0xffffffff8129ded0 <pmd_page_vaddr>
+   0xffffffff812a5f07 <+1527>:  mov    r8,rax
+   0xffffffff812a5f0a <+1530>:  mov    rax,rbx
+   0xffffffff812a5f0d <+1533>:  shr    rax,0x9
+   0xffffffff812a5f11 <+1537>:  and    eax,0xff8
+   0xffffffff812a5f16 <+1542>:  add    rax,r8
+   0xffffffff812a5f19 <+1545>:  mov    QWORD PTR [rbp-0x48],rax
+   0xffffffff812a5f1d <+1549>:  mov    rax,QWORD PTR [rax]
+   0xffffffff812a5f20 <+1552>:  mov    QWORD PTR [rbp-0x60],rax
+   0xffffffff812a5f24 <+1556>:  mov    rdx,QWORD PTR [rbp-0x60]
+   0xffffffff812a5f28 <+1560>:  test   rdx,0xffffffffffffff9f
+   0xffffffff812a5f2f <+1567>:  jne    0xffffffff812a6244 <__handle_mm_fault+2356>
+   0xffffffff812a5f35 <+1573>:  mov    r12,QWORD PTR [rbp-0x98]
+   0xffffffff812a5f3c <+1580>:  mov    QWORD PTR [rbp-0x48],0x0
+   0xffffffff812a5f44 <+1588>:  mov    rax,QWORD PTR [r12+0x90]
+   0xffffffff812a5f4c <+1596>:  test   rax,rax
+   0xffffffff812a5f4f <+1599>:  je     0xffffffff812a637a <__handle_mm_fault+2666>
+   0xffffffff812a5f55 <+1605>:  cmp    QWORD PTR [rax+0x28],0x0
+   0xffffffff812a5f5a <+1610>:  je     0xffffffff812a65ab <__handle_mm_fault+3227>
+   0xffffffff812a5f60 <+1616>:  mov    r10d,DWORD PTR [rbp-0x78]
+   0xffffffff812a5f64 <+1620>:  and    r10d,0x1
+   0xffffffff812a5f68 <+1624>:  je     0xffffffff812a666f <__handle_mm_fault+3423>
+   0xffffffff812a5f6e <+1630>:  test   BYTE PTR [r12+0x50],0x8
+   0xffffffff812a5f74 <+1636>:  jne    0xffffffff812a67b6 <__handle_mm_fault+3750>
+   0xffffffff812a5f7a <+1642>:  cmp    QWORD PTR [r12+0x88],0x0
+   0xffffffff812a5f83 <+1651>:  je     0xffffffff812a6ceb <__handle_mm_fault+5083>
+   0xffffffff812a5f89 <+1657>:  mov    rcx,QWORD PTR [rbp-0x80]
+   0xffffffff812a5f8d <+1661>:  xor    r9d,r9d
+   0xffffffff812a5f90 <+1664>:  xor    esi,esi
+   0xffffffff812a5f92 <+1666>:  mov    edi,0x1100cca
+   0xffffffff812a5f97 <+1671>:  mov    rdx,r12
+   0xffffffff812a5f9a <+1674>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a5fa1 <+1681>:  mov    r8d,DWORD PTR gs:[rip+0x7ed7fa1f]        # 0x259c8 <numa_node>
+   0xffffffff812a5fa9 <+1689>:  call   0xffffffff812e6280 <alloc_pages_vma>
+   0xffffffff812a5fae <+1694>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a5fb5 <+1701>:  test   rax,rax
+   0xffffffff812a5fb8 <+1704>:  mov    QWORD PTR [rbp-0x58],rax
+   0xffffffff812a5fbc <+1708>:  mov    rdi,rax
+   0xffffffff812a5fbf <+1711>:  je     0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a5fc5 <+1717>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a5fcc <+1724>:  mov    rsi,QWORD PTR [r12+0x40]
+   0xffffffff812a5fd1 <+1729>:  xchg   ax,ax
+   0xffffffff812a5fd3 <+1731>:  mov    edx,0xcc0
+   0xffffffff812a5fd8 <+1736>:  call   0xffffffff81316150 <__mem_cgroup_charge>
+   0xffffffff812a5fdd <+1741>:  test   eax,eax
+   0xffffffff812a5fdf <+1743>:  jne    0xffffffff812a6c0d <__handle_mm_fault+4861>
+   0xffffffff812a5fe5 <+1749>:  mov    rdi,QWORD PTR [rbp-0x58]
+   0xffffffff812a5fe9 <+1753>:  xchg   ax,ax
+   0xffffffff812a5feb <+1755>:  mov    esi,0xcc0
+   0xffffffff812a5ff0 <+1760>:  call   0xffffffff812d65c0 <__cgroup_throttle_swaprate>
+   0xffffffff812a5ff5 <+1765>:  lea    rdi,[rbp-0x98]
+   0xffffffff812a5ffc <+1772>:  call   0xffffffff8129e0d0 <__do_fault>
+   0xffffffff812a6001 <+1777>:  mov    r10d,eax
+   0xffffffff812a6004 <+1780>:  test   eax,0xd73
+   0xffffffff812a6009 <+1785>:  jne    0xffffffff812a6c06 <__handle_mm_fault+4854>
+   0xffffffff812a600f <+1791>:  test   ah,0x10
+   0xffffffff812a6012 <+1794>:  jne    0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a6014 <+1796>:  mov    rsi,QWORD PTR [rbp-0x50]
+   0xffffffff812a6018 <+1800>:  mov    rdi,QWORD PTR [rbp-0x58]
+   0xffffffff812a601c <+1804>:  mov    DWORD PTR [rbp-0xa8],eax
+   0xffffffff812a6022 <+1810>:  call   0xffffffff8129e300 <copy_user_highpage>
+   0xffffffff812a6027 <+1815>:  mov    rax,QWORD PTR [rbp-0x58]
+   0xffffffff812a602b <+1819>:  bts    QWORD PTR [rax],0x2
+   0xffffffff812a6030 <+1824>:  lea    rdi,[rbp-0x98]
+   0xffffffff812a6037 <+1831>:  call   0xffffffff812a24e0 <finish_fault>
+   0xffffffff812a603c <+1836>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a6043 <+1843>:  mov    rdi,QWORD PTR [rbp-0x50]
+   0xffffffff812a6047 <+1847>:  or     r10d,eax
+   0xffffffff812a604a <+1850>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a6051 <+1857>:  call   0xffffffff8125e1c0 <unlock_page>
+   0xffffffff812a6056 <+1862>:  mov    rdi,QWORD PTR [rbp-0x50]
+   0xffffffff812a605a <+1866>:  call   0xffffffff8129e040 <put_page>
+   0xffffffff812a605f <+1871>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a6066 <+1878>:  test   r10d,0xd73
+   0xffffffff812a606d <+1885>:  jne    0xffffffff812a6c06 <__handle_mm_fault+4854>
+   0xffffffff812a6073 <+1891>:  mov    r12,QWORD PTR [rbp-0x38]
+   0xffffffff812a6077 <+1895>:  test   r12,r12
+   0xffffffff812a607a <+1898>:  je     0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a6080 <+1904>:  or     DWORD PTR [r12+0x30],0x200
+   0xffffffff812a6089 <+1913>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a6090 <+1920>:  call   QWORD PTR ds:0xffffffff82e4c930
+   0xffffffff812a6097 <+1927>:  mov    rbx,rax
+   0xffffffff812a609a <+1930>:  call   QWORD PTR ds:0xffffffff82e4c938
+   0xffffffff812a60a1 <+1937>:  mov    edx,0xffffffff
+   0xffffffff812a60a6 <+1942>:  mov    esi,0x25
+   0xffffffff812a60ab <+1947>:  mov    rdi,r12
+   0xffffffff812a60ae <+1950>:  call   0xffffffff81312550 <__mod_lruvec_page_state>
+   0xffffffff812a60b3 <+1955>:  and    bh,0x2
+   0xffffffff812a60b6 <+1958>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a60bd <+1965>:  jne    0xffffffff812a6b0a <__handle_mm_fault+4602>
+   0xffffffff812a60c3 <+1971>:  xor    esi,esi
+   0xffffffff812a60c5 <+1973>:  mov    rdi,r12
+   0xffffffff812a60c8 <+1976>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a60cf <+1983>:  call   0xffffffff812c49f0 <__free_pages>
+   0xffffffff812a60d4 <+1988>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a60db <+1995>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a60e0 <+2000>:  mov    rsi,r13
+   0xffffffff812a60e3 <+2003>:  lea    rdi,[rbp-0x98]
+   0xffffffff812a60ea <+2010>:  call   0xffffffff81301f40 <huge_pud_set_accessed>
+   0xffffffff812a60ef <+2015>:  xor    r10d,r10d
+   0xffffffff812a60f2 <+2018>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a60f7 <+2023>:  mov    rsi,r14
+   0xffffffff812a60fa <+2026>:  mov    rdi,rbx
+   0xffffffff812a60fd <+2029>:  call   0xffffffff812d9a60 <linear_hugepage_index>
+   0xffffffff812a6102 <+2034>:  jmp    0xffffffff812a5995 <__handle_mm_fault+133>
+   0xffffffff812a6107 <+2039>:  mov    rdi,QWORD PTR [rbp-0xb8]
+   0xffffffff812a610e <+2046>:  mov    rdx,r14
+   0xffffffff812a6111 <+2049>:  mov    rsi,r12
+   0xffffffff812a6114 <+2052>:  call   0xffffffff812a27e0 <__p4d_alloc>
+   0xffffffff812a6119 <+2057>:  test   eax,eax
+   0xffffffff812a611b <+2059>:  je     0xffffffff812a59e2 <__handle_mm_fault+210>
+   0xffffffff812a6121 <+2065>:  jmp    0xffffffff812a5de4 <__handle_mm_fault+1236>
+   0xffffffff812a6126 <+2070>:  mov    rdi,QWORD PTR [rbp-0xb8]
+   0xffffffff812a612d <+2077>:  mov    rdx,r14
+   0xffffffff812a6130 <+2080>:  mov    rsi,rax
+   0xffffffff812a6133 <+2083>:  call   0xffffffff812a2940 <__pud_alloc>
+   0xffffffff812a6138 <+2088>:  test   eax,eax
+   0xffffffff812a613a <+2090>:  je     0xffffffff812a5a06 <__handle_mm_fault+246>
+   0xffffffff812a6140 <+2096>:  jmp    0xffffffff812a5de4 <__handle_mm_fault+1236>
+   0xffffffff812a6145 <+2101>:  and    rax,0xffffffffffe00000
+   0xffffffff812a614b <+2107>:  jmp    0xffffffff812a5e06 <__handle_mm_fault+1270>
+   0xffffffff812a6150 <+2112>:  mov    rdx,QWORD PTR [rip+0x1ec7259]        # 0xffffffff8316d3b0 <transparent_hugepage_flags>
+   0xffffffff812a6157 <+2119>:  test   dl,0x1
+   0xffffffff812a615a <+2122>:  jne    0xffffffff812a5c4a <__handle_mm_fault+826>
+   0xffffffff812a6160 <+2128>:  mov    rcx,QWORD PTR [rbx+0x50]
+   0xffffffff812a6164 <+2132>:  test   ecx,0x40000000
+   0xffffffff812a616a <+2138>:  jne    0xffffffff812a5c4a <__handle_mm_fault+826>
+   0xffffffff812a6170 <+2144>:  mov    rsi,QWORD PTR [rbx+0x40]
+   0xffffffff812a6174 <+2148>:  mov    rsi,QWORD PTR [rsi+0x380]
+   0xffffffff812a617b <+2155>:  test   esi,0x1000000
+   0xffffffff812a6181 <+2161>:  jne    0xffffffff812a5c4a <__handle_mm_fault+826>
+   0xffffffff812a6187 <+2167>:  test   ch,0x1
+   0xffffffff812a618a <+2170>:  je     0xffffffff812a61a2 <__handle_mm_fault+2194>
+   0xffffffff812a618c <+2172>:  mov    rsi,rcx
+   0xffffffff812a618f <+2175>:  and    esi,0x18000
+   0xffffffff812a6195 <+2181>:  cmp    rsi,0x18000
+   0xffffffff812a619c <+2188>:  je     0xffffffff812a5c4a <__handle_mm_fault+826>
+   0xffffffff812a61a2 <+2194>:  test   dl,0x2
+   0xffffffff812a61a5 <+2197>:  jne    0xffffffff812a61d8 <__handle_mm_fault+2248>
+   0xffffffff812a61a7 <+2199>:  mov    rsi,QWORD PTR [rbx+0xa0]
+   0xffffffff812a61ae <+2206>:  test   rsi,rsi
+   0xffffffff812a61b1 <+2209>:  je     0xffffffff812a61c3 <__handle_mm_fault+2227>
+   0xffffffff812a61b3 <+2211>:  mov    rsi,QWORD PTR [rsi+0xd8]
+   0xffffffff812a61ba <+2218>:  mov    rsi,QWORD PTR [rsi]
+   0xffffffff812a61bd <+2221>:  test   BYTE PTR [rsi+0xd],0x20
+   0xffffffff812a61c1 <+2225>:  jne    0xffffffff812a61d8 <__handle_mm_fault+2248>
+   0xffffffff812a61c3 <+2227>:  and    edx,0x4
+   0xffffffff812a61c6 <+2230>:  je     0xffffffff812a5c4a <__handle_mm_fault+826>
+   0xffffffff812a61cc <+2236>:  test   ecx,0x20000000
+   0xffffffff812a61d2 <+2242>:  je     0xffffffff812a5c4a <__handle_mm_fault+826>
+   0xffffffff812a61d8 <+2248>:  mov    r12,QWORD PTR [rbp-0x98]
+   0xffffffff812a61df <+2255>:  mov    rax,QWORD PTR [r12+0x90]
+   0xffffffff812a61e7 <+2263>:  test   rax,rax
+   0xffffffff812a61ea <+2266>:  je     0xffffffff812a6b16 <__handle_mm_fault+4614>
+   0xffffffff812a61f0 <+2272>:  mov    rdx,QWORD PTR [rax+0x30]
+   0xffffffff812a61f4 <+2276>:  test   rdx,rdx
+   0xffffffff812a61f7 <+2279>:  je     0xffffffff812a6342 <__handle_mm_fault+2610>
+   0xffffffff812a61fd <+2285>:  lea    r14,[rbp-0x98]
+   0xffffffff812a6204 <+2292>:  mov    esi,0x1
+   0xffffffff812a6209 <+2297>:  mov    rdi,r14
+   0xffffffff812a620c <+2300>:  call   0xffffffff820024c0 <__x86_indirect_thunk_rdx>
+   0xffffffff812a6211 <+2305>:  mov    r10d,eax
+   0xffffffff812a6214 <+2308>:  test   r10d,0x800
+   0xffffffff812a621b <+2315>:  jne    0xffffffff812a5ec2 <__handle_mm_fault+1458>
+   0xffffffff812a6221 <+2321>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a6226 <+2326>:  test   BYTE PTR [rbx+0x50],0x7
+   0xffffffff812a622a <+2330>:  je     0xffffffff812a5cd2 <__handle_mm_fault+962>
+   0xffffffff812a6230 <+2336>:  lea    rdi,[rbp-0x98]
+   0xffffffff812a6237 <+2343>:  call   0xffffffff81302380 <do_huge_pmd_numa_page>
+   0xffffffff812a623c <+2348>:  mov    r10d,eax
+   0xffffffff812a623f <+2351>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a6244 <+2356>:  cmp    QWORD PTR [rbp-0x48],0x0
+   0xffffffff812a6249 <+2361>:  je     0xffffffff812a6c22 <__handle_mm_fault+4882>
+   0xffffffff812a624f <+2367>:  mov    rax,QWORD PTR [rip+0x14290fa]        # 0xffffffff826cf350 <physical_mask>
+   0xffffffff812a6256 <+2374>:  and    rax,0xfffffffffffff000
+   0xffffffff812a625c <+2380>:  not    rax
+   0xffffffff812a625f <+2383>:  and    rax,rdx
+   0xffffffff812a6262 <+2386>:  test   eax,0x101
+   0xffffffff812a6267 <+2391>:  je     0xffffffff812a634f <__handle_mm_fault+2623>
+   0xffffffff812a626d <+2397>:  mov    rcx,rax
+   0xffffffff812a6270 <+2400>:  mov    rdx,QWORD PTR [rbp-0x70]
+   0xffffffff812a6274 <+2404>:  and    ecx,0x101
+   0xffffffff812a627a <+2410>:  cmp    rcx,0x100
+   0xffffffff812a6281 <+2417>:  jne    0xffffffff812a6296 <__handle_mm_fault+2438>
+   0xffffffff812a6283 <+2419>:  mov    r12,QWORD PTR [rbp-0x98]
+   0xffffffff812a628a <+2426>:  test   BYTE PTR [r12+0x50],0x7
+   0xffffffff812a6290 <+2432>:  jne    0xffffffff812a685a <__handle_mm_fault+3914>
+   0xffffffff812a6296 <+2438>:  mov    rdi,QWORD PTR [rdx]
+   0xffffffff812a6299 <+2441>:  call   0xffffffff8129de80 <pmd_pfn>
+   0xffffffff812a629e <+2446>:  mov    rdi,QWORD PTR [rip+0x1410593]        # 0xffffffff826b6838 <vmemmap_base>
+   0xffffffff812a62a5 <+2453>:  shl    rax,0x6
+   0xffffffff812a62a9 <+2457>:  add    rdi,rax
+   0xffffffff812a62ac <+2460>:  add    rdi,0x28
+   0xffffffff812a62b0 <+2464>:  mov    QWORD PTR [rbp-0x40],rdi
+   0xffffffff812a62b4 <+2468>:  call   0xffffffff81c499b0 <_raw_spin_lock>
+   0xffffffff812a62b9 <+2473>:  mov    rdx,QWORD PTR [rbp-0x48]
+   0xffffffff812a62bd <+2477>:  mov    rax,QWORD PTR [rbp-0x60]
+   0xffffffff812a62c1 <+2481>:  cmp    rax,QWORD PTR [rdx]
+   0xffffffff812a62c4 <+2484>:  jne    0xffffffff812a62fe <__handle_mm_fault+2542>
+   0xffffffff812a62c6 <+2486>:  mov    r8d,DWORD PTR [rbp-0x78]
+   0xffffffff812a62ca <+2490>:  test   r8b,0x1
+   0xffffffff812a62ce <+2494>:  je     0xffffffff812a62e3 <__handle_mm_fault+2515>
+   0xffffffff812a62d0 <+2496>:  mov    ecx,eax
+   0xffffffff812a62d2 <+2498>:  or     rax,0x840
+   0xffffffff812a62d8 <+2504>:  and    ecx,0x2
+   0xffffffff812a62db <+2507>:  test   ecx,ecx
+   0xffffffff812a62dd <+2509>:  je     0xffffffff812a665b <__handle_mm_fault+3403>
+   0xffffffff812a62e3 <+2515>:  or     rax,0x20
+   0xffffffff812a62e7 <+2519>:  mov    rsi,QWORD PTR [rbp-0x80]
+   0xffffffff812a62eb <+2523>:  mov    rdi,QWORD PTR [rbp-0x98]
+   0xffffffff812a62f2 <+2530>:  and    r8d,0x1
+   0xffffffff812a62f6 <+2534>:  mov    rcx,rax
+   0xffffffff812a62f9 <+2537>:  call   0xffffffff81089710 <ptep_set_access_flags>
+   0xffffffff812a62fe <+2542>:  mov    rdi,QWORD PTR [rbp-0x40]
+   0xffffffff812a6302 <+2546>:  call   0xffffffff8129de70 <queued_spin_unlock>
+   0xffffffff812a6307 <+2551>:  jmp    0xffffffff812a5e61 <__handle_mm_fault+1361>
+   0xffffffff812a630c <+2556>:  test   BYTE PTR [rdi+0x51],0x10
+   0xffffffff812a6310 <+2560>:  je     0xffffffff812a6363 <__handle_mm_fault+2643>
+   0xffffffff812a6312 <+2562>:  test   ah,0x4
+   0xffffffff812a6315 <+2565>:  je     0xffffffff812a6363 <__handle_mm_fault+2643>
+   0xffffffff812a6317 <+2567>:  lea    r14,[rbp-0x98]
+   0xffffffff812a631e <+2574>:  mov    esi,0x1000
+   0xffffffff812a6323 <+2579>:  mov    rdi,r14
+   0xffffffff812a6326 <+2582>:  call   0xffffffff8138d5e0 <handle_userfault>
+   0xffffffff812a632b <+2587>:  mov    r10d,eax
+   0xffffffff812a632e <+2590>:  jmp    0xffffffff812a6214 <__handle_mm_fault+2308>
+   0xffffffff812a6333 <+2595>:  mov    r12,QWORD PTR [rbp-0x98]
+   0xffffffff812a633a <+2602>:  mov    rax,QWORD PTR [r12+0x90]
+   0xffffffff812a6342 <+2610>:  mov    QWORD PTR [rbp-0x48],0x0
+   0xffffffff812a634a <+2618>:  jmp    0xffffffff812a5f4c <__handle_mm_fault+1596>
+   0xffffffff812a634f <+2623>:  lea    rdi,[rbp-0x98]
+   0xffffffff812a6356 <+2630>:  call   0xffffffff812a1820 <do_swap_page>
+   0xffffffff812a635b <+2635>:  mov    r10d,eax
+   0xffffffff812a635e <+2638>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a6363 <+2643>:  lea    r14,[rbp-0x98]
+   0xffffffff812a636a <+2650>:  mov    rdi,r14
+   0xffffffff812a636d <+2653>:  call   0xffffffff81304e20 <do_huge_pmd_wp_page>
+   0xffffffff812a6372 <+2658>:  mov    r10d,eax
+   0xffffffff812a6375 <+2661>:  jmp    0xffffffff812a6214 <__handle_mm_fault+2308>
+   0xffffffff812a637a <+2666>:  mov    r10d,0x2
+   0xffffffff812a6380 <+2672>:  test   BYTE PTR [r12+0x50],0x8
+   0xffffffff812a6386 <+2678>:  jne    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a638c <+2684>:  mov    r13,QWORD PTR [rbp-0x70]
+   0xffffffff812a6390 <+2688>:  mov    rbx,QWORD PTR [r13+0x0]
+   0xffffffff812a6394 <+2692>:  mov    rax,rbx
+   0xffffffff812a6397 <+2695>:  and    rax,0xffffffffffffff9f
+   0xffffffff812a639b <+2699>:  je     0xffffffff812a6ddf <__handle_mm_fault+5327>
+   0xffffffff812a63a1 <+2705>:  test   rax,rax
+   0xffffffff812a63a4 <+2708>:  je     0xffffffff812a5e61 <__handle_mm_fault+1361>
+   0xffffffff812a63aa <+2714>:  mov    rdi,rbx
+   0xffffffff812a63ad <+2717>:  call   0xffffffff8129de50 <pmd_val>
+   0xffffffff812a63b2 <+2722>:  movabs rdx,0x400000000000080
+   0xffffffff812a63bc <+2732>:  and    rax,rdx
+   0xffffffff812a63bf <+2735>:  cmp    rax,0x80
+   0xffffffff812a63c5 <+2741>:  je     0xffffffff812a5e61 <__handle_mm_fault+1361>
+   0xffffffff812a63cb <+2747>:  mov    rdx,QWORD PTR [rip+0x1428f7e]        # 0xffffffff826cf350 <physical_mask>
+   0xffffffff812a63d2 <+2754>:  mov    rax,rdx
+   0xffffffff812a63d5 <+2757>:  and    rax,0xfffffffffffff000
+   0xffffffff812a63db <+2763>:  test   bl,0x80
+   0xffffffff812a63de <+2766>:  je     0xffffffff812a63e9 <__handle_mm_fault+2777>
+   0xffffffff812a63e0 <+2768>:  mov    rax,rdx
+   0xffffffff812a63e3 <+2771>:  and    rax,0xffffffffffe00000
+   0xffffffff812a63e9 <+2777>:  not    rax
+   0xffffffff812a63ec <+2780>:  and    rax,rbx
+   0xffffffff812a63ef <+2783>:  test   eax,0x181
+   0xffffffff812a63f4 <+2788>:  je     0xffffffff812a5e61 <__handle_mm_fault+1361>
+   0xffffffff812a63fa <+2794>:  mov    rdx,QWORD PTR [rip+0x1bb7317]        # 0xffffffff82e5d718 <sme_me_mask>
+   0xffffffff812a6401 <+2801>:  and    rax,0xfffffffffffffffb
+   0xffffffff812a6405 <+2805>:  or     rdx,0x63
+   0xffffffff812a6409 <+2809>:  cmp    rax,rdx
+   0xffffffff812a640c <+2812>:  jne    0xffffffff812a6dbb <__handle_mm_fault+5291>
+   0xffffffff812a6412 <+2818>:  mov    r10d,DWORD PTR [rbp-0x78]
+   0xffffffff812a6416 <+2822>:  and    r10d,0x1
+   0xffffffff812a641a <+2826>:  je     0xffffffff812a6b2d <__handle_mm_fault+4637>
+   0xffffffff812a6420 <+2832>:  cmp    QWORD PTR [r12+0x88],0x0
+   0xffffffff812a6429 <+2841>:  je     0xffffffff812a5dc6 <__handle_mm_fault+1206>
+   0xffffffff812a642f <+2847>:  mov    rcx,QWORD PTR [rbp-0x80]
+   0xffffffff812a6433 <+2851>:  xor    r9d,r9d
+   0xffffffff812a6436 <+2854>:  xor    esi,esi
+   0xffffffff812a6438 <+2856>:  mov    rdx,r12
+   0xffffffff812a643b <+2859>:  mov    edi,0x1100dca
+   0xffffffff812a6440 <+2864>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a6447 <+2871>:  mov    r8d,DWORD PTR gs:[rip+0x7ed7f579]        # 0x259c8 <numa_node>
+   0xffffffff812a644f <+2879>:  call   0xffffffff812e6280 <alloc_pages_vma>
+   0xffffffff812a6454 <+2884>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a645b <+2891>:  test   rax,rax
+   0xffffffff812a645e <+2894>:  mov    r13,rax
+   0xffffffff812a6461 <+2897>:  je     0xffffffff812a5de4 <__handle_mm_fault+1236>
+   0xffffffff812a6467 <+2903>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a646e <+2910>:  mov    rsi,QWORD PTR [r12+0x40]
+   0xffffffff812a6473 <+2915>:  xchg   ax,ax
+   0xffffffff812a6475 <+2917>:  mov    edx,0xcc0
+   0xffffffff812a647a <+2922>:  mov    rdi,rax
+   0xffffffff812a647d <+2925>:  call   0xffffffff81316150 <__mem_cgroup_charge>
+   0xffffffff812a6482 <+2930>:  test   eax,eax
+   0xffffffff812a6484 <+2932>:  jne    0xffffffff812a6dcb <__handle_mm_fault+5307>
+   0xffffffff812a648a <+2938>:  xchg   ax,ax
+   0xffffffff812a648c <+2940>:  mov    esi,0xcc0
+   0xffffffff812a6491 <+2945>:  mov    rdi,r13
+   0xffffffff812a6494 <+2948>:  call   0xffffffff812d65c0 <__cgroup_throttle_swaprate>
+   0xffffffff812a6499 <+2953>:  bts    QWORD PTR [r13+0x0],0x2
+   0xffffffff812a649f <+2959>:  mov    rsi,QWORD PTR [r12+0x48]
+   0xffffffff812a64a4 <+2964>:  mov    rdi,r13
+   0xffffffff812a64a7 <+2967>:  sub    rdi,QWORD PTR [rip+0x141038a]        # 0xffffffff826b6838 <vmemmap_base>
+   0xffffffff812a64ae <+2974>:  sar    rdi,0x6
+   0xffffffff812a64b2 <+2978>:  call   0xffffffff8129e500 <pfn_pte>
+   0xffffffff812a64b7 <+2983>:  mov    rbx,rax
+   0xffffffff812a64ba <+2986>:  test   BYTE PTR [r12+0x50],0x2
+   0xffffffff812a64c0 <+2992>:  je     0xffffffff812a64c9 <__handle_mm_fault+3001>
+   0xffffffff812a64c2 <+2994>:  or     rbx,0x842
+   0xffffffff812a64c9 <+3001>:  mov    rax,QWORD PTR [rbp-0x70]
+   0xffffffff812a64cd <+3005>:  mov    rdi,QWORD PTR [rax]
+   0xffffffff812a64d0 <+3008>:  call   0xffffffff8129de80 <pmd_pfn>
+   0xffffffff812a64d5 <+3013>:  mov    r15,QWORD PTR [rip+0x141035c]        # 0xffffffff826b6838 <vmemmap_base>
+   0xffffffff812a64dc <+3020>:  mov    r14,QWORD PTR [rbp-0x80]
+   0xffffffff812a64e0 <+3024>:  shl    rax,0x6
+   0xffffffff812a64e4 <+3028>:  add    r15,rax
+   0xffffffff812a64e7 <+3031>:  mov    rax,QWORD PTR [rbp-0x70]
+   0xffffffff812a64eb <+3035>:  shr    r14,0x9
+   0xffffffff812a64ef <+3039>:  add    r15,0x28
+   0xffffffff812a64f3 <+3043>:  and    r14d,0xff8
+   0xffffffff812a64fa <+3050>:  mov    rdi,QWORD PTR [rax]
+   0xffffffff812a64fd <+3053>:  call   0xffffffff8129ded0 <pmd_page_vaddr>
+   0xffffffff812a6502 <+3058>:  mov    rdi,r15
+   0xffffffff812a6505 <+3061>:  mov    QWORD PTR [rbp-0x40],r15
+   0xffffffff812a6509 <+3065>:  add    r14,rax
+   0xffffffff812a650c <+3068>:  call   0xffffffff81c499b0 <_raw_spin_lock>
+   0xffffffff812a6511 <+3073>:  mov    QWORD PTR [rbp-0x48],r14
+   0xffffffff812a6515 <+3077>:  test   QWORD PTR [r14],0xffffffffffffff9f
+   0xffffffff812a651c <+3084>:  jne    0xffffffff812a6db6 <__handle_mm_fault+5286>
+   0xffffffff812a6522 <+3090>:  mov    rdi,QWORD PTR [r12+0x40]
+   0xffffffff812a6527 <+3095>:  mov    rax,QWORD PTR [rdi+0x380]
+   0xffffffff812a652e <+3102>:  test   eax,0x400000
+   0xffffffff812a6533 <+3107>:  jne    0xffffffff812a6d95 <__handle_mm_fault+5253>
+   0xffffffff812a6539 <+3113>:  test   BYTE PTR [r12+0x51],0x2
+   0xffffffff812a653f <+3119>:  jne    0xffffffff812a6d6b <__handle_mm_fault+5211>
+   0xffffffff812a6545 <+3125>:  mov    rax,QWORD PTR gs:0x17bc0
+   0xffffffff812a654e <+3134>:  cmp    rdi,QWORD PTR [rax+0x898]
+   0xffffffff812a6555 <+3141>:  jne    0xffffffff812a6d57 <__handle_mm_fault+5191>
+   0xffffffff812a655b <+3147>:  add    DWORD PTR [rax+0x8d8],0x1
+   0xffffffff812a6562 <+3154>:  mov    rdx,QWORD PTR [rbp-0x80]
+   0xffffffff812a6566 <+3158>:  mov    rsi,r12
+   0xffffffff812a6569 <+3161>:  mov    rdi,r13
+   0xffffffff812a656c <+3164>:  xor    ecx,ecx
+   0xffffffff812a656e <+3166>:  call   0xffffffff812b7b90 <page_add_new_anon_rmap>
+   0xffffffff812a6573 <+3171>:  mov    rsi,r12
+   0xffffffff812a6576 <+3174>:  mov    rdi,r13
+   0xffffffff812a6579 <+3177>:  call   0xffffffff812718e0 <lru_cache_add_inactive_or_unevictable>
+   0xffffffff812a657e <+3182>:  mov    rdi,QWORD PTR [rbp-0x48]
+   0xffffffff812a6582 <+3186>:  mov    rsi,rbx
+   0xffffffff812a6585 <+3189>:  call   QWORD PTR ds:0xffffffff82e4ca08
+   0xffffffff812a658c <+3196>:  xor    r10d,r10d
+   0xffffffff812a658f <+3199>:  mov    rdi,QWORD PTR [rbp-0x40]
+   0xffffffff812a6593 <+3203>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a659a <+3210>:  call   0xffffffff8129de70 <queued_spin_unlock>
+   0xffffffff812a659f <+3215>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a65a6 <+3222>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a65ab <+3227>:  mov    rax,QWORD PTR [rbp-0x70]
+   0xffffffff812a65af <+3231>:  mov    rdi,QWORD PTR [rax]
+   0xffffffff812a65b2 <+3234>:  mov    rax,QWORD PTR [rip+0x1428d97]        # 0xffffffff826cf350 <physical_mask>
+   0xffffffff812a65b9 <+3241>:  mov    rdx,rax
+   0xffffffff812a65bc <+3244>:  and    rax,0xfffffffffffff000
+   0xffffffff812a65c2 <+3250>:  and    rdx,0xffffffffffe00000
+   0xffffffff812a65c9 <+3257>:  test   dil,0x80
+   0xffffffff812a65cd <+3261>:  cmovne rax,rdx
+   0xffffffff812a65d1 <+3265>:  not    rax
+   0xffffffff812a65d4 <+3268>:  and    rax,rdi
+   0xffffffff812a65d7 <+3271>:  test   eax,0x181
+   0xffffffff812a65dc <+3276>:  je     0xffffffff812a6d1f <__handle_mm_fault+5135>
+   0xffffffff812a65e2 <+3282>:  call   0xffffffff8129de80 <pmd_pfn>
+   0xffffffff812a65e7 <+3287>:  mov    r12,QWORD PTR [rip+0x141024a]        # 0xffffffff826b6838 <vmemmap_base>
+   0xffffffff812a65ee <+3294>:  mov    rbx,QWORD PTR [rbp-0x80]
+   0xffffffff812a65f2 <+3298>:  shl    rax,0x6
+   0xffffffff812a65f6 <+3302>:  add    r12,rax
+   0xffffffff812a65f9 <+3305>:  mov    rax,QWORD PTR [rbp-0x70]
+   0xffffffff812a65fd <+3309>:  shr    rbx,0x9
+   0xffffffff812a6601 <+3313>:  add    r12,0x28
+   0xffffffff812a6605 <+3317>:  and    ebx,0xff8
+   0xffffffff812a660b <+3323>:  mov    rdi,QWORD PTR [rax]
+   0xffffffff812a660e <+3326>:  call   0xffffffff8129ded0 <pmd_page_vaddr>
+   0xffffffff812a6613 <+3331>:  mov    rdi,r12
+   0xffffffff812a6616 <+3334>:  mov    QWORD PTR [rbp-0x40],r12
+   0xffffffff812a661a <+3338>:  add    rbx,rax
+   0xffffffff812a661d <+3341>:  call   0xffffffff81c499b0 <_raw_spin_lock>
+   0xffffffff812a6622 <+3346>:  mov    QWORD PTR [rbp-0x48],rbx
+   0xffffffff812a6626 <+3350>:  mov    rax,QWORD PTR [rbx]
+   0xffffffff812a6629 <+3353>:  mov    rdi,QWORD PTR [rbp-0x40]
+   0xffffffff812a662d <+3357>:  and    rax,0xffffffffffffff9f
+   0xffffffff812a6631 <+3361>:  cmp    rax,0x1
+   0xffffffff812a6635 <+3365>:  sbb    r10d,r10d
+   0xffffffff812a6638 <+3368>:  and    r10b,0x2
+   0xffffffff812a663c <+3372>:  add    r10d,0x100
+   0xffffffff812a6643 <+3379>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a664a <+3386>:  call   0xffffffff8129de70 <queued_spin_unlock>
+   0xffffffff812a664f <+3391>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a6656 <+3398>:  jmp    0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a665b <+3403>:  lea    rdi,[rbp-0x98]
+   0xffffffff812a6662 <+3410>:  call   0xffffffff812a1410 <do_wp_page>
+   0xffffffff812a6667 <+3415>:  mov    r10d,eax
+   0xffffffff812a666a <+3418>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a666f <+3423>:  cmp    QWORD PTR [rax+0x38],0x0
+   0xffffffff812a6674 <+3428>:  je     0xffffffff812a6bd4 <__handle_mm_fault+4804>
+   0xffffffff812a667a <+3434>:  cmp    QWORD PTR [rip+0x1ec57db],0x1fff        # 0xffffffff8316be60 <fault_around_bytes>
+   0xffffffff812a6685 <+3445>:  jbe    0xffffffff812a6bd4 <__handle_mm_fault+4804>
+   0xffffffff812a668b <+3451>:  test   BYTE PTR [r12+0x54],0x20
+   0xffffffff812a6691 <+3457>:  jne    0xffffffff812a6bd4 <__handle_mm_fault+4804>
+   0xffffffff812a6697 <+3463>:  mov    rax,QWORD PTR [rip+0x1ec57c2]        # 0xffffffff8316be60 <fault_around_bytes>
+   0xffffffff812a669e <+3470>:  mov    rdx,QWORD PTR [rbp-0x80]
+   0xffffffff812a66a2 <+3474>:  mov    rcx,QWORD PTR [r12]
+   0xffffffff812a66a6 <+3478>:  mov    r15,QWORD PTR [rbp-0x88]
+   0xffffffff812a66ad <+3485>:  mov    rsi,rax
+   0xffffffff812a66b0 <+3488>:  and    rax,0xfffffffffffff000
+   0xffffffff812a66b6 <+3494>:  neg    rax
+   0xffffffff812a66b9 <+3497>:  shr    rsi,0xc
+   0xffffffff812a66bd <+3501>:  and    rax,rdx
+   0xffffffff812a66c0 <+3504>:  cmp    rax,rcx
+   0xffffffff812a66c3 <+3507>:  cmovb  rax,rcx
+   0xffffffff812a66c7 <+3511>:  sub    rdx,rax
+   0xffffffff812a66ca <+3514>:  shr    rax,0xc
+   0xffffffff812a66ce <+3518>:  shr    rdx,0xc
+   0xffffffff812a66d2 <+3522>:  not    rax
+   0xffffffff812a66d5 <+3525>:  and    edx,0x1ff
+   0xffffffff812a66db <+3531>:  and    eax,0x1ff
+   0xffffffff812a66e0 <+3536>:  sub    r15,rdx
+   0xffffffff812a66e3 <+3539>:  lea    rdx,[rsi+r15*1-0x1]
+   0xffffffff812a66e8 <+3544>:  add    rax,r15
+   0xffffffff812a66eb <+3547>:  cmp    rax,rdx
+   0xffffffff812a66ee <+3550>:  cmova  rax,rdx
+   0xffffffff812a66f2 <+3554>:  mov    rdx,QWORD PTR [r12+0x8]
+   0xffffffff812a66f7 <+3559>:  sub    rdx,rcx
+   0xffffffff812a66fa <+3562>:  mov    rcx,QWORD PTR [r12+0x98]
+   0xffffffff812a6702 <+3570>:  shr    rdx,0xc
+   0xffffffff812a6706 <+3574>:  lea    r13,[rdx+rcx*1-0x1]
+   0xffffffff812a670b <+3579>:  cmp    rax,r13
+   0xffffffff812a670e <+3582>:  cmovbe r13,rax
+   0xffffffff812a6712 <+3586>:  mov    rax,QWORD PTR [rbp-0x70]
+   0xffffffff812a6716 <+3590>:  test   QWORD PTR [rax],0xffffffffffffff9f
+   0xffffffff812a671d <+3597>:  je     0xffffffff812a6cbe <__handle_mm_fault+5038>
+   0xffffffff812a6723 <+3603>:  mov    rax,QWORD PTR [r12+0x90]
+   0xffffffff812a672b <+3611>:  lea    r14,[rbp-0x98]
+   0xffffffff812a6732 <+3618>:  mov    rdx,r13
+   0xffffffff812a6735 <+3621>:  mov    rsi,r15
+   0xffffffff812a6738 <+3624>:  mov    rdi,r14
+   0xffffffff812a673b <+3627>:  mov    rax,QWORD PTR [rax+0x38]
+   0xffffffff812a673f <+3631>:  call   0xffffffff82002460 <__x86_indirect_thunk_rax>
+   0xffffffff812a6744 <+3636>:  mov    r10d,eax
+   0xffffffff812a6747 <+3639>:  test   eax,eax
+   0xffffffff812a6749 <+3641>:  jne    0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a674f <+3647>:  mov    rdi,r14
+   0xffffffff812a6752 <+3650>:  call   0xffffffff8129e0d0 <__do_fault>
+   0xffffffff812a6757 <+3655>:  mov    r10d,eax
+   0xffffffff812a675a <+3658>:  test   eax,0xd73
+   0xffffffff812a675f <+3663>:  jne    0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a6765 <+3669>:  mov    rdi,r14
+   0xffffffff812a6768 <+3672>:  mov    DWORD PTR [rbp-0xa8],eax
+   0xffffffff812a676e <+3678>:  call   0xffffffff812a24e0 <finish_fault>
+   0xffffffff812a6773 <+3683>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a677a <+3690>:  mov    rdi,QWORD PTR [rbp-0x50]
+   0xffffffff812a677e <+3694>:  or     r10d,eax
+   0xffffffff812a6781 <+3697>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a6788 <+3704>:  call   0xffffffff8125e1c0 <unlock_page>
+   0xffffffff812a678d <+3709>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a6794 <+3716>:  test   r10d,0xd73
+   0xffffffff812a679b <+3723>:  je     0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a67a1 <+3729>:  mov    rdi,QWORD PTR [rbp-0x50]
+   0xffffffff812a67a5 <+3733>:  call   0xffffffff8129e040 <put_page>
+   0xffffffff812a67aa <+3738>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a67b1 <+3745>:  jmp    0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a67b6 <+3750>:  lea    r14,[rbp-0x98]
+   0xffffffff812a67bd <+3757>:  mov    rdi,r14
+   0xffffffff812a67c0 <+3760>:  call   0xffffffff8129e0d0 <__do_fault>
+   0xffffffff812a67c5 <+3765>:  mov    r10d,eax
+   0xffffffff812a67c8 <+3768>:  test   eax,0xd73
+   0xffffffff812a67cd <+3773>:  jne    0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a67d3 <+3779>:  mov    rax,QWORD PTR [r12+0x90]
+   0xffffffff812a67db <+3787>:  cmp    QWORD PTR [rax+0x48],0x0
+   0xffffffff812a67e0 <+3792>:  je     0xffffffff812a6816 <__handle_mm_fault+3846>
+   0xffffffff812a67e2 <+3794>:  mov    rdi,QWORD PTR [rbp-0x50]
+   0xffffffff812a67e6 <+3798>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a67ed <+3805>:  call   0xffffffff8125e1c0 <unlock_page>
+   0xffffffff812a67f2 <+3810>:  mov    rdi,r14
+   0xffffffff812a67f5 <+3813>:  call   0xffffffff8129ed90 <do_page_mkwrite>
+   0xffffffff812a67fa <+3818>:  mov    ebx,eax
+   0xffffffff812a67fc <+3820>:  test   eax,eax
+   0xffffffff812a67fe <+3822>:  je     0xffffffff812a6d0e <__handle_mm_fault+5118>
+   0xffffffff812a6804 <+3828>:  test   eax,0x973
+   0xffffffff812a6809 <+3833>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a6810 <+3840>:  jne    0xffffffff812a6d0e <__handle_mm_fault+5118>
+   0xffffffff812a6816 <+3846>:  mov    rdi,r14
+   0xffffffff812a6819 <+3849>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a6820 <+3856>:  call   0xffffffff812a24e0 <finish_fault>
+   0xffffffff812a6825 <+3861>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a682c <+3868>:  or     r10d,eax
+   0xffffffff812a682f <+3871>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a6836 <+3878>:  and    r10d,0xd73
+   0xffffffff812a683d <+3885>:  jne    0xffffffff812a6e08 <__handle_mm_fault+5368>
+   0xffffffff812a6843 <+3891>:  mov    rdi,r14
+   0xffffffff812a6846 <+3894>:  call   0xffffffff8129e3b0 <fault_dirty_shared_page>
+   0xffffffff812a684b <+3899>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a6852 <+3906>:  or     r10d,eax
+   0xffffffff812a6855 <+3909>:  jmp    0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a685a <+3914>:  mov    DWORD PTR [rbp-0x9c],0x0
+   0xffffffff812a6864 <+3924>:  mov    rdi,QWORD PTR [rdx]
+   0xffffffff812a6867 <+3927>:  mov    ebx,eax
+   0xffffffff812a6869 <+3929>:  and    ebx,0x2
+   0xffffffff812a686c <+3932>:  call   0xffffffff8129de80 <pmd_pfn>
+   0xffffffff812a6871 <+3937>:  mov    rdi,QWORD PTR [rip+0x140ffc0]        # 0xffffffff826b6838 <vmemmap_base>
+   0xffffffff812a6878 <+3944>:  shl    rax,0x6
+   0xffffffff812a687c <+3948>:  add    rdi,rax
+   0xffffffff812a687f <+3951>:  add    rdi,0x28
+   0xffffffff812a6883 <+3955>:  mov    QWORD PTR [rbp-0x40],rdi
+   0xffffffff812a6887 <+3959>:  call   0xffffffff81c499b0 <_raw_spin_lock>
+   0xffffffff812a688c <+3964>:  mov    rax,QWORD PTR [rbp-0x48]
+   0xffffffff812a6890 <+3968>:  mov    rsi,QWORD PTR [rbp-0x60]
+   0xffffffff812a6894 <+3972>:  cmp    QWORD PTR [rax],rsi
+   0xffffffff812a6897 <+3975>:  jne    0xffffffff812a62fe <__handle_mm_fault+2542>
+   0xffffffff812a689d <+3981>:  mov    rdi,QWORD PTR [rax]
+   0xffffffff812a68a0 <+3984>:  mov    r13,QWORD PTR [r12+0x48]
+   0xffffffff812a68a5 <+3989>:  call   0xffffffff8129de40 <pte_val>
+   0xffffffff812a68aa <+3994>:  mov    rsi,QWORD PTR [rip+0x1428a9f]        # 0xffffffff826cf350 <physical_mask>
+   0xffffffff812a68b1 <+4001>:  movabs rdx,0x400000000000e78
+   0xffffffff812a68bb <+4011>:  mov    rcx,rax
+   0xffffffff812a68be <+4014>:  movabs rax,0xfbfffffffffff000
+   0xffffffff812a68c8 <+4024>:  and    rax,rsi
+   0xffffffff812a68cb <+4027>:  or     rax,QWORD PTR [rip+0x1bb6e46]        # 0xffffffff82e5d718 <sme_me_mask>
+   0xffffffff812a68d2 <+4034>:  or     rax,rdx
+   0xffffffff812a68d5 <+4037>:  mov    rdx,QWORD PTR [rip+0x1ec0804]        # 0xffffffff831670e0 <__supported_pte_mask>
+   0xffffffff812a68dc <+4044>:  and    rdx,r13
+   0xffffffff812a68df <+4047>:  test   r13b,0x1
+   0xffffffff812a68e3 <+4051>:  cmovne r13,rdx
+   0xffffffff812a68e7 <+4055>:  mov    rdx,rcx
+   0xffffffff812a68ea <+4058>:  xor    rdx,r13
+   0xffffffff812a68ed <+4061>:  mov    rdi,r13
+   0xffffffff812a68f0 <+4064>:  and    rax,rdx
+   0xffffffff812a68f3 <+4067>:  xor    rdi,rax
+   0xffffffff812a68f6 <+4070>:  test   rcx,rcx
+   0xffffffff812a68f9 <+4073>:  je     0xffffffff812a6ae9 <__handle_mm_fault+4569>
+   0xffffffff812a68ff <+4079>:  and    cl,0x1
+   0xffffffff812a6902 <+4082>:  jne    0xffffffff812a6ae9 <__handle_mm_fault+4569>
+   0xffffffff812a6908 <+4088>:  cmp    r13,rax
+   0xffffffff812a690b <+4091>:  jne    0xffffffff812a6cb4 <__handle_mm_fault+5028>
+   0xffffffff812a6911 <+4097>:  and    rsi,0xfffffffffffff000
+   0xffffffff812a6918 <+4104>:  xor    rdi,rsi
+   0xffffffff812a691b <+4107>:  call   QWORD PTR ds:0xffffffff82e4ca30
+   0xffffffff812a6922 <+4114>:  mov    rsi,QWORD PTR [rbp-0x80]
+   0xffffffff812a6926 <+4118>:  mov    rdx,rax
+   0xffffffff812a6929 <+4121>:  mov    rdi,r12
+   0xffffffff812a692c <+4124>:  call   0xffffffff8129fc80 <vm_normal_page>
+   0xffffffff812a6931 <+4129>:  mov    r14,rax
+   0xffffffff812a6934 <+4132>:  test   rax,rax
+   0xffffffff812a6937 <+4135>:  je     0xffffffff812a6a11 <__handle_mm_fault+4353>
+   0xffffffff812a693d <+4141>:  mov    rax,QWORD PTR [rax]
+   0xffffffff812a6940 <+4144>:  test   eax,0x10000
+   0xffffffff812a6945 <+4149>:  jne    0xffffffff812a6a11 <__handle_mm_fault+4353>
+   0xffffffff812a694b <+4155>:  mov    rax,QWORD PTR [r14+0x8]
+   0xffffffff812a694f <+4159>:  test   al,0x1
+   0xffffffff812a6951 <+4161>:  jne    0xffffffff812a6a11 <__handle_mm_fault+4353>
+   0xffffffff812a6957 <+4167>:  test   ebx,ebx
+   0xffffffff812a6959 <+4169>:  jne    0xffffffff812a6962 <__handle_mm_fault+4178>
+   0xffffffff812a695b <+4171>:  or     DWORD PTR [rbp-0x9c],0x2
+   0xffffffff812a6962 <+4178>:  mov    rax,QWORD PTR [r14]
+   0xffffffff812a6965 <+4181>:  test   eax,0x10000
+   0xffffffff812a696a <+4186>:  je     0xffffffff812a6c9c <__handle_mm_fault+5004>
+   0xffffffff812a6970 <+4192>:  mov    rdi,r14
+   0xffffffff812a6973 <+4195>:  call   0xffffffff81284240 <__page_mapcount>
+   0xffffffff812a6978 <+4200>:  sub    eax,0x1
+   0xffffffff812a697b <+4203>:  jle    0xffffffff812a698c <__handle_mm_fault+4220>
+   0xffffffff812a697d <+4205>:  test   BYTE PTR [r12+0x50],0x8
+   0xffffffff812a6983 <+4211>:  je     0xffffffff812a698c <__handle_mm_fault+4220>
+   0xffffffff812a6985 <+4213>:  or     DWORD PTR [rbp-0x9c],0x4
+   0xffffffff812a698c <+4220>:  mov    rcx,QWORD PTR [r14]
+   0xffffffff812a698f <+4223>:  mov    rdx,QWORD PTR [rbp-0x80]
+   0xffffffff812a6993 <+4227>:  mov    rsi,r12
+   0xffffffff812a6996 <+4230>:  mov    rdi,r14
+   0xffffffff812a6999 <+4233>:  lea    r8,[rbp-0x9c]
+   0xffffffff812a69a0 <+4240>:  mov    rax,rcx
+   0xffffffff812a69a3 <+4243>:  shr    rcx,0x36
+   0xffffffff812a69a7 <+4247>:  shr    rax,0x1e
+   0xffffffff812a69ab <+4251>:  mov    r13d,ecx
+   0xffffffff812a69ae <+4254>:  and    eax,0x1fffff
+   0xffffffff812a69b3 <+4259>:  mov    DWORD PTR [rbp-0xb0],eax
+   0xffffffff812a69b9 <+4265>:  call   0xffffffff812a2790 <numa_migrate_prep>
+   0xffffffff812a69be <+4270>:  mov    r15d,eax
+   0xffffffff812a69c1 <+4273>:  cmp    eax,0xffffffff
+   0xffffffff812a69c4 <+4276>:  je     0xffffffff812a6c8b <__handle_mm_fault+4987>
+   0xffffffff812a69ca <+4282>:  mov    rdi,QWORD PTR [rbp-0x40]
+   0xffffffff812a69ce <+4286>:  call   0xffffffff8129de70 <queued_spin_unlock>
+   0xffffffff812a69d3 <+4291>:  mov    edx,r15d
+   0xffffffff812a69d6 <+4294>:  mov    rsi,r12
+   0xffffffff812a69d9 <+4297>:  mov    rdi,r14
+   0xffffffff812a69dc <+4300>:  call   0xffffffff812ffe30 <migrate_misplaced_page>
+   0xffffffff812a69e1 <+4305>:  test   eax,eax
+   0xffffffff812a69e3 <+4307>:  je     0xffffffff812a6c36 <__handle_mm_fault+4902>
+   0xffffffff812a69e9 <+4313>:  or     DWORD PTR [rbp-0x9c],0x1
+   0xffffffff812a69f0 <+4320>:  mov    r13d,r15d
+   0xffffffff812a69f3 <+4323>:  mov    ecx,DWORD PTR [rbp-0x9c]
+   0xffffffff812a69f9 <+4329>:  mov    edi,DWORD PTR [rbp-0xb0]
+   0xffffffff812a69ff <+4335>:  mov    edx,0x1
+   0xffffffff812a6a04 <+4340>:  mov    esi,r13d
+   0xffffffff812a6a07 <+4343>:  call   0xffffffff810f4420 <task_numa_fault>
+   0xffffffff812a6a0c <+4348>:  jmp    0xffffffff812a5e61 <__handle_mm_fault+1361>
+   0xffffffff812a6a11 <+4353>:  mov    rdx,QWORD PTR [rbp-0x48]
+   0xffffffff812a6a15 <+4357>:  mov    r13d,0xffffffff
+   0xffffffff812a6a1b <+4363>:  mov    rsi,QWORD PTR [rbp-0x80]
+   0xffffffff812a6a1f <+4367>:  mov    rdi,r12
+   0xffffffff812a6a22 <+4370>:  call   QWORD PTR ds:0xffffffff82e4ca18
+   0xffffffff812a6a29 <+4377>:  mov    rdi,rax
+   0xffffffff812a6a2c <+4380>:  mov    r14,QWORD PTR [r12+0x48]
+   0xffffffff812a6a31 <+4385>:  call   0xffffffff8129de40 <pte_val>
+   0xffffffff812a6a36 <+4390>:  mov    rsi,QWORD PTR [rip+0x1428913]        # 0xffffffff826cf350 <physical_mask>
+   0xffffffff812a6a3d <+4397>:  movabs rdx,0x400000000000e78
+   0xffffffff812a6a47 <+4407>:  mov    rcx,rax
+   0xffffffff812a6a4a <+4410>:  movabs rax,0xfbfffffffffff000
+   0xffffffff812a6a54 <+4420>:  and    rax,rsi
+   0xffffffff812a6a57 <+4423>:  or     rax,QWORD PTR [rip+0x1bb6cba]        # 0xffffffff82e5d718 <sme_me_mask>
+   0xffffffff812a6a5e <+4430>:  or     rax,rdx
+   0xffffffff812a6a61 <+4433>:  mov    rdx,QWORD PTR [rip+0x1ec0678]        # 0xffffffff831670e0 <__supported_pte_mask>
+   0xffffffff812a6a68 <+4440>:  and    rdx,r14
+   0xffffffff812a6a6b <+4443>:  test   r14b,0x1
+   0xffffffff812a6a6f <+4447>:  cmovne r14,rdx
+   0xffffffff812a6a73 <+4451>:  mov    rdx,rcx
+   0xffffffff812a6a76 <+4454>:  xor    rdx,r14
+   0xffffffff812a6a79 <+4457>:  mov    rdi,r14
+   0xffffffff812a6a7c <+4460>:  and    rax,rdx
+   0xffffffff812a6a7f <+4463>:  xor    rdi,rax
+   0xffffffff812a6a82 <+4466>:  test   rcx,rcx
+   0xffffffff812a6a85 <+4469>:  je     0xffffffff812a6be0 <__handle_mm_fault+4816>
+   0xffffffff812a6a8b <+4475>:  and    cl,0x1
+   0xffffffff812a6a8e <+4478>:  jne    0xffffffff812a6be0 <__handle_mm_fault+4816>
+   0xffffffff812a6a94 <+4484>:  cmp    r14,rax
+   0xffffffff812a6a97 <+4487>:  jne    0xffffffff812a6ce1 <__handle_mm_fault+5073>
+   0xffffffff812a6a9d <+4493>:  and    rsi,0xfffffffffffff000
+   0xffffffff812a6aa4 <+4500>:  xor    rdi,rsi
+   0xffffffff812a6aa7 <+4503>:  call   QWORD PTR ds:0xffffffff82e4ca30
+   0xffffffff812a6aae <+4510>:  mov    rcx,rax
+   0xffffffff812a6ab1 <+4513>:  or     rax,0x22
+   0xffffffff812a6ab5 <+4517>:  mov    rsi,QWORD PTR [rbp-0x80]
+   0xffffffff812a6ab9 <+4521>:  mov    rdx,QWORD PTR [rbp-0x48]
+   0xffffffff812a6abd <+4525>:  or     rcx,0x20
+   0xffffffff812a6ac1 <+4529>:  test   ebx,ebx
+   0xffffffff812a6ac3 <+4531>:  mov    rdi,r12
+   0xffffffff812a6ac6 <+4534>:  cmovne rcx,rax
+   0xffffffff812a6aca <+4538>:  call   QWORD PTR ds:0xffffffff82e4ca20
+   0xffffffff812a6ad1 <+4545>:  mov    rdi,QWORD PTR [rbp-0x40]
+   0xffffffff812a6ad5 <+4549>:  call   0xffffffff8129de70 <queued_spin_unlock>
+   0xffffffff812a6ada <+4554>:  cmp    r13d,0xffffffff
+   0xffffffff812a6ade <+4558>:  je     0xffffffff812a5e61 <__handle_mm_fault+1361>
+   0xffffffff812a6ae4 <+4564>:  jmp    0xffffffff812a69f3 <__handle_mm_fault+4323>
+   0xffffffff812a6ae9 <+4569>:  xor    edx,edx
+   0xffffffff812a6aeb <+4571>:  cmp    r13,rax
+   0xffffffff812a6aee <+4574>:  je     0xffffffff812a691b <__handle_mm_fault+4107>
+   0xffffffff812a6af4 <+4580>:  mov    rax,rdi
+   0xffffffff812a6af7 <+4583>:  not    rax
+   0xffffffff812a6afa <+4586>:  and    eax,0x1
+   0xffffffff812a6afd <+4589>:  cmp    al,dl
+   0xffffffff812a6aff <+4591>:  jne    0xffffffff812a6911 <__handle_mm_fault+4097>
+   0xffffffff812a6b05 <+4597>:  jmp    0xffffffff812a691b <__handle_mm_fault+4107>
+   0xffffffff812a6b0a <+4602>:  call   QWORD PTR ds:0xffffffff82e4c940
+   0xffffffff812a6b11 <+4609>:  jmp    0xffffffff812a60c3 <__handle_mm_fault+1971>
+   0xffffffff812a6b16 <+4614>:  lea    r14,[rbp-0x98]
+   0xffffffff812a6b1d <+4621>:  mov    rdi,r14
+   0xffffffff812a6b20 <+4624>:  call   0xffffffff81301200 <do_huge_pmd_anonymous_page>
+   0xffffffff812a6b25 <+4629>:  mov    r10d,eax
+   0xffffffff812a6b28 <+4632>:  jmp    0xffffffff812a6214 <__handle_mm_fault+2308>
+   0xffffffff812a6b2d <+4637>:  mov    rsi,QWORD PTR [r12+0x48]
+   0xffffffff812a6b32 <+4642>:  mov    rdi,QWORD PTR [rip+0x1ec5337]        # 0xffffffff8316be70 <zero_pfn>
+   0xffffffff812a6b39 <+4649>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a6b40 <+4656>:  call   0xffffffff8129e500 <pfn_pte>
+   0xffffffff812a6b45 <+4661>:  mov    rbx,rax
+   0xffffffff812a6b48 <+4664>:  mov    rax,QWORD PTR [rbp-0x70]
+   0xffffffff812a6b4c <+4668>:  mov    rdi,QWORD PTR [rax]
+   0xffffffff812a6b4f <+4671>:  call   0xffffffff8129de80 <pmd_pfn>
+   0xffffffff812a6b54 <+4676>:  mov    r14,QWORD PTR [rip+0x140fcdd]        # 0xffffffff826b6838 <vmemmap_base>
+   0xffffffff812a6b5b <+4683>:  mov    r13,QWORD PTR [rbp-0x80]
+   0xffffffff812a6b5f <+4687>:  shl    rax,0x6
+   0xffffffff812a6b63 <+4691>:  add    r14,rax
+   0xffffffff812a6b66 <+4694>:  mov    rax,QWORD PTR [rbp-0x70]
+   0xffffffff812a6b6a <+4698>:  shr    r13,0x9
+   0xffffffff812a6b6e <+4702>:  add    r14,0x28
+   0xffffffff812a6b72 <+4706>:  and    r13d,0xff8
+   0xffffffff812a6b79 <+4713>:  mov    rdi,QWORD PTR [rax]
+   0xffffffff812a6b7c <+4716>:  call   0xffffffff8129ded0 <pmd_page_vaddr>
+   0xffffffff812a6b81 <+4721>:  mov    rdi,r14
+   0xffffffff812a6b84 <+4724>:  mov    QWORD PTR [rbp-0x40],r14
+   0xffffffff812a6b88 <+4728>:  add    r13,rax
+   0xffffffff812a6b8b <+4731>:  call   0xffffffff81c499b0 <_raw_spin_lock>
+   0xffffffff812a6b90 <+4736>:  mov    QWORD PTR [rbp-0x48],r13
+   0xffffffff812a6b94 <+4740>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a6b9b <+4747>:  test   QWORD PTR [r13+0x0],0xffffffffffffff9f
+   0xffffffff812a6ba3 <+4755>:  jne    0xffffffff812a658f <__handle_mm_fault+3199>
+   0xffffffff812a6ba9 <+4761>:  mov    rax,QWORD PTR [r12+0x40]
+   0xffffffff812a6bae <+4766>:  mov    rax,QWORD PTR [rax+0x380]
+   0xffffffff812a6bb5 <+4773>:  test   eax,0x400000
+   0xffffffff812a6bba <+4778>:  jne    0xffffffff812a6d4c <__handle_mm_fault+5180>
+   0xffffffff812a6bc0 <+4784>:  test   BYTE PTR [r12+0x51],0x2
+   0xffffffff812a6bc6 <+4790>:  jne    0xffffffff812a6d2a <__handle_mm_fault+5146>
+   0xffffffff812a6bcc <+4796>:  or     bh,0x2
+   0xffffffff812a6bcf <+4799>:  jmp    0xffffffff812a657e <__handle_mm_fault+3182>
+   0xffffffff812a6bd4 <+4804>:  lea    r14,[rbp-0x98]
+   0xffffffff812a6bdb <+4811>:  jmp    0xffffffff812a674f <__handle_mm_fault+3647>
+   0xffffffff812a6be0 <+4816>:  xor    edx,edx
+   0xffffffff812a6be2 <+4818>:  cmp    r14,rax
+   0xffffffff812a6be5 <+4821>:  je     0xffffffff812a6aa7 <__handle_mm_fault+4503>
+   0xffffffff812a6beb <+4827>:  mov    rax,rdi
+   0xffffffff812a6bee <+4830>:  not    rax
+   0xffffffff812a6bf1 <+4833>:  and    eax,0x1
+   0xffffffff812a6bf4 <+4836>:  cmp    al,dl
+   0xffffffff812a6bf6 <+4838>:  jne    0xffffffff812a6a9d <__handle_mm_fault+4493>
+   0xffffffff812a6bfc <+4844>:  jmp    0xffffffff812a6aa7 <__handle_mm_fault+4503>
+   0xffffffff812a6c01 <+4849>:  call   0xffffffff81c3a0b0 <__stack_chk_fail>
+   0xffffffff812a6c06 <+4854>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a6c0d <+4861>:  mov    rdi,QWORD PTR [rbp-0x58]
+   0xffffffff812a6c11 <+4865>:  call   0xffffffff8129e040 <put_page>
+   0xffffffff812a6c16 <+4870>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a6c1d <+4877>:  jmp    0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a6c22 <+4882>:  mov    r12,QWORD PTR [rbp-0x98]
+   0xffffffff812a6c29 <+4889>:  mov    rax,QWORD PTR [r12+0x90]
+   0xffffffff812a6c31 <+4897>:  jmp    0xffffffff812a5f4c <__handle_mm_fault+1596>
+   0xffffffff812a6c36 <+4902>:  mov    rax,QWORD PTR [rbp-0x70]
+   0xffffffff812a6c3a <+4906>:  or     DWORD PTR [rbp-0x9c],0x10
+   0xffffffff812a6c41 <+4913>:  mov    r14,QWORD PTR [rbp-0x80]
+   0xffffffff812a6c45 <+4917>:  mov    rdi,QWORD PTR [rax]
+   0xffffffff812a6c48 <+4920>:  call   0xffffffff8129ded0 <pmd_page_vaddr>
+   0xffffffff812a6c4d <+4925>:  mov    rdi,QWORD PTR [rbp-0x40]
+   0xffffffff812a6c51 <+4929>:  mov    r8,rax
+   0xffffffff812a6c54 <+4932>:  mov    rax,r14
+   0xffffffff812a6c57 <+4935>:  shr    rax,0x9
+   0xffffffff812a6c5b <+4939>:  and    eax,0xff8
+   0xffffffff812a6c60 <+4944>:  add    rax,r8
+   0xffffffff812a6c63 <+4947>:  mov    QWORD PTR [rbp-0x48],rax
+   0xffffffff812a6c67 <+4951>:  call   0xffffffff81c499b0 <_raw_spin_lock>
+   0xffffffff812a6c6c <+4956>:  mov    rdx,QWORD PTR [rbp-0x48]
+   0xffffffff812a6c70 <+4960>:  mov    rax,QWORD PTR [rbp-0x60]
+   0xffffffff812a6c74 <+4964>:  cmp    QWORD PTR [rdx],rax
+   0xffffffff812a6c77 <+4967>:  je     0xffffffff812a6a1b <__handle_mm_fault+4363>
+   0xffffffff812a6c7d <+4973>:  mov    rdi,QWORD PTR [rbp-0x40]
+   0xffffffff812a6c81 <+4977>:  call   0xffffffff8129de70 <queued_spin_unlock>
+   0xffffffff812a6c86 <+4982>:  jmp    0xffffffff812a69f3 <__handle_mm_fault+4323>
+   0xffffffff812a6c8b <+4987>:  mov    rdi,r14
+   0xffffffff812a6c8e <+4990>:  call   0xffffffff8129e040 <put_page>
+   0xffffffff812a6c93 <+4995>:  mov    rdx,QWORD PTR [rbp-0x48]
+   0xffffffff812a6c97 <+4999>:  jmp    0xffffffff812a6a1b <__handle_mm_fault+4363>
+   0xffffffff812a6c9c <+5004>:  mov    rax,QWORD PTR [r14+0x8]
+   0xffffffff812a6ca0 <+5008>:  test   al,0x1
+   0xffffffff812a6ca2 <+5010>:  jne    0xffffffff812a6970 <__handle_mm_fault+4192>
+   0xffffffff812a6ca8 <+5016>:  mov    eax,DWORD PTR [r14+0x30]
+   0xffffffff812a6cac <+5020>:  add    eax,0x1
+   0xffffffff812a6caf <+5023>:  jmp    0xffffffff812a6978 <__handle_mm_fault+4200>
+   0xffffffff812a6cb4 <+5028>:  mov    edx,0x1
+   0xffffffff812a6cb9 <+5033>:  jmp    0xffffffff812a6af4 <__handle_mm_fault+4580>
+   0xffffffff812a6cbe <+5038>:  mov    rdi,QWORD PTR [r12+0x40]
+   0xffffffff812a6cc3 <+5043>:  call   0xffffffff81089180 <pte_alloc_one>
+   0xffffffff812a6cc8 <+5048>:  mov    QWORD PTR [rbp-0x38],rax
+   0xffffffff812a6ccc <+5052>:  test   rax,rax
+   0xffffffff812a6ccf <+5055>:  je     0xffffffff812a5de4 <__handle_mm_fault+1236>
+   0xffffffff812a6cd5 <+5061>:  mov    r12,QWORD PTR [rbp-0x98]
+   0xffffffff812a6cdc <+5068>:  jmp    0xffffffff812a6723 <__handle_mm_fault+3603>
+   0xffffffff812a6ce1 <+5073>:  mov    edx,0x1
+   0xffffffff812a6ce6 <+5078>:  jmp    0xffffffff812a6beb <__handle_mm_fault+4827>
+   0xffffffff812a6ceb <+5083>:  mov    rdi,r12
+   0xffffffff812a6cee <+5086>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a6cf5 <+5093>:  call   0xffffffff812b9b10 <__anon_vma_prepare>
+   0xffffffff812a6cfa <+5098>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a6d01 <+5105>:  test   eax,eax
+   0xffffffff812a6d03 <+5107>:  je     0xffffffff812a5f89 <__handle_mm_fault+1657>
+   0xffffffff812a6d09 <+5113>:  jmp    0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a6d0e <+5118>:  mov    rdi,QWORD PTR [rbp-0x50]
+   0xffffffff812a6d12 <+5122>:  call   0xffffffff8129e040 <put_page>
+   0xffffffff812a6d17 <+5127>:  mov    r10d,ebx
+   0xffffffff812a6d1a <+5130>:  jmp    0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a6d1f <+5135>:  mov    r10d,0x2
+   0xffffffff812a6d25 <+5141>:  jmp    0xffffffff812a6073 <__handle_mm_fault+1891>
+   0xffffffff812a6d2a <+5146>:  mov    rdi,QWORD PTR [rbp-0x40]
+   0xffffffff812a6d2e <+5150>:  call   0xffffffff8129de70 <queued_spin_unlock>
+   0xffffffff812a6d33 <+5155>:  mov    esi,0x200
+   0xffffffff812a6d38 <+5160>:  lea    rdi,[rbp-0x98]
+   0xffffffff812a6d3f <+5167>:  call   0xffffffff8138d5e0 <handle_userfault>
+   0xffffffff812a6d44 <+5172>:  mov    r10d,eax
+   0xffffffff812a6d47 <+5175>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a6d4c <+5180>:  mov    r10d,0x2
+   0xffffffff812a6d52 <+5186>:  jmp    0xffffffff812a658f <__handle_mm_fault+3199>
+   0xffffffff812a6d57 <+5191>:  mov    edx,0x1
+   0xffffffff812a6d5c <+5196>:  mov    esi,0x1
+   0xffffffff812a6d61 <+5201>:  call   0xffffffff8129df60 <add_mm_counter>
+   0xffffffff812a6d66 <+5206>:  jmp    0xffffffff812a6562 <__handle_mm_fault+3154>
+   0xffffffff812a6d6b <+5211>:  mov    rdi,QWORD PTR [rbp-0x40]
+   0xffffffff812a6d6f <+5215>:  call   0xffffffff8129de70 <queued_spin_unlock>
+   0xffffffff812a6d74 <+5220>:  mov    rdi,r13
+   0xffffffff812a6d77 <+5223>:  call   0xffffffff8129e040 <put_page>
+   0xffffffff812a6d7c <+5228>:  mov    esi,0x200
+   0xffffffff812a6d81 <+5233>:  lea    rdi,[rbp-0x98]
+   0xffffffff812a6d88 <+5240>:  call   0xffffffff8138d5e0 <handle_userfault>
+   0xffffffff812a6d8d <+5245>:  mov    r10d,eax
+   0xffffffff812a6d90 <+5248>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a6d95 <+5253>:  mov    r10d,0x2
+   0xffffffff812a6d9b <+5259>:  mov    rdi,r13
+   0xffffffff812a6d9e <+5262>:  mov    DWORD PTR [rbp-0xa8],r10d
+   0xffffffff812a6da5 <+5269>:  call   0xffffffff8129e040 <put_page>
+   0xffffffff812a6daa <+5274>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a6db1 <+5281>:  jmp    0xffffffff812a658f <__handle_mm_fault+3199>
+   0xffffffff812a6db6 <+5286>:  xor    r10d,r10d
+   0xffffffff812a6db9 <+5289>:  jmp    0xffffffff812a6d9b <__handle_mm_fault+5259>
+   0xffffffff812a6dbb <+5291>:  mov    rdi,r13
+   0xffffffff812a6dbe <+5294>:  call   0xffffffff812b67c0 <pmd_clear_bad>
+   0xffffffff812a6dc3 <+5299>:  xor    r10d,r10d
+   0xffffffff812a6dc6 <+5302>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a6dcb <+5307>:  mov    rdi,r13
+   0xffffffff812a6dce <+5310>:  call   0xffffffff8129e040 <put_page>
+   0xffffffff812a6dd3 <+5315>:  mov    r10d,DWORD PTR [rbp-0xa8]
+   0xffffffff812a6dda <+5322>:  jmp    0xffffffff812a5cf3 <__handle_mm_fault+995>
+   0xffffffff812a6ddf <+5327>:  mov    rdi,QWORD PTR [r12+0x40]
+   0xffffffff812a6de4 <+5332>:  mov    rsi,r13
+   0xffffffff812a6de7 <+5335>:  call   0xffffffff8129fa30 <__pte_alloc>
+   0xffffffff812a6dec <+5340>:  test   eax,eax
+   0xffffffff812a6dee <+5342>:  jne    0xffffffff812a5de4 <__handle_mm_fault+1236>
+   0xffffffff812a6df4 <+5348>:  mov    r13,QWORD PTR [rbp-0x70]
+   0xffffffff812a6df8 <+5352>:  mov    rbx,QWORD PTR [r13+0x0]
+   0xffffffff812a6dfc <+5356>:  mov    rax,rbx
+   0xffffffff812a6dff <+5359>:  and    rax,0xffffffffffffff9f
+   0xffffffff812a6e03 <+5363>:  jmp    0xffffffff812a63a1 <__handle_mm_fault+2705>
+   0xffffffff812a6e08 <+5368>:  mov    rdi,QWORD PTR [rbp-0x50]
+   0xffffffff812a6e0c <+5372>:  call   0xffffffff8125e1c0 <unlock_page>
+   0xffffffff812a6e11 <+5377>:  jmp    0xffffffff812a67a1 <__handle_mm_fault+3729>
