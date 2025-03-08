@@ -74,6 +74,10 @@ def get_next_insn(bin_log_file, arch) -> int:
         PAGE_TABLE_LEAVES = 4
         # radix: uint8, uint8, uint16, uint32, 3 * uint64, PAGE_TABLE_LEAVES * uint64
         entry_format = '<BBHI3Q{}Q'.format(PAGE_TABLE_LEAVES)
+    elif arch == "fpt":
+        PAGE_TABLE_LEAVES = 4
+        # fpt same format with radix
+        entry_format = '<BBHI3Q{}Q'.format(PAGE_TABLE_LEAVES)
     elif arch == "ecpt":
         PAGE_TABLE_LEAVES = 6
         CWT_LEAVES = 4
