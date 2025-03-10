@@ -1,0 +1,9 @@
+asm_exc_page_fault,96279981
+asm_sysvec_apic_timer_interrupt,4930229
+None,94068
+arch_static_branch,871
+syscall_enter_from_user_mode,6097
+array_index_mask_nospec,1742
+__x64_sys_brk,1051014
+syscall_exit_to_user_mode,46163
+source_path,CSL-PowerEdge-R750:/siyuan_data/fpt_L3L2/fpt_L3L2_never_loading_end_phase_jiyuan_redis_run_128G.bin.kern_inst.folded
