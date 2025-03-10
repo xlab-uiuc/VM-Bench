@@ -1,0 +1,13 @@
+None,129779
+arch_static_branch,2012
+syscall_enter_from_user_mode,14084
+array_index_mask_nospec,4024
+__x64_sys_write,123392
+syscall_exit_to_user_mode,20695
+asm_sysvec_apic_timer_interrupt,10215540
+__x64_sys_clock_nanosleep,4002086
+__x64_sys_futex,46988
+__x64_sys_mmap,21798
+asm_exc_page_fault,9260590
+irq_entries_start,155201
+source_path,frontier:/data1/fpt_kexec/Memcached64Gpure_20insertion/fpt_L4L3_L2L1_never_run_Memcached64Gpure_20insertion_running.bin.kern_inst.folded
