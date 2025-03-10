@@ -1,0 +1,10 @@
+asm_exc_page_fault,105023127
+asm_sysvec_apic_timer_interrupt,4755523
+None,236952
+arch_static_branch,2194
+syscall_enter_from_user_mode,15358
+array_index_mask_nospec,4388
+__x64_sys_read,4044972
+syscall_exit_to_user_mode,103118
+__x64_sys_brk,1403012
+source_path,frontier:/hdd/fpt_kexec/fpt/loading_end_phase/fpt_never_graphbig_tc_loading_end_phase_walk_log.bin.kern_inst.folded
