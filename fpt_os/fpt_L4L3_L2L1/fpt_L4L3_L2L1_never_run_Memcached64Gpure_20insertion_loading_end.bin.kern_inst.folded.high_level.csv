@@ -8,4 +8,4 @@ syscall_exit_to_user_mode,63595
 asm_exc_page_fault,27134142
 __x64_sys_futex,182768
 __x64_sys_clock_nanosleep,3957353
-source_path,ajisai:/data1/fpt_kexec/Memcached64Gpure_20insertion/fpt_L3L2_never_run_Memcached64Gpure_20insertion_loading_end.bin.kern_inst.folded
+source_path,ajisai:/data1/fpt_kexec/Memcached64Gpure_20insertion/fpt_L4L3_L2L1_never_run_Memcached64Gpure_20insertion_loading_end.bin.kern_inst.folded
