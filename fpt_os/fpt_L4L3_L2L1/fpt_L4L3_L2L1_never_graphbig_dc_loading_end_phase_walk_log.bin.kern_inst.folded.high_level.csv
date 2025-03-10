@@ -1,0 +1,10 @@
+asm_exc_page_fault,106651698
+None,242676
+arch_static_branch,2247
+syscall_enter_from_user_mode,15729
+array_index_mask_nospec,4494
+__x64_sys_brk,1432602
+syscall_exit_to_user_mode,105609
+asm_sysvec_apic_timer_interrupt,4834296
+__x64_sys_read,4145901
+source_path,ajisai:/data2/fpt_kexec/fpt_L4L3_L2L1/loading_end_phase/fpt_L4L3_L2L1_never_graphbig_dc_loading_end_phase_walk_log.bin.kern_inst.folded
