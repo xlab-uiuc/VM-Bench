@@ -312,6 +312,7 @@ struct redisCommand redisCommandTable[] = {
 /* Record specified stage */
 #define RECORD_RUNNING 1
 #define RECORD_LOADING 2
+#define RECORD_LOADING_END 3
 
 
 static int record_stage = 1; 
@@ -4040,10 +4041,10 @@ int real_main(int argc, char **argv) {
                     j++;
                     continue;
                 }
-                else if (strcmp(argv[j], "--loading-phase") == 0) {
-                    record_stage = RECORD_LOADING; 
+                else if (strcmp(argv[j], "--recording-stage") == 0) {
+                    record_stage = atoi(argv[j + 1]); 
                     printf("record_stage= %d\n", record_stage);
-                    j++; 
+                    j += 2; 
                     continue;
                 } else if (strcmp(argv[j], "--perf_ctl_fifo") == 0) {
                     perf_ctl_fd = get_fifo_fd(argv[j + 1], O_WRONLY);
@@ -4142,11 +4143,11 @@ int real_main(int argc, char **argv) {
     gettimeofday(&loading_tstart, NULL);
 
     // Loading phase
-    if(record_stage & RECORD_LOADING) {
+    if(record_stage == RECORD_LOADING) {
         enable_perf(perf_ctl_fd, perf_ack_fd);
     }
 
-    for (size_t i = 0; i < KEY_MAX; i++) {
+    for (size_t i = 0; i < (19 * (KEY_MAX/20)); i++) {
         char key[128+1];
         char val[BENCHMARK_VALUE_SIZE+1];
         if ((i % 10000000) == 0) {
@@ -4162,7 +4163,28 @@ int real_main(int argc, char **argv) {
         setKey(server.db, rkey, rvalue);
     }
 
-    if(record_stage & RECORD_LOADING) {
+    // Loading end phase
+    if(record_stage == RECORD_LOADING_END) {
+        enable_perf(perf_ctl_fd, perf_ack_fd);
+    }
+
+    for (size_t i = (19 * (KEY_MAX/20)); i < KEY_MAX; i++) {
+        char key[128+1];
+        char val[BENCHMARK_VALUE_SIZE+1];
+        if ((i % 10000000) == 0) {
+            fprintf(stderr, "Key %zu M / %zu M\n", i >> 20, KEY_MAX >> 20);
+        }
+        snprintf(key, 128, "my-key-0x%016lx", i);
+        snprintf(val, BENCHMARK_VALUE_SIZE, "my-dummy-value-for-key-0x%016lx", i);
+
+        robj *rkey = createStringObject(key, strlen(key));
+        assert(rkey);
+        robj *rvalue = createStringObject(val, BENCHMARK_VALUE_SIZE);
+        assert(rvalue);
+        setKey(server.db, rkey, rvalue);
+    }
+
+    if(record_stage == RECORD_LOADING || record_stage == RECORD_LOADING_END) {
         disable_perf(perf_ctl_fd, perf_ack_fd);
     }
 
@@ -4208,7 +4230,7 @@ int real_main(int argc, char **argv) {
     gettimeofday(&running_tstart, NULL);
 
     // Running phase
-    if(record_stage & RECORD_RUNNING) {
+    if(record_stage == RECORD_RUNNING) {
         enable_perf(perf_ctl_fd, perf_ack_fd);
     }
 
@@ -4316,7 +4338,7 @@ int real_main(int argc, char **argv) {
 
     #endif
 
-    if(record_stage & RECORD_RUNNING) {
+    if(record_stage == RECORD_RUNNING) {
         disable_perf(perf_ctl_fd, perf_ack_fd);
     }
 
