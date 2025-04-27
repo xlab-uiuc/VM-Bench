@@ -2,6 +2,8 @@ import os
 import re
 import pandas as pd
 import numpy as np
+import socket
+import subprocess
 
 
 def extract_instructions_u(file_path):
@@ -193,84 +195,188 @@ def popuate_from_datapath(data_path_df, bench_data):
     bench_data["sim_running_distro"] = os.path.abspath(running_path)
     bench_data["sim_loading_distro"] = os.path.abspath(loading_path)
 
+def scp_from_remote(host, remote_path, local_path):
+    """
+    Transfers a file from a remote machine to the local machine using SCP via subprocess.
+    """
+    try:
+        # Construct the SCP command
+        scp_command = ["scp", f"{host}:{remote_path}", local_path]
+        # if key_file:
+        #     scp_command.extend(["-i", key_file])
+        # scp_command.append(f"{username}@{host}:{remote_path}")
+        # scp_command.append(local_path)
+
+        # Execute the command
+        subprocess.run(scp_command, check=True)
+        print(f"File successfully copied from {host}:{remote_path} to {local_path}")
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred while running SCP: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+def fetch_bench_files(machine, path, local_dir="local"):
+    hostname = socket.gethostname()
+    os.makedirs(local_dir, exist_ok=True)
+
+    if machine == hostname:
+        filename = path
+    else:
+        filename = f"local/{os.path.basename(path)}.local"
+        os.makedirs("local", exist_ok=True)
+        scp_from_remote(machine, path, filename)
+
+    return filename
+
 def populate_FPT_sim_path_L2L3(bench_data, thp):
-    sub_folder = "fpt_os/fpt_L3L2"
+    # sub_folder = "fpt_os/fpt_L3L2"
     
-    flavor = "L3L2"
-    stage = "running"
-    running_path = {
-        "graphbig_bfs": f'{sub_folder}/fpt_{thp}_graphbig_bfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_dfs": f'{sub_folder}/fpt_{thp}_graphbig_dfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_dc": f'{sub_folder}/fpt_{thp}_graphbig_dc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_sssp": f'{sub_folder}/fpt_{thp}_graphbig_sssp_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_cc": f'{sub_folder}/fpt_{thp}_graphbig_cc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_tc": f'{sub_folder}/fpt_{thp}_graphbig_tc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_pagerank": f'{sub_folder}/fpt_{thp}_graphbig_pagerank_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "sysbench": f'{sub_folder}/fpt_{thp}_sysbench_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "gups": f'{sub_folder}/fpt_{thp}_gups_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "redis": f'{sub_folder}/fpt_L3L2_never_{stage}_jiyuan_redis_run_128G.bin.kern_inst.folded.high_level.csv',
-        "memcached": f'{sub_folder}/fpt_{flavor}_{thp}_memcached_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "postgres": f'{sub_folder}/fpt_L3L2_never_run_postgres64G_sequential_load_{stage}.bin.kern_inst.folded.high_level.csv',
-    }
+    # flavor = "L3L2"
+    # stage = "running"
+    # running_path = {
+    #     "graphbig_bfs": f'{sub_folder}/fpt_{thp}_graphbig_bfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_dfs": f'{sub_folder}/fpt_{thp}_graphbig_dfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_dc": f'{sub_folder}/fpt_{thp}_graphbig_dc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_sssp": f'{sub_folder}/fpt_{thp}_graphbig_sssp_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_cc": f'{sub_folder}/fpt_{thp}_graphbig_cc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_tc": f'{sub_folder}/fpt_{thp}_graphbig_tc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_pagerank": f'{sub_folder}/fpt_{thp}_graphbig_pagerank_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "sysbench": f'{sub_folder}/fpt_{thp}_sysbench_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "gups": f'{sub_folder}/fpt_{thp}_gups_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "redis": f'{sub_folder}/fpt_L3L2_never_{stage}_jiyuan_redis_run_128G.bin.kern_inst.folded.high_level.csv',
+    #     "memcached": f'{sub_folder}/fpt_{flavor}_{thp}_memcached_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "postgres": f'{sub_folder}/fpt_L3L2_never_run_postgres64G_sequential_load_{stage}.bin.kern_inst.folded.high_level.csv',
+    # }
     
-    stage = "loading_end_phase"
-    loading_end_path = {
-        "graphbig_bfs": f'{sub_folder}/fpt_{thp}_graphbig_bfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_dfs": f'{sub_folder}/fpt_{thp}_graphbig_dfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_dc": f'{sub_folder}/fpt_{thp}_graphbig_dc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_sssp": f'{sub_folder}/fpt_{thp}_graphbig_sssp_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_cc": f'{sub_folder}/fpt_{thp}_graphbig_cc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_tc": f'{sub_folder}/fpt_{thp}_graphbig_tc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_pagerank": f'{sub_folder}/fpt_{thp}_graphbig_pagerank_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "sysbench": f'{sub_folder}/fpt_{flavor}_{thp}_sysbench_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "gups": f'{sub_folder}/fpt_{flavor}_{thp}_gups_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "redis": f'{sub_folder}/fpt_L3L2_never_{stage}_jiyuan_redis_run_128G.bin.kern_inst.folded.high_level.csv',
-        "memcached": f'{sub_folder}/fpt_{flavor}_{thp}_memcached_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "postgres": f'{sub_folder}/fpt_L3L2_never_run_postgres64G_sequential_load_loading_end.bin.kern_inst.folded.high_level.csv',
-    }
+    # stage = "loading_end_phase"
+    # loading_end_path = {
+    #     "graphbig_bfs": f'{sub_folder}/fpt_{thp}_graphbig_bfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_dfs": f'{sub_folder}/fpt_{thp}_graphbig_dfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_dc": f'{sub_folder}/fpt_{thp}_graphbig_dc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_sssp": f'{sub_folder}/fpt_{thp}_graphbig_sssp_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_cc": f'{sub_folder}/fpt_{thp}_graphbig_cc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_tc": f'{sub_folder}/fpt_{thp}_graphbig_tc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_pagerank": f'{sub_folder}/fpt_{thp}_graphbig_pagerank_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "sysbench": f'{sub_folder}/fpt_{flavor}_{thp}_sysbench_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "gups": f'{sub_folder}/fpt_{flavor}_{thp}_gups_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "redis": f'{sub_folder}/fpt_L3L2_never_{stage}_jiyuan_redis_run_128G.bin.kern_inst.folded.high_level.csv',
+    #     "memcached": f'{sub_folder}/fpt_{flavor}_{thp}_memcached_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "postgres": f'{sub_folder}/fpt_L3L2_never_run_postgres64G_sequential_load_loading_end.bin.kern_inst.folded.high_level.csv',
+    # }
+
+    running_folder = '/data1/fpt_report/fpt_L3L2/running'
     
-    bench_data["sim_running_distro"] = os.path.abspath(running_path[bench_data["workload"]])
-    bench_data["sim_loading_distro"] = os.path.abspath(loading_end_path[bench_data["workload"]])
+    benchs = [
+        'graphbig_bfs',
+        'graphbig_dfs',
+        'graphbig_dc',
+        'graphbig_sssp',
+        'graphbig_cc',
+        'graphbig_tc',
+        'graphbig_pagerank',
+        'sysbench',
+        'gups',
+    ]
+    running_bench_infos = [(b,              'frontier', f'{running_folder}/fpt_L3L2_never_{b}_running_walk_log.bin.kern_inst.folded.high_level.csv') for b in benchs]
+    running_bench_infos += [('redis',        'CSL',      '/disk/bak1/siyuan/fpt_L3L2/running_phase/fpt_L3L2_never_running_jiyuan_redis_run_128G.bin.kern_inst.folded.high_level.csv')]
+    running_bench_infos += [('memcached',    'frontier', '/data1/fpt_report/Memcached64Gpure_20insertion/fpt_L3L2_never_run_Memcached64Gpure_20insertion_running.bin.kern_inst.folded.high_level.csv')]
+    running_bench_infos += [('postgres',     'CSL',      '/disk/bak1/siyuan/fpt_L3L2/running_phase/fpt_L3L2_never_run_postgres64G_sequential_load_running.bin.kern_inst.folded.high_level.csv')]
+
+    for b, machine, path in running_bench_infos:
+        if b == bench_data["workload"]:
+            break
+    running_path = fetch_bench_files(machine, path, local_dir="local")
+
+    loading_end_folder = '/data1/fpt_report/fpt_L3L2/loading_end_phase'
+    
+    loading_end_bench_infos = [(b,              'frontier', f'{loading_end_folder}/fpt_L3L2_never_{b}_loading_end_phase_walk_log.bin.kern_inst.folded.high_level.csv') for b in benchs]
+    loading_end_bench_infos += [('redis',        'CSL',      '/disk/bak1/siyuan/fpt_L3L2/loading_end_phase/fpt_L3L2_never_loading_end_phase_jiyuan_redis_run_128G.bin.kern_inst.folded.high_level.csv')]
+    loading_end_bench_infos += [('memcached',    'frontier', '/data1/fpt_report/Memcached64Gpure_20insertion/fpt_L3L2_never_run_Memcached64Gpure_20insertion_loading_end.bin.kern_inst.folded.high_level.csv')]
+    loading_end_bench_infos += [('postgres',     'CSL',      '/disk/bak1/siyuan/fpt_L3L2/loading_end_phase/fpt_L3L2_never_run_postgres64G_sequential_load_loading_end.bin.kern_inst.folded.high_level.csv')]
+
+    for b, machine, path in loading_end_bench_infos:
+        if b == bench_data["workload"]:
+            break
+    loading_end_path = fetch_bench_files(machine, path, local_dir="local")
+    
+    bench_data["sim_running_distro"] = running_path
+    bench_data["sim_loading_distro"] = loading_end_path
 
 def populate_FPT_sim_path_L4L3_L2L1(bench_data, thp):
-    sub_folder = "fpt_os/fpt_L4L3_L2L1"
+    # sub_folder = "fpt_os/fpt_L4L3_L2L1"
     
-    flavor = "L4L3_L2L1"
-    stage = "running"
+    # flavor = "L4L3_L2L1"
+    # stage = "running"
     
-    running_path = {
-        "graphbig_bfs": f'{sub_folder}/fpt_{thp}_graphbig_bfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_dfs": f'{sub_folder}/fpt_{thp}_graphbig_dfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_dc": f'{sub_folder}/fpt_{thp}_graphbig_dc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_sssp": f'{sub_folder}/fpt_{thp}_graphbig_sssp_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_cc": f'{sub_folder}/fpt_{thp}_graphbig_cc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_tc": f'{sub_folder}/fpt_{thp}_graphbig_tc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_pagerank": f'{sub_folder}/fpt_{thp}_graphbig_pagerank_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "sysbench": f'{sub_folder}/fpt_{flavor}_{thp}_sysbench_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "gups": f'{sub_folder}/fpt_{flavor}_{thp}_gups_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "redis": f'{sub_folder}/fpt_L4L3_L2L1_never_{stage}_jiyuan_redis_run_128G.bin.kern_inst.folded.high_level.csv',
-        "memcached": f'{sub_folder}/fpt_L4L3_L2L1_never_run_Memcached64Gpure_20insertion_running.bin.kern_inst.folded.high_level.csv',
-        "postgres": f'{sub_folder}/fpt_L4L3_L2L1_never_run_postgres64G_sequential_load_running.bin.kern_inst.folded.high_level.csv',
-    }
+    # running_path = {
+    #     "graphbig_bfs": f'{sub_folder}/fpt_{thp}_graphbig_bfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_dfs": f'{sub_folder}/fpt_{thp}_graphbig_dfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_dc": f'{sub_folder}/fpt_{thp}_graphbig_dc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_sssp": f'{sub_folder}/fpt_{thp}_graphbig_sssp_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_cc": f'{sub_folder}/fpt_{thp}_graphbig_cc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_tc": f'{sub_folder}/fpt_{thp}_graphbig_tc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_pagerank": f'{sub_folder}/fpt_{thp}_graphbig_pagerank_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "sysbench": f'{sub_folder}/fpt_{flavor}_{thp}_sysbench_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "gups": f'{sub_folder}/fpt_{flavor}_{thp}_gups_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "redis": f'{sub_folder}/fpt_L4L3_L2L1_never_{stage}_jiyuan_redis_run_128G.bin.kern_inst.folded.high_level.csv',
+    #     "memcached": f'{sub_folder}/fpt_L4L3_L2L1_never_run_Memcached64Gpure_20insertion_running.bin.kern_inst.folded.high_level.csv',
+    #     "postgres": f'{sub_folder}/fpt_L4L3_L2L1_never_run_postgres64G_sequential_load_running.bin.kern_inst.folded.high_level.csv',
+    # }
     
-    stage = "loading_end_phase"
-    loading_end_path = {
-        "graphbig_bfs": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_bfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_dfs": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_dfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_dc": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_dc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_sssp": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_sssp_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_cc": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_cc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_tc": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_tc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "graphbig_pagerank": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_pagerank_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "sysbench": f'{sub_folder}/fpt_{flavor}_{thp}_sysbench_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "gups": f'{sub_folder}/fpt_{flavor}_{thp}_gups_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
-        "redis": f'{sub_folder}/fpt_L4L3_L2L1_never_loading_end_phase_jiyuan_redis_run_128G.bin.kern_inst.folded.high_level.csv',
-        "memcached": f'{sub_folder}/fpt_L4L3_L2L1_never_run_Memcached64Gpure_20insertion_loading_end.bin.kern_inst.folded.high_level.csv',
-        "postgres": f'{sub_folder}/fpt_L4L3_L2L1_never_run_postgres64G_sequential_load_loading_end.bin.kern_inst.folded.high_level.csv',
-    }
+    # stage = "loading_end_phase"
+    # loading_end_path = {
+    #     "graphbig_bfs": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_bfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_dfs": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_dfs_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_dc": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_dc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_sssp": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_sssp_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_cc": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_cc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_tc": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_tc_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "graphbig_pagerank": f'{sub_folder}/fpt_{flavor}_{thp}_graphbig_pagerank_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "sysbench": f'{sub_folder}/fpt_{flavor}_{thp}_sysbench_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "gups": f'{sub_folder}/fpt_{flavor}_{thp}_gups_{stage}_walk_log.bin.kern_inst.folded.high_level.csv',
+    #     "redis": f'{sub_folder}/fpt_L4L3_L2L1_never_loading_end_phase_jiyuan_redis_run_128G.bin.kern_inst.folded.high_level.csv',
+    #     "memcached": f'{sub_folder}/fpt_L4L3_L2L1_never_run_Memcached64Gpure_20insertion_loading_end.bin.kern_inst.folded.high_level.csv',
+    #     "postgres": f'{sub_folder}/fpt_L4L3_L2L1_never_run_postgres64G_sequential_load_loading_end.bin.kern_inst.folded.high_level.csv',
+    # }
     
-    bench_data["sim_running_distro"] = os.path.abspath(running_path[bench_data["workload"]])
-    bench_data["sim_loading_distro"] = os.path.abspath(loading_end_path[bench_data["workload"]])
+    running_folder = '/data1/fpt_report/fpt_L4L3_L2L1/running'
+    
+    benchs = [
+        'graphbig_bfs',
+        'graphbig_dfs',
+        'graphbig_dc',
+        'graphbig_sssp',
+        'graphbig_cc',
+        'graphbig_tc',
+        'graphbig_pagerank',
+        'sysbench',
+        'gups',
+    ]
+    running_bench_infos = [(b,              'frontier', f'{running_folder}/fpt_L4L3_L2L1_never_{b}_running_walk_log.bin.kern_inst.folded.high_level.csv') for b in benchs]
+    running_bench_infos += [('redis',        'CSL',      '/disk/bak1/siyuan/fpt_L4L3_L2L1/running_phase/fpt_L4L3_L2L1_never_running_redis_run_128G.bin.kern_inst.folded.high_level.csv')]
+    running_bench_infos += [('memcached',    'frontier', '/data1/fpt_report/Memcached64Gpure_20insertion/fpt_L4L3_L2L1_never_run_Memcached64Gpure_20insertion_running.bin.kern_inst.folded.high_level.csv')]
+    running_bench_infos += [('postgres',     'CSL',      '/disk/bak1/siyuan/fpt_L4L3_L2L1/running_phase/fpt_L4L3_L2L1_never_run_postgres64G_sequential_load_running.bin.kern_inst.folded.high_level.csv')]
+
+    for b, machine, path in running_bench_infos:
+        if b == bench_data["workload"]:
+            break
+    running_path = fetch_bench_files(machine, path, local_dir="local")
+
+    loading_end_folder = '/data2/fpt_kexec_temp/fpt_L4L3_L2L1/loading_end_phase'
+    
+    loading_end_bench_infos = [(b,              'ajisai', f'{loading_end_folder}/fpt_L4L3_L2L1_never_{b}_loading_end_phase_walk_log.bin.kern_inst.folded.high_level.csv') for b in benchs]
+    loading_end_bench_infos += [('redis',        'CSL',      '/disk/bak1/siyuan/fpt_L4L3_L2L1/loading_end_phase/fpt_L4L3_L2L1_never_loading_end_phase_redis_run_128G.bin.kern_inst.folded.high_level.csv')]
+    loading_end_bench_infos += [('memcached',    'ajisai', '/data2/fpt_kexec_temp/Memcached64Gpure_20insertion/fpt_L4L3_L2L1_never_run_Memcached64Gpure_20insertion_loading_end.bin.kern_inst.folded.high_level.csv')]
+    loading_end_bench_infos += [('postgres',     'CSL',      '/disk/bak1/siyuan/fpt_L4L3_L2L1/loading_end_phase/fpt_L4L3_L2L1_never_run_postgres64G_sequential_load_loading_end.bin.kern_inst.folded.high_level.csv')]
+
+    for b, machine, path in loading_end_bench_infos:
+        if b == bench_data["workload"]:
+            break
+    loading_end_path = fetch_bench_files(machine, path, local_dir="local")
+    
+    
+    bench_data["sim_running_distro"] = os.path.abspath(running_path)
+    bench_data["sim_loading_distro"] = os.path.abspath(loading_end_path)
     
 
 def get_result_per_kernel_thp_test(arch, thp, test_name, sim_inst_df):
@@ -653,17 +759,17 @@ if __name__ == "__main__":
 
     tests = [
         "graphbig_bfs",
-        # "graphbig_dfs",
-        # "graphbig_dc",
-        # "graphbig_sssp",
-        # "graphbig_cc",
-        # "graphbig_tc",
-        # "graphbig_pagerank",
-        # "sysbench",
-        # "gups",
-        # "redis",
-        # "memcached",
-        # "postgres",
+        "graphbig_dfs",
+        "graphbig_dc",
+        "graphbig_sssp",
+        "graphbig_cc",
+        "graphbig_tc",
+        "graphbig_pagerank",
+        "sysbench",
+        "gups",
+        "redis",
+        "memcached",
+        "postgres",
     ]
 
     get_user_instructions(tests)
