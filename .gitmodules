@@ -1,24 +1,28 @@
 [submodule "graphBIG"]
-	path = graphBIG
-	url = git@github.com:xlab-uiuc/graphBIG.git
+    path = graphBIG
+    url = https://github.com/xlab-uiuc/graphBIG.git
 [submodule "gups"]
-	path = gups
-	url = git@github.com:xlab-uiuc/gups.git
+    path = gups
+    url = https://github.com/xlab-uiuc/gups.git
 [submodule "sysbench"]
-	path = sysbench
-	url = git@github.com:xlab-uiuc/sysbench.git
+    path = sysbench
+    url = https://github.com/xlab-uiuc/sysbench.git
 [submodule "FlameGraph"]
-	path = FlameGraph
-	url = https://github.com/brendangregg/FlameGraph.git
+    path = FlameGraph
+    url = https://github.com/brendangregg/FlameGraph.git
 [submodule "LEBench"]
-	path = LEBench
-	url = git@github.com:xlab-uiuc/LEBench.git
+    path = LEBench
+    url = https://github.com/xlab-uiuc/LEBench.git
 [submodule "ltp"]
-	path = ltp
-	url = https://github.com/linux-test-project/ltp
+    path = ltp
+    url = https://github.com/linux-test-project/ltp
 [submodule "ycsb"]
-	path = ycsb
-	url = git@github.com:xlab-uiuc/ycsb.git
+    path = ycsb
+    url = https://github.com/xlab-uiuc/ycsb.git
 [submodule "memcached_rethinkvm"]
-	path = memcached_rethinkvm
-	url = git@github.com:xlab-uiuc/memcached_rethinkvm.git
+    path = memcached_rethinkvm
+    url = https://github.com/xlab-uiuc/memcached_rethinkvm.git
+[submodule "postgresql-14.13"]
+    path = postgresql-14.13
+    url = https://github.com/xlab-uiuc/postgresql-14.13.git
+
