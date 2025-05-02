@@ -181,7 +181,7 @@ def stack_engine(start: int, name: str, inline: str, addr: int, stack: list, pre
         # TODO: Probably we can detect jump enter near call?
 
     # Definitely not a return, warn and continue
-    print(f"WARNING: at RIP {hex(addr)} ({hex(start)}:{name}+{hex(addr - start)}) RET {hex(prev_addr)} INSN# {hex(cntr)}: jump into the body of function")
+    # print(f"WARNING: at RIP {hex(addr)} ({hex(start)}:{name}+{hex(addr - start)}) RET {hex(prev_addr)} INSN# {hex(cntr)}: jump into the body of function")
     stack.append({
         "ret": prev_addr,
         "start": start,
