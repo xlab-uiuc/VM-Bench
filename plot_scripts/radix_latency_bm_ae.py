@@ -8,6 +8,7 @@ import os
 import csv
 from subprocess import Popen
 import argparse
+import getpass
 
 system_labels = [
 	'Vanilla Linux', 
@@ -17,7 +18,7 @@ system_labels = [
 RUNTIME_COL_NUM = 3
 PG_WALK_LATENCY_COL_NUM = 2
 
-INPUT_DIR = './ae_result/siyuan'
+INPUT_DIR = f'./ae_result/{getpass.getuser()}'
 OUTPUT_DIR = './graphs'
 
 def perf_from_csv(path):

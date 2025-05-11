@@ -7,6 +7,7 @@ import math
 import shutil
 import os
 import csv
+import getpass
 
 RUNTIME_COL_NUM = 3
 PG_WALK_LATENCY_COL_NUM = 2
@@ -60,7 +61,7 @@ def get_kernel_version():
         print(f"Error occurred: {e}")
         return None
     
-RAW_DATA_DIR = './ae_result/siyuan'
+RAW_DATA_DIR = f'./ae_result/{getpass.getuser()}'
 OUTPUT_DIR = './graphs'
 KERNEL = get_kernel_version()
 
