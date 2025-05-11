@@ -19,7 +19,7 @@ RUNTIME_COL_NUM = 3
 PG_WALK_LATENCY_COL_NUM = 2
 
 INPUT_DIR = f'./ae_result/{getpass.getuser()}'
-OUTPUT_DIR = './graphs'
+OUTPUT_DIR = f'./ae_result/{getpass.getuser()}/graphs'
 
 def perf_from_csv(path):
     df = pd.read_csv(path, index_col=0)
@@ -73,6 +73,9 @@ if args.input:
     
 if args.output:
     OUTPUT_DIR = args.output
+    
+if not os.path.exists(OUTPUT_DIR):
+	os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # data input
 

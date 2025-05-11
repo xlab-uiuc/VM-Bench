@@ -62,7 +62,7 @@ def get_kernel_version():
         return None
     
 RAW_DATA_DIR = f'./ae_result/{getpass.getuser()}'
-OUTPUT_DIR = './graphs'
+OUTPUT_DIR = f'./ae_result/{getpass.getuser()}/graphs'
 KERNEL = get_kernel_version()
 
 app_bench_list = [
