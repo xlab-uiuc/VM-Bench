@@ -777,9 +777,9 @@ if __name__ == "__main__":
 
     tests = [
         "graphbig_bfs",
-        "graphbig_dfs",
-        "graphbig_dc",
-        "graphbig_sssp",
+        # "graphbig_dfs",
+        # "graphbig_dc",
+        # "graphbig_sssp",
         # "graphbig_cc",
         # "graphbig_tc",
         # "graphbig_pagerank",
