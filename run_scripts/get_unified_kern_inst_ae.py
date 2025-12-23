@@ -270,15 +270,15 @@ def populate_FPT_sim_path_L2L3(bench_data, thp):
     running_folder = '/data1/fpt_report/fpt_L3L2/running'
     
     benchs = [
-        'graphbig_bfs',
-        'graphbig_dfs',
-        'graphbig_dc',
-        'graphbig_sssp',
-        'graphbig_cc',
-        'graphbig_tc',
-        'graphbig_pagerank',
-        'sysbench',
-        'gups',
+        # 'graphbig_bfs',
+        # 'graphbig_dfs',
+        # 'graphbig_dc',
+        # 'graphbig_sssp',
+        # 'graphbig_cc',
+        # 'graphbig_tc',
+        # 'graphbig_pagerank',
+        # 'sysbench',
+        # 'gups',
     ]
     running_bench_infos = [(b,              'frontier', f'{running_folder}/fpt_L3L2_never_{b}_running_walk_log.bin.kern_inst.folded.high_level.csv') for b in benchs]
     running_bench_infos += [('redis',        'CSL',      '/disk/bak1/siyuan/fpt_L3L2/running_phase/fpt_L3L2_never_running_jiyuan_redis_run_128G.bin.kern_inst.folded.high_level.csv')]
@@ -776,6 +776,7 @@ if __name__ == "__main__":
     # ]
 
     tests = [
+        # "graphbig_bfs_small",
         "graphbig_bfs",
         # "graphbig_dfs",
         # "graphbig_dc",
@@ -784,8 +785,8 @@ if __name__ == "__main__":
         # "graphbig_tc",
         # "graphbig_pagerank",
         # "sysbench",
-        "gups",
-        "redis",
+        # "gups",
+        # "redis",
         # "memcached",
         # "postgres",
     ]
